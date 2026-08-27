@@ -1,0 +1,65 @@
+// Prisma schema for RICH Knowledge Repository (mirrors Laravel)
+// DB: Postgres (Neon/Supabase/Vercel Postgres) — same as DB_CONNECTION=pgsql rich
+
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id               String    @id @default(cuid())
+  name             String
+  email            String    @unique
+  emailVerifiedAt  DateTime? @map("email_verified_at")
+  password         String
+  avatar           String?
+  createdAt        DateTime  @default(now()) @map("created_at")
+  updatedAt        DateTime  @updatedAt @map("updated_at")
+  resources        Resource[]
+  @@map("users")
+}
+
+model Tag {
+  id        String     @id @default(cuid())
+  name      String     // JSON name->en in Laravel, simplified
+  type      String     // cluster, geography, theme, scaling_pathway, audience
+  resources Resource[] @relation("ResourceTags")
+  createdAt DateTime   @default(now()) @map("created_at")
+  updatedAt DateTime   @updatedAt @map("updated_at")
+  @@map("tags")
+}
+
+model Requirement {
+  id          String   @id @default(cuid())
+  reference   String   @unique // 11.8 etc
+  requirement String
+  category    String
+  status      String   // met, partial, not_met, not_applicable
+  evidence    String?
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+  @@map("requirements")
+}
+
+model Resource {
+  id            String   @id @default(cuid())
+  title         String
+  slug          String   @unique
+  summary       String?
+  collection    String   // research_outputs, innovation_case_studies, ecosystem_insights, policy_resources
+  contentType   String   @map("content_type")
+  status        String   @default("draft") // draft, in_review, published
+  source        String?
+  publishedAt   DateTime? @map("published_at")
+  authorId      String?  @map("author_id")
+  author        User?    @relation(fields: [authorId], references: [id])
+  tags          Tag[]    @relation("ResourceTags")
+  createdAt     DateTime @default(now()) @map("created_at")
+  updatedAt     DateTime @updatedAt @map("updated_at")
+  @@map("resources")
+}
