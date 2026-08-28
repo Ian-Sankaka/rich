@@ -42,7 +42,7 @@ const initial: Submission[] = [
 
 function StatusBadge({ s }: { s: Status }) {
   const cfg: Record<Status, { label: string; cls: string; dot: string }> = {
-    pending: { label: "Pending", cls: "bg-amber-50 text-amber-800 border-amber-300 dark:bg-amber-950/40 dark:text-amber-300 dark:border-amber-900/70 shadow-sm", dot: "bg-amber-500" },
+    pending: { label: "Pending", cls: "bg-orange-500 text-white border-orange-600 dark:bg-orange-600 dark:text-white dark:border-orange-700 shadow-sm", dot: "bg-white" },
     in_review: { label: "In review", cls: "bg-sky-50 text-sky-800 border-sky-300 dark:bg-sky-950/40 dark:text-sky-300 dark:border-sky-900/70 shadow-sm", dot: "bg-sky-500" },
     published: { label: "Published", cls: "bg-emerald-50 text-emerald-800 border-emerald-300 dark:bg-emerald-950/40 dark:text-emerald-300 dark:border-emerald-900/70 shadow-sm", dot: "bg-emerald-500" },
     declined: { label: "Declined", cls: "bg-red-50 text-red-700 border-red-200 dark:bg-red-950/40 dark:text-red-300 dark:border-red-900 shadow-sm", dot: "bg-red-500" },
