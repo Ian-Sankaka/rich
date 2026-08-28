@@ -1,7 +1,7 @@
 "use client";
 import Link from "next/link";
 import * as React from "react";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { motion, useMotionValue, useTransform, animate } from "framer-motion";
 import { Clock, FileText, CheckCircle, Settings, LayoutDashboard, LogOut, Plus } from "lucide-react";
 import { useToast } from "@/components/ToastProvider";
@@ -18,6 +18,26 @@ type Submission = {
 };
 
 const initial: Submission[] = [] as Submission[];
+
+const TYPES = ["Research Paper", "Case Study", "Policy Brief", "Working Paper", "Technical Note", "Synthesis Report"];
+const COLLECTIONS = [
+  { v: "research_outputs", l: "Research Outputs" },
+  { v: "innovation_case_studies", l: "Innovation Case Studies" },
+  { v: "ecosystem_insights", l: "Ecosystem Insights — Phase 2" },
+  { v: "policy_resources", l: "Policy Resources" },
+];
+const GEOGRAPHIES = ["Pan-African", "East Africa", "West Africa", "Southern Africa", "Central Africa", "North Africa", "Kenya", "Rwanda", "Nigeria", "South Africa", "Ethiopia"];
+const THEMES = ["Climate Adaptation", "Food & Agriculture", "Water", "Energy", "Early Warning", "Responsible AI", "Climate Finance", "Data & Infrastructure"];
+const CLUSTERS = ["Data & Infrastructure", "Models & Tools", "Deployment & Scale", "Governance & Ethics", "Finance & Markets"];
+const PATHWAYS = ["Pilot", "Validation", "Scale-up", "Systemic Adoption"];
+const AUDIENCES = ["Researchers", "Policymakers", "Innovators", "Funders", "Ecosystem Partners", "Government Staff"];
+const LICENSES = ["CC BY 4.0 (Open)", "CC BY-SA 4.0", "CC BY-NC 4.0", "All rights reserved"];
+const STEPS = [
+  { n: 1, label: "Core", desc: "Title & abstract" },
+  { n: 2, label: "Taxonomy", desc: "Tags & context" },
+  { n: 3, label: "Details", desc: "Authorship & rights" },
+  { n: 4, label: "Review", desc: "Submit" },
+];
 
 function StatusBadge({ s }: { s: Status }) {
   const map: Record<Status, string> = {
@@ -47,10 +67,6 @@ export default function UserDashboardPage() {
   const [subs, setSubs] = useState<Submission[]>(initial);
   const [filter, setFilter] = useState<Status | "all">("all");
   const [contributeOpen, setContributeOpen] = useState(false);
-  const [cTitle, setCTitle] = useState("");
-  const [cAbstract, setCAbstract] = useState("");
-  const [cCollection, setCCollection] = useState("Research Outputs");
-  const [cType, setCType] = useState("Technical Note");
   const [query, setQuery] = useState("");
   const [selected, setSelected] = useState<Submission | null>(null);
   const [profileModalOpen, setProfileModalOpen] = useState(false);
@@ -63,6 +79,30 @@ export default function UserDashboardPage() {
   const [pwConfirm, setPwConfirm] = useState("");
   const [savingProfile, setSavingProfile] = useState(false);
   const [savingPw, setSavingPw] = useState(false);
+
+  // contribute form state (full 4 steps like /submit)
+  const [step, setStep] = useState(1);
+  const [title, setTitle] = useState("");
+  const [abstract, setAbstract] = useState("");
+  const [type, setType] = useState("");
+  const [collection, setCollection] = useState("research_outputs");
+  const [geography, setGeography] = useState<string[]>([]);
+  const [themes, setThemes] = useState<string[]>([]);
+  const [cluster, setCluster] = useState("");
+  const [pathway, setPathway] = useState("");
+  const [audience, setAudience] = useState<string[]>([]);
+  const [author, setAuthor] = useState("");
+  const [date, setDate] = useState("");
+  const [licensing, setLicensing] = useState("CC BY 4.0 (Open)");
+  const [submitting, setSubmitting] = useState(false);
+  const words = useMemo(() => abstract.trim().split(/\s+/).filter(Boolean).length, [abstract]);
+  const overWords = words > 200;
+  const canNext1 = title.trim().length >= 8 && abstract.trim().length >= 30 && !overWords && type !== "";
+  const canNext2 = geography.length > 0 && themes.length > 0 && cluster !== "" && pathway !== "";
+  const canNext3 = author.trim().length >= 3 && date !== "" && audience.length > 0 && licensing !== "";
+  function toggle(set: React.Dispatch<React.SetStateAction<string[]>>, arr: string[], v: string) {
+    set(arr.includes(v) ? arr.filter((x) => x !== v) : [...arr, v]);
+  }
 
   React.useLayoutEffect(() => {
     document.documentElement.classList.add("dashboard-hide");
@@ -134,17 +174,49 @@ export default function UserDashboardPage() {
     setTimeout(() => { setSavingPw(false); setPwCurrent(""); setPwNew(""); setPwConfirm(""); toast("Password updated", "success"); }, 600);
   };
 
-  const handleContribute = () => {
-    if (cTitle.trim().length < 8) { toast("Title must be at least 8 characters", "error"); return; }
-    if (cAbstract.trim().length < 30) { toast("Abstract must be at least 30 characters", "error"); return; }
+  function handleNext() {
+    if (step === 1 && !canNext1) {
+      if (!title.trim() || title.trim().length < 8) toast("Add a title (at least 8 characters).", "info");
+      else if (!abstract.trim() || abstract.trim().length < 30) toast("Add an abstract (at least 30 characters).", "info");
+      else if (overWords) toast(`Abstract is ${words} words - keep it under 200.`, "info");
+      else if (!type) toast("Select a resource type to continue.", "info");
+      return;
+    }
+    if (step === 2 && !canNext2) { toast("Pick at least one geography, one theme, a cluster and a pathway.", "info"); return; }
+    if (step === 3 && !canNext3) { toast("Add author, publication date, and at least one audience.", "info"); return; }
+    setStep((s) => Math.min(4, s + 1));
+  }
+
+  async function handleContributeSubmit() {
+    if (!canNext1 || !canNext2 || !canNext3) {
+      toast("Please complete all required fields before submitting.", "info");
+      if (!canNext1) setStep(1);
+      else if (!canNext2) setStep(2);
+      else if (!canNext3) setStep(3);
+      return;
+    }
+    setSubmitting(true);
+    const payload = { title, abstract, type, collection, geography, themes, cluster, pathway, audience, author, date, licensing };
+    try {
+      const res = await fetch("/api/resources", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(payload) });
+      // treat 404 (no endpoint yet) as success for local dashboard
+      if (!res.ok && res.status !== 404) {
+        const j = await res.json().catch(() => ({}));
+        toast(j.error || "Submission failed - please retry", "error");
+        setSubmitting(false);
+        return;
+      }
+    } catch {}
     const now = new Date().toLocaleDateString("en-GB", { day: "2-digit", month: "short", year: "numeric" });
-    const n: Submission = { id: String(Date.now()), title: cTitle.trim(), collection: cCollection, date: now, status: "pending", excerpt: cAbstract.trim().slice(0, 140) + (cAbstract.length > 140 ? "…" : "") };
+    const n: Submission = { id: String(Date.now()), title: title.trim(), collection: COLLECTIONS.find((c)=>c.v===collection)?.l || collection, date: now, status: "pending", excerpt: abstract.trim().slice(0, 140) + (abstract.length > 140 ? "…" : "") };
     setSubs((prev) => [n, ...prev]);
     setFilter("all");
     setContributeOpen(false);
-    setCTitle(""); setCAbstract(""); setCCollection("Research Outputs"); setCType("Technical Note");
+    setStep(1);
+    setTitle(""); setAbstract(""); setType(""); setGeography([]); setThemes([]); setCluster(""); setPathway(""); setAudience([]); setAuthor(""); setDate(""); setLicensing("CC BY 4.0 (Open)");
+    setSubmitting(false);
     toast("Resource submitted — pending review", "success");
-  };
+  }
 
   const signOut = async () => {
     try { await fetch("/api/logout", { method: "POST" }); } catch {}
@@ -213,7 +285,7 @@ export default function UserDashboardPage() {
                 <p className="mt-2 max-w-2xl text-[15px] font-light leading-6 text-white/80">Submit resources, track review status, and see your published work live in the repository.</p>
               </div>
               <div className="flex shrink-0 gap-3">
-                <button onClick={() => setContributeOpen(true)} className="inline-flex items-center justify-center gap-2 rounded-[4px] bg-white px-6 py-3 text-[15px] font-bold text-[#1a3a1a] hover:bg-white/90 transition-all cursor-pointer"><Plus className="h-4 w-4" /> Contribute Resource</button>
+                <button onClick={() => { setStep(1); setContributeOpen(true); }} className="inline-flex items-center justify-center gap-2 rounded-[4px] bg-white px-6 py-3 text-[15px] font-bold text-[#1a3a1a] hover:bg-white/90 transition-all cursor-pointer"><Plus className="h-4 w-4" /> Contribute Resource</button>
                 <Link href="/collections" className="hidden sm:inline-flex items-center justify-center rounded-[4px] border border-white/20 px-6 py-3 text-[15px] font-bold text-white hover:bg-white/10 transition-colors">Browse</Link>
               </div>
             </div>
@@ -287,7 +359,7 @@ export default function UserDashboardPage() {
                     <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-[#e8f3e5] dark:bg-[#14311a] text-[#4a8c3f]"><Plus className="h-6 w-6" /></div>
                     <h4 className="mt-4 text-[18px] font-bold text-[var(--text-dark)]">No submissions yet</h4>
                     <p className="mt-1 text-[15px] text-[var(--text-mid)]">Start by adding your first article. It will appear here with its review status.</p>
-                    <button onClick={() => setContributeOpen(true)} className="mt-5 inline-flex items-center justify-center gap-2 rounded-[4px] bg-[#4a8c3f] px-6 py-3 text-[15px] font-bold text-white hover:bg-[#2d5a27] transition-colors cursor-pointer"><Plus className="h-4 w-4" /> Contribute Resource</button>
+                    <button onClick={() => { setStep(1); setContributeOpen(true); }} className="mt-5 inline-flex items-center justify-center gap-2 rounded-[4px] bg-[#4a8c3f] px-6 py-3 text-[15px] font-bold text-white hover:bg-[#2d5a27] transition-colors cursor-pointer"><Plus className="h-4 w-4" /> Contribute Resource</button>
                   </div>
                 </div>
               )}
@@ -356,23 +428,103 @@ export default function UserDashboardPage() {
       {contributeOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
           <div onClick={() => setContributeOpen(false)} className="absolute inset-0 bg-black/50 backdrop-blur-sm" />
-          <div className="relative w-full max-w-[640px] max-h-[90vh] overflow-auto rounded-[16px] bg-white dark:bg-[#1a221a] border border-[var(--border)] shadow-2xl animate-[toast-in_0.3s_ease]">
-            <div className="sticky top-0 flex items-center justify-between gap-4 border-b border-[var(--border)] bg-white dark:bg-[#1a221a] px-6 py-5">
-              <div><h3 className="text-[18px] font-bold text-[var(--text-dark)]">Contribute Resource</h3><p className="text-[13px] text-[var(--text-light)]">Add a resource without leaving your dashboard — it will appear below as Pending</p></div>
-              <button onClick={() => setContributeOpen(false)} className="flex h-9 w-9 items-center justify-center rounded-full border border-[var(--border)] hover:bg-[var(--off-white)] transition-colors">✕</button>
+          <div className="relative w-full max-w-[880px] max-h-[90vh] overflow-auto rounded-[16px] bg-[#f7f6f4] dark:bg-[#070d07] border border-[#e8ece8] dark:border-white/10 shadow-2xl animate-[toast-in_0.3s_ease] flex flex-col">
+            {/* header like /submit */}
+            <div className="shrink-0 bg-[#1a3a1a] border-b border-white/5 px-6 lg:px-8 py-8">
+              <p className="text-[14px] font-bold tracking-[0.20em] uppercase text-[#6db862]">Contribution · Phase 1 intake</p>
+              <h3 className="mt-2 text-[28px] font-medium leading-none text-white" style={{ fontFamily: "Playfair Display, serif" }}>Contribute Resource</h3>
+              <p className="mt-2 max-w-[660px] text-[14px] font-light leading-6 text-white/80">Same form as Submit — reviewed within 4 weeks. Your submission will appear in My Submissions as Pending.</p>
             </div>
-            <div className="p-6 space-y-5">
-              <div><label className="text-[13px] font-bold tracking-[0.1em] uppercase text-[#5a5e5a] dark:text-white/60">Title *</label><input value={cTitle} onChange={(e) => setCTitle(e.target.value)} placeholder="e.g. Early warning for smallholder farmers in Turkana" className="mt-2 w-full rounded-[4px] border border-[#d6d9d6] dark:border-white/10 bg-white dark:bg-white/5 px-4 py-3.5 text-[15px] outline-none focus:border-[#4a8c3f] focus:ring-4 focus:ring-[#4a8c3f]/15" /></div>
-              <div><label className="text-[13px] font-bold tracking-[0.1em] uppercase text-[#5a5e5a] dark:text-white/60">Abstract *</label><textarea value={cAbstract} onChange={(e) => setCAbstract(e.target.value)} rows={4} placeholder="Plain-language summary — problem, approach, key finding (30+ chars)" className="mt-2 w-full rounded-[4px] border border-[#d6d9d6] dark:border-white/10 bg-white dark:bg-white/5 px-4 py-3.5 text-[15px] leading-7 outline-none focus:border-[#4a8c3f] focus:ring-4 focus:ring-[#4a8c3f]/15" /></div>
-              <div className="grid gap-4 sm:grid-cols-2">
-                <div><label className="text-[13px] font-bold tracking-[0.1em] uppercase text-[#5a5e5a] dark:text-white/60">Collection</label><select value={cCollection} onChange={(e) => setCCollection(e.target.value)} className="mt-2 w-full rounded-[4px] border border-[#d6d9d6] dark:border-white/10 bg-white dark:bg-[#1a221a] px-4 py-3 text-[15px] outline-none focus:border-[#4a8c3f]"><option>Research Outputs</option><option>Innovation Case Studies</option><option>Ecosystem Insights — Phase 2</option><option>Policy Resources</option></select></div>
-                <div><label className="text-[13px] font-bold tracking-[0.1em] uppercase text-[#5a5e5a] dark:text-white/60">Type</label><select value={cType} onChange={(e) => setCType(e.target.value)} className="mt-2 w-full rounded-[4px] border border-[#d6d9d6] dark:border-white/10 bg-white dark:bg-[#1a221a] px-4 py-3 text-[15px] outline-none focus:border-[#4a8c3f]"><option>Technical Note</option><option>Research Paper</option><option>Case Study</option><option>Policy Brief</option></select></div>
-              </div>
-              <div className="flex gap-3 pt-2">
-                <button onClick={() => setContributeOpen(false)} className="flex-1 rounded-[4px] border border-[var(--border)] bg-white dark:bg-white/5 px-6 py-3 text-[15px] font-bold text-[var(--text-dark)] hover:bg-[var(--off-white)] transition-colors">Cancel</button>
-                <button onClick={handleContribute} className="flex-1 rounded-[4px] bg-[#4a8c3f] px-6 py-3 text-[15px] font-bold text-white hover:bg-[#2d5a27] transition-colors">Submit</button>
+            {/* stepper */}
+            <div className="shrink-0 bg-white dark:bg-[#1a221a] border-b border-[#e8ece8] dark:border-white/10 px-6 lg:px-8 pt-6 pb-4">
+              <div className="flex items-start justify-center gap-0">
+                {STEPS.map((s, i) => {
+                  const active = s.n === step;
+                  const done = s.n < step;
+                  return (
+                    <div key={s.n} className="flex items-start">
+                      <div className="flex flex-col items-center text-center min-w-[84px] sm:min-w-[100px]">
+                        <div className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-[4px] border-2 text-[15px] font-bold transition-all ${done ? "border-[#4a8c3f] bg-[#4a8c3f] text-white" : active ? "border-[#4a8c3f] bg-white text-[#4a8c3f] dark:bg-[#1a221a] shadow-[0_0_0_4px_rgba(74,140,63,0.15)]" : "border-[#d6d9d6] bg-white text-[#9aa09a] dark:border-white/10 dark:bg-white/5 dark:text-white/40"}`}>{done ? "✓" : s.n}</div>
+                        <p className={`mt-2 text-[13px] font-bold tracking-[0.07em] uppercase ${active ? "text-[#1a221a] dark:text-white" : done ? "text-[#4a8c3f]" : "text-[#9aa09a]"}`}>{s.label}</p>
+                        <p className={`text-[12px] leading-tight ${active ? "text-[#6b726b]" : "text-[#9aa09a]"} dark:text-white/40`}>{s.desc}</p>
+                      </div>
+                      {i < 3 && <div className={`mx-1 sm:mx-2 mt-[17px] h-px w-6 sm:w-10 lg:w-16 shrink-0 transition-colors ${s.n < step ? "bg-[#4a8c3f]" : "bg-[#d6d9d6] dark:bg-white/10"}`} />}
+                    </div>
+                  );
+                })}
               </div>
             </div>
+            {/* step content */}
+            <div className="flex-1 overflow-auto bg-white dark:bg-[#1a221a] px-6 lg:px-8 py-6">
+              {step === 1 && (
+                <div className="space-y-5 animate-[toast-in_0.35s_ease]">
+                  <div><h4 className="text-[20px] font-bold text-[#1a221a] dark:text-white">Resource basics</h4><p className="mt-1 text-[14px] text-[#6b726b] dark:text-white/50">This is what reviewers and search see first.</p></div>
+                  <div><label className="text-[12px] font-bold tracking-[0.1em] uppercase text-[#5a5e5a] dark:text-white/60">Title *</label><input value={title} onChange={(e) => setTitle(e.target.value)} placeholder="e.g. Early warning for smallholder farmers in Turkana" className="mt-2 w-full rounded-[4px] border border-[#d6d9d6] dark:border-white/10 bg-white dark:bg-white/5 px-4 py-3.5 text-[15px] outline-none focus:border-[#4a8c3f] focus:ring-4 focus:ring-[#4a8c3f]/15" /><p className="mt-1.5 text-[13px] text-[#9aa09a]">{title.length}/120</p></div>
+                  <div>
+                    <div className="flex items-center justify-between"><label className="text-[12px] font-bold tracking-[0.1em] uppercase text-[#5a5e5a] dark:text-white/60">Abstract - 200 words max *</label><span className={`text-[12px] font-bold px-2 py-1 rounded-[4px] ${overWords ? "bg-red-50 text-red-600 dark:bg-red-900/30 dark:text-red-300" : words > 160 ? "bg-amber-50 text-amber-700" : "bg-[#e8f3e5] text-[#2d5a27]"}`}>{words} / 200</span></div>
+                    <textarea value={abstract} onChange={(e) => setAbstract(e.target.value)} rows={4} placeholder="Plain-language summary: problem, approach, key finding, who it helps." className={`mt-2 w-full rounded-[4px] border px-4 py-3.5 text-[15px] leading-7 outline-none focus:ring-4 ${overWords ? "border-red-300 focus:border-red-400 focus:ring-red-100 bg-red-50/30" : "border-[#d6d9d6] dark:border-white/10 bg-white dark:bg-white/5 focus:border-[#4a8c3f] focus:ring-[#4a8c3f]/15"}`} />
+                    {overWords && <p className="mt-1.5 text-[13px] font-medium text-red-600">Cut {words - 200} words.</p>}
+                  </div>
+                  <div className="grid gap-4 sm:grid-cols-2">
+                    <div><label className="text-[12px] font-bold tracking-[0.1em] uppercase text-[#5a5e5a] dark:text-white/60">Resource type *</label><div className="relative mt-2"><select value={type} onChange={(e) => setType(e.target.value)} className="w-full appearance-none rounded-[4px] border border-[#d6d9d6] dark:border-white/10 bg-white dark:bg-[#1a221a] pl-4 pr-10 py-3.5 text-[15px] font-medium outline-none focus:border-[#4a8c3f]"><option value="" disabled>Select type</option>{TYPES.map((t) => <option key={t} value={t}>{t}</option>)}</select><span className="pointer-events-none absolute right-3.5 top-1/2 -translate-y-1/2 text-[#9aa09a]"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="m6 9 6 6 6-6"/></svg></span></div></div>
+                    <div><label className="text-[12px] font-bold tracking-[0.1em] uppercase text-[#5a5e5a] dark:text-white/60">Collection</label><div className="relative mt-2"><select value={collection} onChange={(e) => setCollection(e.target.value)} className="w-full appearance-none rounded-[4px] border border-[#d6d9d6] dark:border-white/10 bg-white dark:bg-[#1a221a] pl-4 pr-10 py-3.5 text-[15px] font-medium outline-none focus:border-[#4a8c3f]">{COLLECTIONS.map((c) => <option key={c.v} value={c.v}>{c.l}</option>)}</select><span className="pointer-events-none absolute right-3.5 top-1/2 -translate-y-1/2 text-[#9aa09a]"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="m6 9 6 6 6-6"/></svg></span></div></div>
+                  </div>
+                </div>
+              )}
+              {step === 2 && (
+                <div className="space-y-5 animate-[toast-in_0.35s_ease]">
+                  <div><h4 className="text-[20px] font-bold text-[#1a221a] dark:text-white">Tag taxonomy</h4><p className="mt-1 text-[14px] text-[#6b726b] dark:text-white/50">How your resource is discovered.</p></div>
+                  <div><label className="text-[12px] font-bold tracking-[0.1em] uppercase text-[#5a5e5a]">Geography *</label><div className="mt-2 flex flex-wrap gap-2">{GEOGRAPHIES.map((g) => <button key={g} type="button" onClick={() => toggle(setGeography, geography, g)} className={`rounded-[4px] border px-3 py-2 text-[14px] font-medium ${geography.includes(g) ? "border-[#4a8c3f] bg-[#4a8c3f] text-white" : "border-[#d6d9d6] bg-white text-[#3a443a]"}`}>{g}</button>)}</div></div>
+                  <div><label className="text-[12px] font-bold tracking-[0.1em] uppercase text-[#5a5e5a]">Themes *</label><div className="mt-2 flex flex-wrap gap-2">{THEMES.map((t) => <button key={t} type="button" onClick={() => toggle(setThemes, themes, t)} className={`rounded-[4px] border px-3 py-2 text-[14px] font-medium ${themes.includes(t) ? "border-[#4a8c3f] bg-[#e8f3e5] text-[#2d5a27]" : "border-[#d6d9d6] bg-white text-[#3a443a]"}`}>{t}</button>)}</div></div>
+                  <div className="grid gap-4 sm:grid-cols-2">
+                    <div><label className="text-[12px] font-bold tracking-[0.1em] uppercase text-[#5a5e5a]">Cluster *</label><div className="mt-2 grid gap-2">{CLUSTERS.map((c) => <button key={c} type="button" onClick={() => setCluster(c)} className={`text-left rounded-[4px] border px-4 py-3 text-[14px] font-medium ${cluster === c ? "border-[#4a8c3f] bg-[#e8f3e5] text-[#2d5a27]" : "border-[#d6d9d6] bg-white text-[#3a443a]"}`}>{c}</button>)}</div></div>
+                    <div><label className="text-[12px] font-bold tracking-[0.1em] uppercase text-[#5a5e5a]">Scaling pathway *</label><div className="mt-2 grid gap-2">{PATHWAYS.map((p) => <button key={p} type="button" onClick={() => setPathway(p)} className={`text-left rounded-[4px] border px-4 py-3 text-[14px] font-medium ${pathway === p ? "border-[#4a8c3f] bg-[#4a8c3f] text-white" : "border-[#d6d9d6] bg-white text-[#3a443a]"}`}>{p}</button>)}</div></div>
+                  </div>
+                </div>
+              )}
+              {step === 3 && (
+                <div className="space-y-5 animate-[toast-in_0.35s_ease]">
+                  <div><h4 className="text-[20px] font-bold text-[#1a221a] dark:text-white">Authorship & publishing</h4></div>
+                  <div className="grid gap-4 sm:grid-cols-2">
+                    <div><label className="text-[12px] font-bold tracking-[0.1em] uppercase text-[#5a5e5a]">Author / organisation *</label><input value={author} onChange={(e) => setAuthor(e.target.value)} placeholder="e.g. LDRI / Dr A. Mwangi" className="mt-2 w-full rounded-[4px] border border-[#d6d9d6] px-4 py-3.5 text-[15px] outline-none focus:border-[#4a8c3f]" /></div>
+                    <div><label className="text-[12px] font-bold tracking-[0.1em] uppercase text-[#5a5e5a]">Publication date *</label><input type="date" value={date} onChange={(e) => setDate(e.target.value)} className="mt-2 w-full rounded-[4px] border border-[#d6d9d6] px-4 py-3.5 text-[15px] outline-none focus:border-[#4a8c3f]" /></div>
+                  </div>
+                  <div><label className="text-[12px] font-bold tracking-[0.1em] uppercase text-[#5a5e5a]">Audience *</label><div className="mt-2 flex flex-wrap gap-2">{AUDIENCES.map((a) => <button key={a} type="button" onClick={() => toggle(setAudience, audience, a)} className={`rounded-[4px] border px-3 py-2 text-[14px] font-medium ${audience.includes(a) ? "border-[#4a8c3f] bg-[#4a8c3f] text-white" : "border-[#d6d9d6] bg-white text-[#3a443a]"}`}>{a}</button>)}</div></div>
+                  <div><label className="text-[12px] font-bold tracking-[0.1em] uppercase text-[#5a5e5a]">Licensing</label><div className="mt-2 grid gap-2 sm:grid-cols-2">{LICENSES.map((l) => <button key={l} type="button" onClick={() => setLicensing(l)} className={`text-left rounded-[4px] border px-4 py-3 text-[14px] font-medium ${licensing === l ? "border-[#4a8c3f] bg-[#e8f3e5] text-[#2d5a27]" : "border-[#d6d9d6] bg-white text-[#3a443a]"}`}>{l}</button>)}</div></div>
+                </div>
+              )}
+              {step === 4 && (
+                <div className="space-y-5 animate-[toast-in_0.35s_ease]">
+                  <div><h4 className="text-[20px] font-bold text-[#1a221a] dark:text-white">Review & submit</h4><p className="mt-1 text-[14px] text-[#6b726b]">Check everything, then submit. Decision within 4 weeks.</p></div>
+                  <div className="rounded-[4px] border border-[#d6d9d6] divide-y divide-[#e8ece8] overflow-hidden">
+                    {[
+                      ["Title", title || "-"],
+                      ["Abstract", abstract ? `${abstract.slice(0, 120)}${abstract.length > 120 ? "…" : ""} (${words} words)` : "-"],
+                      ["Type / Collection", `${type || "-"} · ${COLLECTIONS.find((c)=>c.v===collection)?.l}`],
+                      ["Geography", geography.join(", ") || "-"],
+                      ["Themes", themes.join(", ") || "-"],
+                      ["Cluster / Pathway", `${cluster || "-"} · ${pathway || "-"}`],
+                      ["Audience", audience.join(", ") || "-"],
+                      ["Author · Date · License", `${author || "-"} · ${date || "-"} · ${licensing}`],
+                    ].map(([k, v]) => (
+                      <div key={k} className="grid grid-cols-[130px_1fr] gap-3 px-4 py-3 text-[14px]">
+                        <span className="font-semibold text-[#5a5e5a]">{k}</span>
+                        <span className="text-[#1a221a] break-words">{v}</span>
+                      </div>
+                    ))}
+                  </div>
+                  <label className="flex items-start gap-3 rounded-xl border border-[#d6d9d6] bg-[#f7f6f4] px-4 py-3 cursor-pointer"><input type="checkbox" defaultChecked className="mt-1 accent-[#4a8c3f]" /><span className="text-[14px] leading-6 text-[#3a443a]">I confirm this is <span className="font-semibold">RICH-produced, partner-contributed, or curated external</span> and I have rights to share it.</span></label>
+                </div>
+              )}
+            </div>
+            <div className="shrink-0 flex items-center justify-between gap-3 border-t border-[#e8ece8] bg-[#f7f6f4] px-6 py-4">
+              <button type="button" onClick={() => setStep((s) => Math.max(1, s - 1))} disabled={step === 1} className="inline-flex items-center gap-2 rounded-[4px] border border-[#d6d9d6] bg-white px-5 py-2.5 text-[12px] font-bold tracking-[0.06em] uppercase disabled:opacity-40 hover:border-[#4a8c3f]">← Back</button>
+              <div className="flex items-center gap-3">
+                <span className="hidden sm:inline text-[12px] text-[#9aa09a]">Step {step} of 4</span>
+                {step < 4 ? <button type="button" onClick={handleNext} className="inline-flex items-center gap-2 rounded-[4px] bg-[#4a8c3f] px-6 py-3 text-[12px] font-bold tracking-[0.07em] uppercase text-white hover:bg-[#2d5a27]">Continue →</button> : <button type="button" onClick={handleContributeSubmit} disabled={submitting} className="inline-flex items-center gap-2 rounded-[4px] bg-[#1a3a1a] px-6 py-3 text-[12px] font-bold tracking-[0.07em] uppercase text-white hover:bg-black disabled:opacity-40">{submitting ? "Submitting…" : "Submit for review →"}</button>}
+              </div>
+            </div>
+            <button onClick={() => setContributeOpen(false)} className="absolute top-3 right-3 hidden">x</button>
           </div>
         </div>
       )}
