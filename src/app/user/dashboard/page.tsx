@@ -130,6 +130,25 @@ export default function UserDashboardPage() {
 
   useEffect(() => { if (displayName === "" && userName !== "there") setDisplayName(userName); }, [userName, displayName]);
 
+  // hydrate user's own submissions from DB — persists across logouts/logins
+  useEffect(() => {
+    fetch("/api/resources?mine=1")
+      .then((r) => (r.ok ? r.json() : null))
+      .then((j) => {
+        if (!j?.resources?.length) return;
+        const mapped: Submission[] = j.resources.map((r: any) => ({
+          id: String(r.id),
+          title: String(r.title),
+          collection: r.collection === "research_outputs" ? "Research Outputs" : r.collection === "innovation_case_studies" ? "Innovation Case Studies" : r.collection === "ecosystem_insights" ? "Ecosystem Insights" : r.collection === "policy_resources" ? "Policy Resources" : String(r.collection),
+          date: new Date(r.created_at).toLocaleDateString("en-GB", { day: "2-digit", month: "short", year: "numeric" }),
+          status: (r.status === "pending" ? "pending" : r.status === "in_review" ? "in_review" : r.status === "published" ? "published" : "pending") as Status,
+          excerpt: String(r.summary || "").slice(0, 140) + (String(r.summary || "").length > 140 ? "…" : ""),
+        }));
+        setSubs(mapped);
+      })
+      .catch(() => {});
+  }, []);
+
   const filtered = subs.filter((s) => {
     const statusMatch = filter === "all" ? true : s.status === filter;
     const q = query === "" || s.title.toLowerCase().includes(query.toLowerCase());
