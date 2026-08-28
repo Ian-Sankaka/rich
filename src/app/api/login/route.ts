@@ -4,6 +4,8 @@ import { pool } from "@/lib/db";
 import { signSession, SESSION_COOKIE, sessionCookieOptions } from "@/lib/auth";
 import { rateLimit, getClientIp } from "@/lib/rateLimit";
 
+export const dynamic = "force-dynamic";
+
 export async function POST(req: NextRequest) {
   const ip = getClientIp(req as unknown as Request);
   const rl = rateLimit(`login:${ip}`, 5, 15 * 60 * 1000);

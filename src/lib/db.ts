@@ -23,4 +23,10 @@ function getPool() {
   return pool;
 }
 
-export const pool = getPool();
+export const pool: Pool = new Proxy({} as Pool, {
+  get(_target, prop) {
+    const real = getPool();
+    const v = (real as unknown as Record<string | symbol, unknown>)[prop];
+    return typeof v === "function" ? (v as (...a: unknown[]) => unknown).bind(real) : v;
+  },
+});
