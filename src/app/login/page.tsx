@@ -52,14 +52,14 @@ export default function LoginPage() {
                   <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>
                 </span>
                 <input id="email" type="email" required autoComplete="email" placeholder="Email address" value={email} onChange={(e) => setEmail(e.target.value)}
-                  className="w-full rounded-xl border border-[#ddd6cf] dark:border-white/10 bg-white dark:bg-white/5 py-4 pr-4 text-[17px] text-gray-900 dark:text-white placeholder:text-[#9c9188] outline-none focus:border-[#4a8c3f] focus:ring-4 focus:ring-[#4a8c3f]/15 pl-12 transition-all" />
+                  className="w-full rounded-xl border border-[#ddd6cf] dark:border-white/10 bg-white dark:bg-white/5 py-4 pr-4 text-[17px] text-gray-900 dark:text-white placeholder:text-[#9c9188] placeholder:text-[14px] outline-none focus:border-[#4a8c3f] focus:ring-4 focus:ring-[#4a8c3f]/15 pl-12 transition-all" />
               </div>
               <div className="relative">
                 <span className="absolute inset-y-0 left-0 flex items-center pl-4 text-[#8d8278] pointer-events-none">
                   <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect width="18" height="11" x="3" y="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
                 </span>
                 <input id="password" type={show ? "text" : "password"} required autoComplete="current-password" placeholder="Password" value={password} onChange={(e) => setPassword(e.target.value)}
-                  className="w-full rounded-xl border border-[#ddd6cf] dark:border-white/10 bg-white dark:bg-white/5 py-4 pr-12 text-[17px] text-gray-900 dark:text-white placeholder:text-[#9c9188] outline-none focus:border-[#4a8c3f] focus:ring-4 focus:ring-[#4a8c3f]/15 pl-12 transition-all" />
+                  className="w-full rounded-xl border border-[#ddd6cf] dark:border-white/10 bg-white dark:bg-white/5 py-4 pr-12 text-[17px] text-gray-900 dark:text-white placeholder:text-[#9c9188] placeholder:text-[14px] outline-none focus:border-[#4a8c3f] focus:ring-4 focus:ring-[#4a8c3f]/15 pl-12 transition-all" />
                 <button type="button" onClick={() => setShow(!show)} className="absolute right-4 top-1/2 -translate-y-1/2 text-[#8d8278] hover:text-gray-600 dark:hover:text-white/80 transition-colors">
                   <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M2.062 12.348a1 1 0 0 1 0-.696 10.75 10.75 0 0 1 19.876 0 1 1 0 0 1 0 .696 10.75 10.75 0 0 1-19.876 0"/><circle cx="12" cy="12" r="3"/></svg>
                 </button>
