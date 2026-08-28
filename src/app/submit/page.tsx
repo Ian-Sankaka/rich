@@ -359,7 +359,7 @@ export default function SubmitPage() {
                     ["Audience", audience.join(", ") || "-"],
                     ["Author · Date · License", `${author || "-"} · ${date || "-"} · ${licensing}`],
                   ].map(([k, v]) => (
-                    <div key={k} className="grid grid-cols-[160px_1fr] gap-4 px-5 py-3.5 text-[18px]">
+                    <div key={k} className="grid grid-cols-[160px_1fr] gap-4 px-5 py-3.5 text-[15px]">
                       <span className="font-semibold text-[#5a5e5a] dark:text-white/60">{k}</span>
                       <span className="text-[#1a221a] dark:text-white break-words">{v}</span>
                     </div>
