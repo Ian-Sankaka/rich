@@ -28,16 +28,17 @@ type Submission = {
   audience: string;
   licensing: string;
   publicationDate: string;
+  reviewNotes: string;
   isNew?: boolean;
 };
 
 const initial: Submission[] = [
-  { id: "1", title: "Embedding Indigenous Knowledge in Regional Policy Frameworks", collection: "Policy Resources", author: "A. Okoro", authorEmail: "", date: "28 Feb 2026", dateTime: "28 Feb 2026, 09:00 AM", createdAtRaw: "", status: "published", excerpt: "Plain-language synthesis of AU/EAC frameworks with NDC alignment checklist. Ready for repository.", abstract: "Plain-language synthesis of AU/EAC frameworks with NDC alignment checklist. Ready for repository.", type: "Policy Brief", geography: "Pan-African", themes: "Climate Adaptation", cluster: "Governance & Ethics", pathway: "Systemic Adoption", audience: "Policymakers", licensing: "CC BY 4.0 (Open)", publicationDate: "2026-02-28" },
-  { id: "2", title: "Early Warning Systems in the Horn of Africa — LDRI Deployment", collection: "Innovation Case Studies", author: "M. Irura", authorEmail: "", date: "27 Feb 2026", dateTime: "27 Feb 2026, 09:00 AM", createdAtRaw: "", status: "published", excerpt: "Lived case covering deployment, failures, and scaling pathway for EWS. Primary evidence.", abstract: "Lived case covering deployment, failures, and scaling pathway for EWS. Primary evidence.", type: "Case Study", geography: "East Africa", themes: "Early Warning", cluster: "Deployment & Scale", pathway: "Scale-up", audience: "Innovators", licensing: "CC BY 4.0 (Open)", publicationDate: "2026-02-27" },
-  { id: "3", title: "Climate AI Ecosystem Map 2026 — East Africa", collection: "Ecosystem Insights", author: "L. Mutuku", authorEmail: "", date: "26 Feb 2026", dateTime: "26 Feb 2026, 09:00 AM", createdAtRaw: "", status: "in_review", excerpt: "Sector briefing with funder landscape and trend signals. Awaiting editorial review.", abstract: "Sector briefing with funder landscape and trend signals. Awaiting editorial review.", type: "Synthesis Report", geography: "East Africa", themes: "Data & Infrastructure", cluster: "Data & Infrastructure", pathway: "Pilot", audience: "Funders", licensing: "CC BY 4.0 (Open)", publicationDate: "2026-02-26" },
-  { id: "4", title: "Community Drone Mapping for Flood Resilience — Turkana Pilot", collection: "Innovation Case Studies", author: "J. Kamau", authorEmail: "", date: "25 Feb 2026", dateTime: "25 Feb 2026, 09:00 AM", createdAtRaw: "", status: "pending", excerpt: "Case study submission via open pathway. Needs consistent structure check.", abstract: "Case study submission via open pathway. Needs consistent structure check.", type: "Case Study", geography: "Kenya", themes: "Water", cluster: "Deployment & Scale", pathway: "Pilot", audience: "Researchers", licensing: "CC BY 4.0 (Open)", publicationDate: "2026-02-25" },
-  { id: "5", title: "Responsible AI Governance Toolkit for County Governments", collection: "Policy Resources", author: "S. Njeri", authorEmail: "", date: "24 Feb 2026", dateTime: "24 Feb 2026, 09:00 AM", createdAtRaw: "", status: "pending", excerpt: "Checklist and template for county-level procurement of climate AI tools.", abstract: "Checklist and template for county-level procurement of climate AI tools.", type: "Policy Brief", geography: "Kenya", themes: "Responsible AI", cluster: "Governance & Ethics", pathway: "Validation", audience: "Government Staff", licensing: "CC BY 4.0 (Open)", publicationDate: "2026-02-24" },
-  { id: "6", title: "Smallholder Advisory Chatbot — Scaling from SMS to WhatsApp", collection: "Research Outputs", author: "P. Ochieng", authorEmail: "", date: "22 Feb 2026", dateTime: "22 Feb 2026, 09:00 AM", createdAtRaw: "", status: "pending", excerpt: "Working paper with plain-language summary and key finding: adoption +18%.", abstract: "Working paper with plain-language summary and key finding: adoption +18%.", type: "Working Paper", geography: "Pan-African", themes: "Food & Agriculture", cluster: "Models & Tools", pathway: "Scale-up", audience: "Researchers", licensing: "CC BY 4.0 (Open)", publicationDate: "2026-02-22" },
+  { id: "1", title: "Embedding Indigenous Knowledge in Regional Policy Frameworks", collection: "Policy Resources", author: "A. Okoro", authorEmail: "", date: "28 Feb 2026", dateTime: "28 Feb 2026, 09:00 AM", createdAtRaw: "", status: "published", excerpt: "Plain-language synthesis of AU/EAC frameworks with NDC alignment checklist. Ready for repository.", abstract: "Plain-language synthesis of AU/EAC frameworks with NDC alignment checklist. Ready for repository.", type: "Policy Brief", geography: "Pan-African", themes: "Climate Adaptation", cluster: "Governance & Ethics", pathway: "Systemic Adoption", audience: "Policymakers", licensing: "CC BY 4.0 (Open)", publicationDate: "2026-02-28", reviewNotes: "" },
+  { id: "2", title: "Early Warning Systems in the Horn of Africa — LDRI Deployment", collection: "Innovation Case Studies", author: "M. Irura", authorEmail: "", date: "27 Feb 2026", dateTime: "27 Feb 2026, 09:00 AM", createdAtRaw: "", status: "published", excerpt: "Lived case covering deployment, failures, and scaling pathway for EWS. Primary evidence.", abstract: "Lived case covering deployment, failures, and scaling pathway for EWS. Primary evidence.", type: "Case Study", geography: "East Africa", themes: "Early Warning", cluster: "Deployment & Scale", pathway: "Scale-up", audience: "Innovators", licensing: "CC BY 4.0 (Open)", publicationDate: "2026-02-27", reviewNotes: "" },
+  { id: "3", title: "Climate AI Ecosystem Map 2026 — East Africa", collection: "Ecosystem Insights", author: "L. Mutuku", authorEmail: "", date: "26 Feb 2026", dateTime: "26 Feb 2026, 09:00 AM", createdAtRaw: "", status: "in_review", excerpt: "Sector briefing with funder landscape and trend signals. Awaiting editorial review.", abstract: "Sector briefing with funder landscape and trend signals. Awaiting editorial review.", type: "Synthesis Report", geography: "East Africa", themes: "Data & Infrastructure", cluster: "Data & Infrastructure", pathway: "Pilot", audience: "Funders", licensing: "CC BY 4.0 (Open)", publicationDate: "2026-02-26", reviewNotes: "" },
+  { id: "4", title: "Community Drone Mapping for Flood Resilience — Turkana Pilot", collection: "Innovation Case Studies", author: "J. Kamau", authorEmail: "", date: "25 Feb 2026", dateTime: "25 Feb 2026, 09:00 AM", createdAtRaw: "", status: "pending", excerpt: "Case study submission via open pathway. Needs consistent structure check.", abstract: "Case study submission via open pathway. Needs consistent structure check.", type: "Case Study", geography: "Kenya", themes: "Water", cluster: "Deployment & Scale", pathway: "Pilot", audience: "Researchers", licensing: "CC BY 4.0 (Open)", publicationDate: "2026-02-25", reviewNotes: "" },
+  { id: "5", title: "Responsible AI Governance Toolkit for County Governments", collection: "Policy Resources", author: "S. Njeri", authorEmail: "", date: "24 Feb 2026", dateTime: "24 Feb 2026, 09:00 AM", createdAtRaw: "", status: "pending", excerpt: "Checklist and template for county-level procurement of climate AI tools.", abstract: "Checklist and template for county-level procurement of climate AI tools.", type: "Policy Brief", geography: "Kenya", themes: "Responsible AI", cluster: "Governance & Ethics", pathway: "Validation", audience: "Government Staff", licensing: "CC BY 4.0 (Open)", publicationDate: "2026-02-24", reviewNotes: "" },
+  { id: "6", title: "Smallholder Advisory Chatbot — Scaling from SMS to WhatsApp", collection: "Research Outputs", author: "P. Ochieng", authorEmail: "", date: "22 Feb 2026", dateTime: "22 Feb 2026, 09:00 AM", createdAtRaw: "", status: "pending", excerpt: "Working paper with plain-language summary and key finding: adoption +18%.", abstract: "Working paper with plain-language summary and key finding: adoption +18%.", type: "Working Paper", geography: "Pan-African", themes: "Food & Agriculture", cluster: "Models & Tools", pathway: "Scale-up", audience: "Researchers", licensing: "CC BY 4.0 (Open)", publicationDate: "2026-02-22", reviewNotes: "" },
 ];
 
 function StatusBadge({ s }: { s: Status }) {
@@ -86,6 +87,9 @@ export default function DashboardPage() {
   const [filter, setFilter] = useState<Status | "all" | "pending_review">("all");
   const [query, setQuery] = useState("");
   const [selected, setSelected] = useState<Submission | null>(null);
+  const [declineTarget, setDeclineTarget] = useState<Submission | null>(null);
+  const [declineNotes, setDeclineNotes] = useState("");
+  const [declining, setDeclining] = useState(false);
 
   // profile modal state (replaces inline expand)
   const [profileModalOpen, setProfileModalOpen] = useState(false);
@@ -146,7 +150,7 @@ export default function DashboardPage() {
             date: d.toLocaleDateString("en-GB", { day: "2-digit", month: "short", year: "numeric" }),
             dateTime: d.toLocaleString("en-GB", { day: "2-digit", month: "short", year: "numeric", hour: "2-digit", minute: "2-digit", hour12: true }),
             createdAtRaw: String(r.created_at),
-            status: (r.status === "pending" ? "pending" : r.status === "in_review" ? "in_review" : r.status === "published" ? "published" : "pending") as Status,
+            status: (r.status === "pending" ? "pending" : r.status === "in_review" ? "in_review" : r.status === "published" ? "published" : r.status === "declined" ? "declined" : "pending") as Status,
             excerpt: String(r.summary || r.abstract || "").slice(0, 140) + (String(r.summary || r.abstract || "").length > 140 ? "…" : ""),
             abstract: String(r.abstract || r.summary || ""),
             type: String(r.content_type || ""),
@@ -157,6 +161,7 @@ export default function DashboardPage() {
             audience: String(r.audience || ""),
             licensing: String(r.license || "CC BY 4.0 (Open)"),
             publicationDate: String(r.publication_date || ""),
+            reviewNotes: String(r.review_notes || ""),
             isNew: r.status === "pending",
           };
         });
@@ -184,12 +189,45 @@ export default function DashboardPage() {
     published: subs.filter((s) => s.status === "published").length,
   };
 
-  const act = (id: string, next: Status) => {
-    setSubs((prev) => prev.map((p) => (p.id === id ? { ...p, status: next } : p)));
-    if (next === "published") toast("Published to repository - live in collections", "success");
-    else if (next === "declined") toast("Submission declined", "info");
-    else toast("Status updated", "info");
-    setSelected(null);
+  const act = async (id: string, next: Status, notes?: string) => {
+    // for published/pending restore we can call API too; for declined notes required
+    if (next === "declined" && !notes) {
+      // should have been via decline modal
+      return;
+    }
+    try {
+      const res = await fetch("/api/resources", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ id, status: next, notes: notes || "" }),
+      });
+      const j = await res.json().catch(() => ({}));
+      if (!res.ok) {
+        toast(j.error || "Failed to update", "error");
+        return;
+      }
+      setSubs((prev) => prev.map((p) => (p.id === id ? { ...p, status: next, reviewNotes: next === "declined" ? (notes || "") : p.reviewNotes } : p)));
+      setSelected((prev) => (prev && prev.id === id ? { ...prev, status: next, reviewNotes: next === "declined" ? (notes || "") : prev.reviewNotes } : prev));
+      if (next === "published") toast("Published to repository - live in collections", "success");
+      else if (next === "declined") toast("Submission declined", "info");
+      else toast("Status updated", "info");
+      if (next === "declined") setDeclineTarget(null);
+      setSelected(null);
+    } catch {
+      toast("Network error", "error");
+    }
+  };
+
+  const confirmDecline = async () => {
+    if (!declineTarget) return;
+    if (declineNotes.trim().length < 10) {
+      toast("Decline notes required (at least 10 characters)", "error");
+      return;
+    }
+    setDeclining(true);
+    await act(declineTarget.id, "declined", declineNotes.trim());
+    setDeclining(false);
+    setDeclineNotes("");
   };
 
   const onAvatar = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -430,7 +468,7 @@ export default function DashboardPage() {
                     {s.status !== "published" && s.status !== "declined" && (
                       <>
                         <button onClick={(e) => { e.stopPropagation(); act(s.id, "published"); }} className="rounded-[4px] bg-[#4a8c3f] px-4 py-2.5 text-[14px] font-bold text-white hover:bg-[#2d5a27] hover:shadow transition-all">Publish</button>
-                        <button onClick={(e) => { e.stopPropagation(); act(s.id, "declined"); }} className="rounded-[4px] border border-red-200 bg-red-50 px-4 py-2.5 text-[14px] font-bold text-red-700 hover:bg-red-100 dark:border-red-900 dark:bg-red-950/40 dark:text-red-300 transition-colors">Decline</button>
+                        <button onClick={(e) => { e.stopPropagation(); setDeclineTarget(s); setDeclineNotes(""); }} className="rounded-[4px] border border-red-200 bg-red-50 px-4 py-2.5 text-[14px] font-bold text-red-700 hover:bg-red-100 dark:border-red-900 dark:bg-red-950/40 dark:text-red-300 transition-colors">Decline</button>
                       </>
                     )}
                     {s.status === "declined" && <button onClick={(e) => { e.stopPropagation(); act(s.id, "pending"); }} className="rounded-[4px] border border-[var(--border)] px-4 py-2.5 text-[14px] font-bold hover:border-amber-300 transition-colors">Restore</button>}
@@ -554,13 +592,46 @@ export default function DashboardPage() {
                   <span><StatusBadge s={selected.status} /></span>
                 </div>
               </div>
+              {selected.status === "declined" && selected.reviewNotes && (
+                <div className="rounded-[12px] bg-red-50 dark:bg-red-950/20 border border-red-200 dark:border-red-900 p-4">
+                  <p className="text-[12px] font-bold uppercase tracking-widest text-red-700 dark:text-red-300">Decline notes</p>
+                  <p className="mt-2 text-[14px] leading-6 text-red-800 dark:text-red-200 whitespace-pre-wrap break-words">{selected.reviewNotes}</p>
+                </div>
+              )}
               <div className="rounded-[12px] bg-[var(--off-white)] dark:bg-white/5 border border-[var(--border)] p-4">
                 <p className="text-[14px] font-bold uppercase tracking-wide text-[var(--text-light)]">Decision</p>
-                <p className="mt-1 text-[14px] leading-6 text-[var(--text-mid)]">Publishing moves this submission to the live repository and makes it discoverable by collection, tag, and search.</p>
+                <p className="mt-1 text-[14px] leading-6 text-[var(--text-mid)]">Publishing moves this submission to the live repository and makes it discoverable by collection, tag, and search. Declining requires notes visible to the contributor.</p>
                 <div className="mt-4 flex gap-2">
                   <button onClick={() => act(selected.id, "published")} className="flex-1 rounded-[4px] bg-[#4a8c3f] py-3 text-[15px] font-bold text-white hover:bg-[#2d5a27] hover:shadow transition-all">Publish to repository</button>
-                  <button onClick={() => act(selected.id, "declined")} className="rounded-[4px] border border-red-200 bg-white px-4 py-3 text-[15px] font-bold text-red-600 hover:bg-red-50 dark:border-red-900 dark:bg-red-950/40 dark:text-red-300 transition-colors">Decline</button>
+                  <button onClick={() => { setDeclineTarget(selected); setDeclineNotes(selected.reviewNotes || ""); }} className="rounded-[4px] border border-red-200 bg-white px-4 py-3 text-[15px] font-bold text-red-600 hover:bg-red-50 dark:border-red-900 dark:bg-red-950/40 dark:text-red-300 transition-colors">Decline</button>
                 </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* DECLINE WITH NOTES MODAL */}
+      {declineTarget && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+          <div onClick={() => setDeclineTarget(null)} className="absolute inset-0 bg-black/50 backdrop-blur-sm" />
+          <div className="relative w-full max-w-[560px] rounded-[16px] bg-white dark:bg-[#1a221a] border border-[var(--border)] shadow-2xl animate-[toast-in_0.3s_ease] overflow-hidden">
+            <div className="px-6 py-5 border-b border-[var(--border)] flex items-start justify-between gap-4">
+              <div>
+                <h3 className="text-[18px] font-bold text-[var(--text-dark)]">Decline submission</h3>
+                <p className="mt-1 text-[13px] text-[var(--text-light)] truncate max-w-[380px]">{declineTarget.title}</p>
+              </div>
+              <button onClick={() => setDeclineTarget(null)} className="flex h-9 w-9 items-center justify-center rounded-full border border-[var(--border)] hover:bg-[var(--off-white)] transition-colors">✕</button>
+            </div>
+            <div className="p-6 space-y-4">
+              <div>
+                <label className="text-[12px] font-bold uppercase tracking-widest text-[var(--text-light)]">Decline notes *</label>
+                <textarea value={declineNotes} onChange={(e) => setDeclineNotes(e.target.value)} rows={4} placeholder="Explain why this is declined and what to improve — visible to the contributor in their dashboard." className="mt-2 w-full rounded-[8px] border border-[var(--border)] bg-white dark:bg-white/5 px-4 py-3 text-[14px] leading-6 outline-none focus:border-red-400 focus:ring-4 focus:ring-red-100 dark:focus:ring-red-900/30" />
+                <p className="mt-1.5 text-[12px] text-[var(--text-light)]">{declineNotes.length}/2000 • at least 10 characters</p>
+              </div>
+              <div className="flex gap-3">
+                <button onClick={() => setDeclineTarget(null)} className="flex-1 rounded-[4px] border border-[var(--border)] bg-white dark:bg-white/5 px-4 py-3 text-[14px] font-bold text-[var(--text-dark)] hover:bg-[var(--off-white)] transition-colors">Cancel</button>
+                <button onClick={confirmDecline} disabled={declining || declineNotes.trim().length < 10} className="flex-1 rounded-[4px] bg-red-600 px-4 py-3 text-[14px] font-bold text-white hover:bg-red-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors">{declining ? "Declining…" : "Decline with notes"}</button>
               </div>
             </div>
           </div>

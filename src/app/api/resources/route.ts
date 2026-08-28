@@ -58,6 +58,34 @@ export async function POST(req: NextRequest) {
   }
 }
 
+export async function PATCH(req: NextRequest) {
+  const token = req.cookies.get(SESSION_COOKIE)?.value;
+  if (!token) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  const sess = await verifySession(token);
+  if (!sess) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  const isAdmin = sess.email.toLowerCase() === "lead@rich.africa" || sess.email.toLowerCase() === "admin@rich.africa";
+  if (!isAdmin) return NextResponse.json({ error: "Forbidden — admin only" }, { status: 403 });
+  let body: any;
+  try { body = await req.json(); } catch { return NextResponse.json({ error: "Invalid request." }, { status: 400 }); }
+  const id = String(body.id || "").trim();
+  const status = String(body.status || "").trim();
+  const notes = String(body.notes || body.review_notes || "").trim().slice(0, 2000);
+  if (!id) return NextResponse.json({ error: "Missing id" }, { status: 400 });
+  if (!["published", "declined", "pending", "in_review"].includes(status)) return NextResponse.json({ error: "Invalid status" }, { status: 400 });
+  if (status === "declined" && notes.length < 10) return NextResponse.json({ error: "Decline notes required (at least 10 characters)." }, { status: 400 });
+  try {
+    const { rows } = await pool.query(
+      `update public.resources set status=$1, review_notes=$2, reviewed_at=now(), updated_at=now() where id=$3 returning id, status, review_notes`,
+      [status, status === "declined" ? notes : null, id]
+    );
+    if (!rows.length) return NextResponse.json({ error: "Not found" }, { status: 404 });
+    return NextResponse.json({ ok: true, resource: rows[0] });
+  } catch (e) {
+    console.error("[resources PATCH]", e);
+    return NextResponse.json({ error: "Failed to update" }, { status: 500 });
+  }
+}
+
 export async function GET(req: NextRequest) {
   const token = req.cookies.get(SESSION_COOKIE)?.value;
   if (!token) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
@@ -68,7 +96,7 @@ export async function GET(req: NextRequest) {
   const mine = url.searchParams.get("mine") === "1";
   const isAdmin = sess.email.toLowerCase() === "lead@rich.africa" || sess.email.toLowerCase() === "admin@rich.africa";
 
-  const selectCols = `r.id, r.title, r.slug, r.summary, r.abstract, r.collection, r.content_type, r.status, r.user_id, r.author_name, r.author_email, r.license, r.geography, r.themes, r.cluster, r.pathway, r.audience, r.publication_date, r.created_at, r.updated_at, u.name as user_name, u.email as user_email`;
+  const selectCols = `r.id, r.title, r.slug, r.summary, r.abstract, r.collection, r.content_type, r.status, r.review_notes, r.reviewed_at, r.user_id, r.author_name, r.author_email, r.license, r.geography, r.themes, r.cluster, r.pathway, r.audience, r.publication_date, r.created_at, r.updated_at, u.name as user_name, u.email as user_email`;
   try {
     // mine=1 → only caller's submissions; otherwise admin sees all, regular users fall back to theirs
     if (mine) {

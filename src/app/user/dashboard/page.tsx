@@ -28,6 +28,7 @@ type Submission = {
   audience: string;
   licensing: string;
   publicationDate: string;
+  reviewNotes: string;
   isNew?: boolean;
 };
 
@@ -176,7 +177,7 @@ export default function UserDashboardPage() {
             date: d.toLocaleDateString("en-GB", { day: "2-digit", month: "short", year: "numeric" }),
             dateTime: d.toLocaleString("en-GB", { day: "2-digit", month: "short", year: "numeric", hour: "2-digit", minute: "2-digit", hour12: true }),
             createdAtRaw: String(r.created_at),
-            status: (r.status === "pending" ? "pending" : r.status === "in_review" ? "in_review" : r.status === "published" ? "published" : "pending") as Status,
+            status: (r.status === "pending" ? "pending" : r.status === "in_review" ? "in_review" : r.status === "published" ? "published" : r.status === "declined" ? "declined" : "pending") as Status,
             excerpt: String(r.summary || "").slice(0, 140) + (String(r.summary || "").length > 140 ? "…" : ""),
             abstract: String(r.abstract || r.summary || ""),
             type: String(r.content_type || ""),
@@ -189,6 +190,7 @@ export default function UserDashboardPage() {
             audience: String(r.audience || ""),
             licensing: String(r.license || "CC BY 4.0 (Open)"),
             publicationDate: String(r.publication_date || ""),
+            reviewNotes: String(r.review_notes || ""),
             isNew: r.status === "pending",
           };
         });
@@ -301,6 +303,7 @@ export default function UserDashboardPage() {
       audience: audience.join(", "),
       licensing,
       publicationDate: date,
+      reviewNotes: "",
       isNew: true,
     };
     setSubs((prev) => [n, ...prev]);
@@ -523,7 +526,7 @@ export default function UserDashboardPage() {
                 <p className="text-[12px] font-bold uppercase tracking-widest text-[var(--text-light)]">Abstract</p>
                 <p className="mt-2 text-[15px] leading-7 text-[var(--text-mid)] whitespace-pre-wrap break-words">{selected.abstract || selected.excerpt}</p>
               </div>
-              <div className="grid gap-3 rounded-[12px] border border-[var(--border)] divide-y divide-[var(--border)] overflow-hidden bg-[var(--off-white)]/60 dark:bg-white/5">
+              <div className="grid gap-0 rounded-[12px] border border-[var(--border)] divide-y divide-[var(--border)] overflow-hidden bg-[var(--off-white)]/60 dark:bg-white/5">
                 {[
                   ["Resource type", selected.type || "—"],
                   ["Collection", selected.collection],
@@ -536,17 +539,26 @@ export default function UserDashboardPage() {
                   ["Publication date", selected.publicationDate || "—"],
                   ["Licensing", selected.licensing || "—"],
                   ["Submitted", selected.dateTime || selected.date],
-                  ["Status", selected.status],
                 ].map(([k, v]) => (
-                  <div key={k} className="grid grid-cols-[150px_1fr] gap-3 px-4 py-3 text-[13px]">
-                    <span className="font-bold uppercase tracking-wide text-[var(--text-light)]">{k}</span>
-                    <span className="text-[var(--text-dark)] break-words">{String(v)}</span>
+                  <div key={k} className="grid grid-cols-[150px_1fr] gap-3 px-4 py-3">
+                    <span className="text-[12px] font-bold uppercase tracking-wide text-[var(--text-light)]">{k}</span>
+                    <span className="text-[14px] font-medium leading-6 text-[var(--text-dark)] break-words">{String(v)}</span>
                   </div>
                 ))}
+                <div className="grid grid-cols-[150px_1fr] gap-3 px-4 py-3 items-center">
+                  <span className="text-[12px] font-bold uppercase tracking-wide text-[var(--text-light)]">Status</span>
+                  <span><StatusBadge s={selected.status} /></span>
+                </div>
               </div>
+              {selected.status === "declined" && selected.reviewNotes && (
+                <div className="rounded-[12px] bg-red-50 dark:bg-red-950/20 border border-red-200 dark:border-red-900 p-4">
+                  <p className="text-[12px] font-bold uppercase tracking-widest text-red-700 dark:text-red-300">Decline notes from editorial team</p>
+                  <p className="mt-2 text-[14px] leading-6 text-red-800 dark:text-red-200 whitespace-pre-wrap break-words">{selected.reviewNotes}</p>
+                </div>
+              )}
               <div className="rounded-[12px] bg-[var(--off-white)] dark:bg-white/5 border border-[var(--border)] p-4">
                 <p className="text-[12px] font-bold uppercase tracking-widest text-[var(--text-light)]">Status</p>
-                <p className="mt-1 text-[14px] leading-6 text-[var(--text-mid)]">{selected.status === "pending" ? "Your submission is awaiting review. Editorial team will review within 4 weeks." : selected.status === "in_review" ? "With editors — you'll be notified when a decision is made." : selected.status === "published" ? "Published — discoverable in collections and search." : "Declined — contact editorial team for feedback."}</p>
+                <p className="mt-1 text-[14px] leading-6 text-[var(--text-mid)]">{selected.status === "pending" ? "Your submission is awaiting review. Editorial team will review within 4 weeks." : selected.status === "in_review" ? "With editors — you'll be notified when a decision is made." : selected.status === "published" ? "Published — discoverable in collections and search." : selected.reviewNotes ? "Declined — see notes above." : "Declined — contact editorial team for feedback."}</p>
               </div>
             </div>
           </div>
