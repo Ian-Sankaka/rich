@@ -1,6 +1,6 @@
 "use client";
 import Link from "next/link";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useToast } from "@/components/ToastProvider";
 
@@ -12,6 +12,8 @@ export default function RegisterPage() {
   const [password, setPassword] = useState("");
   const [show, setShow] = useState(false);
   const [loading, setLoading] = useState(false);
+
+  useEffect(() => { window.scrollTo({ top: 0, left: 0, behavior: "instant" as ScrollBehavior }); }, []);
 
   async function onSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -32,7 +34,7 @@ export default function RegisterPage() {
   }
 
   return (
-    <div className="min-h-[calc(100vh-62px-34px)] bg-[#f7f6f4] dark:bg-[#0a0f0a] flex font-sans antialiased">
+    <div className="min-h-[calc(100dvh-62px)] bg-[#f7f6f4] dark:bg-[#0a0f0a] flex font-sans antialiased scroll-mt-0">
       <div className="flex-1 flex items-center justify-center px-6 lg:px-16 py-10">
         <div className="w-full max-w-[560px] animate-[toast-in_0.5s_ease]">
           <div className="relative rounded-[18px] bg-white dark:bg-[#1a221a] border border-transparent dark:border-white/10 px-8 lg:px-10 py-10 lg:py-12 shadow-[0_22px_70px_rgba(59,45,36,0.10)] dark:shadow-none">
