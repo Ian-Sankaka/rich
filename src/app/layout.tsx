@@ -8,6 +8,21 @@ import SiteHeader from "@/components/SiteHeader";
 export const metadata: Metadata = {
   title: "RICH Knowledge Repository",
   description: "Africa's Central Platform for Climate AI Knowledge — research, case studies, ecosystem insights and policy resources.",
+  icons: { icon: "/icon.svg" },
+  openGraph: {
+    title: "RICH Knowledge Repository",
+    description: "Africa's Central Platform for Climate AI Knowledge — research, case studies, ecosystem insights and policy resources.",
+    url: "https://richafrica.vercel.app",
+    siteName: "RICH",
+    images: [{ url: "/opengraph-image", width: 1200, height: 630, alt: "RICH Knowledge Repository" }],
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "RICH Knowledge Repository",
+    description: "Africa's Central Platform for Climate AI Knowledge — research, case studies, ecosystem insights and policy resources.",
+    images: ["/opengraph-image"],
+  },
 };
 
 function TopBar() {
