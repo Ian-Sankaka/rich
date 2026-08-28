@@ -1,11 +1,9 @@
 "use client";
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
 import { useToast } from "@/components/ToastProvider";
 
 export default function LoginPage() {
-  const router = useRouter();
   const { toast } = useToast();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -22,14 +20,15 @@ export default function LoginPage() {
       const j = await res.json();
       if (!res.ok) {
         toast(j.error || "Login failed", "error");
+        setLoading(false);
       } else {
         toast(`Welcome back, ${j.user.name}! 👋`, "success");
-        setTimeout(() => router.push("/dashboard"), 700);
+        setTimeout(() => { window.location.href = "/dashboard"; }, 700);
       }
     } catch {
       toast("Network error - try again", "error");
+      setLoading(false);
     }
-    setLoading(false);
   }
 
   return (
