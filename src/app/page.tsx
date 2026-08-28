@@ -1,42 +1,50 @@
 import Link from "next/link";
+import { articles } from "@/lib/articles";
+import PartnerCarousel from "@/components/PartnerCarousel";
+import StatsAnimated from "@/components/StatsAnimated";
+import { Users, Search, Unlock, Globe, RefreshCw, Layers } from "lucide-react";
 
-const collectionCards = [
+const collections = [
   {
     slug: "research_outputs",
+    accent: "#4a8c3f",
+    iconBg: "#e8f3e5",
     icon: "🔎",
-    tile: "from-teal-400 to-teal-700",
     title: "Research Outputs",
-    phase: "Phase 1",
+    badge: "Phase 1",
     live: true,
     desc: "Literature reviews, synthesis papers, working papers, technical notes, and commissioned research. Every output has a plain-language summary and a clear key finding. Built for researchers and serious practitioners.",
     count: "5 to 8 resources at launch",
   },
   {
     slug: "innovation_case_studies",
+    accent: "#2d6a8f",
+    iconBg: "#e5eff5",
     icon: "📄",
-    tile: "from-cyan-400 to-cyan-700",
     title: "Innovation Case Studies",
-    phase: "Phase 1",
+    badge: "Phase 1",
     live: true,
     desc: "In-depth documentation of climate AI innovations across Africa, including both successes and failures. Consistent structure. Honest, evidence-based analysis. The EWS and LDRI deployment is the primary lived case.",
     count: "4 to 6 cases at launch",
   },
   {
     slug: "ecosystem_insights",
-    icon: "🌎",
-    tile: "from-sky-400 to-blue-700",
+    accent: "#8a5a2a",
+    iconBg: "#f5ede5",
+    icon: "🌍",
     title: "Ecosystem Insights",
-    phase: "Phase 2",
+    badge: "Phase 2",
     live: false,
     desc: "Ecosystem maps, sector briefings, funder landscape analyses, policy environment briefs by region, and trend signals. Updated every six months. Designed for funders, ecosystem partners, and policymakers.",
     count: "3 to 5 resources at launch",
   },
   {
     slug: "policy_resources",
+    accent: "#6a2d6a",
+    iconBg: "#f0e5f5",
     icon: "📜",
-    tile: "from-indigo-400 to-violet-700",
     title: "Policy Resources",
-    phase: "Phase 1",
+    badge: "Phase 1",
     live: true,
     desc: "Plain-language summaries of AU, EAC, ECOWAS, SADC, and IGAD climate frameworks. NDC alignment guides. Responsible AI governance tools. Climate finance access guides. Designed for policymakers and government staff.",
     count: "4 to 6 resources at launch",
@@ -46,192 +54,191 @@ const collectionCards = [
 export default function Home() {
   return (
     <>
-      {/* Hero */}
-      <section className="relative flex min-h-[520px] items-center overflow-hidden bg-emerald-950 text-white">
-        <div className="absolute inset-0 bg-cover bg-center" style={{ backgroundImage: "url('/images/hero-bg.jpg')" }} />
-        <div className="absolute inset-0 bg-gradient-to-br from-emerald-950/85 via-emerald-900/60 to-emerald-950/30" />
-        <div className="relative z-10 mx-auto w-full max-w-6xl px-4 py-24 sm:py-28">
-          <div className="max-w-2xl text-left">
-            <p className="mb-5 flex items-center gap-3 text-[11px] font-bold uppercase tracking-[0.18em] text-emerald-300">
-              <span className="h-0.5 w-7 bg-emerald-300" />
-              Knowledge Repository
-            </p>
-            <h1 className="font-display text-4xl font-medium leading-[1.15] tracking-tight sm:text-5xl lg:text-6xl">
-              Africa&apos;s Central Platform for Climate AI Knowledge
-            </h1>
-            <p className="mt-6 max-w-xl text-base font-light leading-relaxed text-emerald-100/90">
-              Research outputs, innovation case studies, ecosystem insights, and policy resources - practical knowledge built for innovators, policymakers, and partners working on climate AI in Africa.
-            </p>
-            <div className="mt-10 flex flex-wrap items-center gap-4">
-              <Link href="/search" className="inline-flex items-center gap-2 rounded-[6px] bg-emerald-600 px-6 py-3 text-sm font-semibold text-white hover:bg-emerald-700">
-                Browse the Repository
-                <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="2.2">
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3" />
-                </svg>
-              </Link>
-              <Link href="/submit" className="inline-flex items-center rounded-[6px] border border-white/20 bg-white/10 px-6 py-3 text-sm font-semibold text-white hover:bg-white/15">
-                Submit a Resource
-              </Link>
-            </div>
+      {/* HERO */}
+      <section className="relative flex h-[680px] items-center overflow-hidden">
+        <div className="absolute inset-0 bg-cover bg-center" style={{ backgroundImage: "url('https://images.unsplash.com/photo-1500382017468-9049fed747ef?w=1400&q=80')" }} />
+        <div className="absolute inset-0" style={{ background: "linear-gradient(135deg, rgba(18,50,18,0.82) 0%, rgba(30,70,20,0.55) 60%, rgba(10,30,10,0.4) 100%)" }} />
+        <div className="relative z-10 mx-auto w-full max-w-[1140px] px-6 lg:px-10">
+          <div className="flex items-center gap-2.5 text-[13px] font-bold tracking-[0.18em] uppercase text-[#6db862] mb-[18px]">
+            <span className="h-0.5 w-7 bg-[#6db862]" />
+            Knowledge Repository
           </div>
-        </div>
-      </section>
-
-      {/* Stats */}
-      <section className="bg-emerald-950">
-        <div className="mx-auto grid w-full max-w-6xl grid-cols-2 px-4 py-10 md:grid-cols-4">
-          <div className="flex flex-col items-center border-r border-emerald-700/40 px-4 py-2 text-center even:border-r-0 md:even:border-r md:last:border-r-0">
-            <p className="text-4xl font-medium text-white">4</p>
-            <p className="mt-2 text-xs font-medium uppercase tracking-wider text-emerald-300/80">Knowledge Collections</p>
-          </div>
-          <div className="flex flex-col items-center border-r border-emerald-700/40 px-4 py-2 text-center even:border-r-0 md:even:border-r md:last:border-r-0">
-            <p className="text-4xl font-medium text-white">20+</p>
-            <p className="mt-2 text-xs font-medium uppercase tracking-wider text-emerald-300/80">Resources at Launch</p>
-          </div>
-          <div className="flex flex-col items-center border-r border-emerald-700/40 px-4 py-2 text-center even:border-r-0 md:even:border-r md:last:border-r-0">
-            <p className="text-4xl font-medium text-white">7</p>
-            <p className="mt-2 text-xs font-medium uppercase tracking-wider text-emerald-300/80">Benchmark Comparators</p>
-          </div>
-          <div className="flex flex-col items-center px-4 py-2 text-center">
-            <p className="text-4xl font-medium text-white">2026</p>
-            <p className="mt-2 text-xs font-medium uppercase tracking-wider text-emerald-300/80">Phase 1 Live</p>
-          </div>
-        </div>
-      </section>
-
-      {/* About */}
-      <section id="about" className="mx-auto max-w-6xl px-4 py-16">
-        <div className="grid items-center gap-12 md:grid-cols-2">
-          <div>
-            <div className="h-64 rounded-[12px] bg-slate-100 flex items-center justify-center text-slate-400 text-sm">RICH Knowledge Platform</div>
-          </div>
-          <div>
-            <p className="text-xs uppercase tracking-widest text-emerald-600">About the Repository</p>
-            <h2 className="mt-2 text-3xl font-medium tracking-tight text-slate-900">A living knowledge platform, not an archive</h2>
-            <p className="mt-4 text-base leading-relaxed text-slate-600">The RICH Knowledge Repository is the central knowledge platform for the Regional Innovation and Climate Hub. It is designed to make practical, high-quality knowledge about climate AI innovation in Africa discoverable, accessible, and usable by the people who need it most.</p>
-            <p className="mt-3 text-base leading-relaxed text-slate-600">Every resource is reviewed, tagged, and maintained on a defined cycle. Every case study follows a consistent structure that makes it usable. Every policy brief is designed so that a senior government official can understand the key message in two minutes.</p>
-            <Link href="#principles" className="mt-4 inline-block text-sm font-semibold text-emerald-600 hover:text-emerald-700">Learn about our design principles →</Link>
-          </div>
-        </div>
-      </section>
-
-      {/* Collections */}
-      <section className="mx-auto max-w-6xl px-4 py-16">
-        <p className="text-xs uppercase tracking-widest text-emerald-600">The Four Collections</p>
-        <h2 className="mt-2 text-3xl font-medium tracking-tight text-slate-900">What the Repository Hosts</h2>
-        <p className="mt-3 max-w-2xl text-base leading-relaxed text-slate-600">Four collections, each with a distinct purpose, audience, and content standard. Every resource belongs to one collection and carries a standardised set of tags to enable filtering across all of them.</p>
-        <div className="mt-8 grid gap-5 sm:grid-cols-2">
-          {collectionCards.map((c) => (
-            <Link
-              key={c.slug}
-              href={`/collections/${c.slug}`}
-              className="group relative flex h-full flex-col overflow-hidden rounded-[6px] bg-white p-6 ring-1 ring-inset ring-slate-200 hover:-translate-y-1 hover:shadow-lg transition-all"
-            >
-              <span className={`pointer-events-none absolute inset-x-0 top-0 h-1 bg-gradient-to-r ${c.tile} opacity-0 group-hover:opacity-100 transition-opacity`} />
-              <div className="flex items-center justify-between">
-                <span className={`flex h-12 w-12 items-center justify-center rounded-[6px] bg-gradient-to-br ${c.tile} text-xl shadow-md`}>{c.icon}</span>
-                <span className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-semibold ring-1 ${c.live ? "bg-teal-50 text-teal-700 ring-teal-200" : "bg-amber-50 text-amber-700 ring-amber-200"}`}>
-                  <span className={`h-1.5 w-1.5 rounded-full ${c.live ? "bg-teal-500" : "bg-amber-500"}`} />
-                  {c.phase}
-                </span>
-              </div>
-              <h3 className="mt-5 text-lg font-medium text-slate-900">{c.title}</h3>
-              <p className="mt-1.5 flex-1 text-base leading-relaxed text-slate-500">{c.desc}</p>
-              <div className="mt-4 flex items-center justify-between border-t border-slate-100 pt-4">
-                <span className="text-xs font-semibold uppercase tracking-wide text-slate-400">{c.count}</span>
-                <span className="inline-flex items-center gap-1 text-sm font-semibold text-emerald-600">Explore <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="2"><path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3" /></svg></span>
-              </div>
+          <h1 className="max-w-[640px] text-[42px] lg:text-[52px] font-medium leading-[1.15] text-white" style={{ fontFamily: "Playfair Display, serif" }}>
+            Africa&apos;s Central Platform for Climate AI Knowledge
+          </h1>
+          <p className="mt-[22px] max-w-[520px] text-[15px] font-light leading-7 text-white/80">
+            Research outputs, innovation case studies, ecosystem insights, and policy resources — practical knowledge built for innovators, policymakers, and partners working on climate AI in Africa.
+          </p>
+          <div className="mt-9 flex flex-wrap gap-3.5">
+            <Link href="/collections" className="inline-flex items-center rounded-[4px] bg-[#4a8c3f] px-7 py-[13px] text-[15px] font-bold tracking-[0.07em] uppercase text-white hover:bg-[#2d5a27] hover:shadow-lg hover:-translate-y-0.5 transition-all duration-300 ease-out">
+              Browse the Repository
             </Link>
-          ))}
-        </div>
-      </section>
-
-      {/* Design Principles */}
-      <section id="principles" className="relative overflow-hidden bg-emerald-950 py-20 text-white">
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,rgba(74,140,63,0.25),transparent_60%)]" />
-        <div className="relative mx-auto max-w-6xl px-4">
-          <p className="text-xs uppercase tracking-widest text-emerald-400">Design Principles</p>
-          <h2 className="mt-2 text-3xl font-medium tracking-tight">How We Built It</h2>
-          <p className="mt-3 max-w-2xl text-base leading-relaxed text-emerald-100/80">Seven principles govern every decision about the repository, from content standards to navigation to governance.</p>
-          <div className="mt-10 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-            {[
-              ["01", "Practitioner First", "Every design decision starts with the innovator, policymaker, or funder trying to use the knowledge."],
-              ["02", "Findable Before Comprehensive", "50 well-organised resources outperform 500 that cannot be navigated."],
-              ["03", "Open by Default", "Content is freely accessible without registration wherever possible."],
-              ["04", "Africa-Centred", "The repository serves the African climate AI ecosystem."],
-              ["05", "Living, Not Archived", "Content is reviewed, updated, and retired on a defined cycle."],
-              ["06", "Multiple Entry Points", "Different users arrive with different questions. Provide at minimum three ways to find content."],
-            ].map(([num, title, desc]) => (
-              <div key={num} className="rounded-[12px] border border-white/10 bg-white/5 p-6">
-                <span className="text-2xl font-bold text-emerald-400">{num}</span>
-                <h3 className="mt-2 font-semibold">{title}</h3>
-                <p className="mt-2 text-sm leading-relaxed text-emerald-100/70">{desc}</p>
-              </div>
-            ))}
+            <Link href="/submit" className="inline-flex items-center rounded-[4px] border border-white/40 px-7 py-[13px] text-[15px] font-bold tracking-[0.07em] uppercase text-white/90 hover:border-white hover:text-white hover:bg-white/10 transition-all duration-300 ease-out">
+              Submit a Resource
+            </Link>
           </div>
         </div>
       </section>
 
-      {/* Phased Build Plan */}
-      <section id="phases" className="relative overflow-hidden bg-emerald-950 py-20 text-white">
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_bottom,rgba(74,140,63,0.22),transparent_60%)]" />
-        <div className="relative mx-auto max-w-6xl px-4">
-          <p className="text-xs uppercase tracking-widest text-emerald-400">Phased Build Plan</p>
-          <h2 className="mt-2 text-3xl font-medium tracking-tight">How the Repository Grows</h2>
-          <div className="mt-10 grid gap-5 lg:grid-cols-3">
-            {[
-              { tag: "Now Active", title: "Phase 1: Foundation", period: "Months 1 to 6", items: ["Four-collection structure live", "Tag taxonomy defined", "16 to 25 founding resources"], target: "20+ resources at launch" },
-              { tag: "Months 7 to 18", title: "Phase 2: Growth", period: "Open contribution pathway", items: ["2 to 3 new resources per month", "Partner contribution pathway open", "First ecosystem map"], target: "70 to 95 resources by Month 18" },
-              { tag: "Month 19 onwards", title: "Phase 3: Maturity", period: "Public knowledge commons", items: ["Indexed by major platforms", "Multilingual content", "30+ case studies"], target: "150+ resources, 5+ citations" },
-            ].map((ph) => (
-              <div key={ph.title} className="rounded-[12px] border border-white/10 bg-white/5 p-6">
-                <span className="inline-block rounded-full bg-white/10 px-3 py-1 text-xs font-semibold">{ph.tag}</span>
-                <h3 className="mt-4 font-semibold">{ph.title}</h3>
-                <p className="text-xs text-emerald-200">{ph.period}</p>
-                <ul className="mt-4 space-y-2 text-sm text-emerald-100/80">{ph.items.map((i) => <li key={i}>• {i}</li>)}</ul>
-                <p className="mt-4 text-xs font-semibold text-emerald-300">Target: {ph.target}</p>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
+      <StatsAnimated />
 
-      {/* Articles */}
-      <section id="articles" className="border-t border-slate-200 bg-white">
-        <div className="mx-auto max-w-6xl px-4 py-16">
-          <p className="text-xs uppercase tracking-widest text-emerald-600">Latest from RICH</p>
-          <h2 className="mt-2 text-3xl font-medium tracking-tight text-slate-900">Articles and Insights</h2>
-          <div className="mt-8 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-            {[
-              { badge: "Innovation Scaling", title: "LDRI to Host the AI4D Research and Innovation for Climate Hub", meta: "February 27, 2026 · Leonida Mutuku" },
-              { badge: "Failure Analysis", title: "The Collapse of Koko Networks: Lessons for Climate Innovation", meta: "February 27, 2026 · Mark Irura" },
-              { badge: "Policy and AI", title: "Aligning Climate AI Innovations with Africa's NDC Commitments", meta: "February 27, 2026 · RICH Team" },
-            ].map((a) => (
-              <div key={a.title} className="rounded-[12px] border border-slate-200 overflow-hidden">
-                <div className="h-32 bg-gradient-to-br from-emerald-100 to-teal-200 flex items-center justify-center text-xs font-bold text-emerald-700">{a.badge}</div>
-                <div className="p-6">
-                  <p className="text-xs text-slate-500">{a.meta}</p>
-                  <h3 className="mt-2 font-medium text-slate-900">{a.title}</h3>
-                  <span className="mt-3 inline-block text-sm font-semibold text-emerald-600">Read more →</span>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Contribute */}
-      <section className="mx-auto max-w-6xl px-4 pb-20">
-        <div className="relative overflow-hidden rounded-[6px] bg-emerald-950 px-8 py-16 text-center text-white">
-          <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgba(74,140,63,0.3),transparent_65%)]" />
-          <div className="relative mx-auto max-w-2xl">
-            <p className="text-xs uppercase tracking-widest text-emerald-400">Contribute</p>
-            <h2 className="mt-2 text-3xl font-medium tracking-tight">Contribute to the Repository</h2>
-            <p className="mt-4 text-base leading-relaxed text-emerald-100/80">Have a case study, research output, or resource that belongs here? Submit through our open contribution pathway. Review decision within four weeks.</p>
-            <div className="mt-8 flex flex-wrap items-center justify-center gap-4">
-              <Link href="/submit" className="rounded-[6px] bg-white px-6 py-3 text-sm font-semibold text-emerald-900 hover:bg-slate-100">Submit a Resource</Link>
-              <Link href="/requirements" className="rounded-[6px] border border-white/20 px-6 py-3 text-sm font-semibold text-white hover:bg-white/10">View Submission Guidelines</Link>
+      {/* ABOUT */}
+      <section className="py-[72px] bg-[var(--background)] dark:bg-[var(--background)]">
+        <div className="mx-auto max-w-[1140px] px-6 lg:px-10">
+          <div className="grid items-center gap-16 lg:grid-cols-2">
+            <div className="group relative aspect-[4/3] overflow-hidden rounded-[4px] bg-cover bg-center transition-all duration-500 ease-out hover:shadow-xl" style={{ backgroundImage: "linear-gradient(160deg, rgba(30,70,20,0.7) 0%, rgba(20,50,10,0.3) 100%), url('https://images.unsplash.com/photo-1625246333195-78d9c38ad449?w=800&q=80')" }}>
+              <span className="absolute bottom-5 left-5 rounded-[4px] bg-[#1a3a1a] px-3.5 py-2 text-[13px] font-bold tracking-[0.1em] uppercase text-white transition-transform duration-300 group-hover:translate-y-0">RICH Knowledge Platform</span>
             </div>
+            <div>
+              <p className="text-[13px] font-bold tracking-[0.18em] uppercase text-[#4a8c3f]">About the Repository</p>
+              <h2 className="mt-3.5 text-[35px] font-medium leading-tight text-[var(--text-dark)]" style={{ fontFamily: "Playfair Display, serif" }}>A living knowledge platform, not an archive</h2>
+              <p className="mt-5 text-[15px] font-light leading-7 text-[var(--text-mid)]">The RICH Knowledge Repository is the central knowledge platform for the Regional Innovation and Climate Hub. It is designed to make practical, high-quality knowledge about climate AI innovation in Africa discoverable, accessible, and usable by the people who need it most.</p>
+              <p className="mt-4 text-[15px] font-light leading-7 text-[var(--text-mid)]">Every resource is reviewed, tagged, and maintained on a defined cycle. Every case study follows a consistent structure that makes it usable. Every policy brief is designed so that a senior government official can understand the key message in two minutes.</p>
+              <Link href="#principles" className="mt-6 inline-flex items-center gap-2 border-b border-[#4a8c3f] pb-0.5 text-[15px] font-bold tracking-[0.07em] uppercase text-[#4a8c3f] hover:text-[#2d5a27]">Learn about our design principles →</Link>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* COLLECTIONS */}
+      <section className="bg-[var(--off-white)] dark:bg-[#0f1410] py-[72px] border-y border-[var(--border)]">
+        <div className="mx-auto max-w-[1140px] px-6 lg:px-10">
+          <p className="text-[13px] font-bold tracking-[0.18em] uppercase text-[#4a8c3f]">The Four Collections</p>
+          <h2 className="mt-3.5 text-[35px] font-medium leading-none text-[var(--text-dark)]" style={{ fontFamily: "Playfair Display, serif" }}>What the Repository Hosts</h2>
+          <p className="mt-4 max-w-[640px] text-[15px] font-light leading-7 text-[var(--text-mid)]">Four collections, each with a distinct purpose, audience, and content standard. Every resource belongs to one collection and carries a standardised set of tags to enable filtering across all of them.</p>
+          <div className="mt-12 grid gap-6 lg:grid-cols-2">
+            {collections.map((c) => (
+              <Link key={c.slug} href={`/collections/${c.slug}`} className="group relative overflow-hidden rounded-[4px] bg-white dark:bg-[#1a221a] border border-[var(--border)] p-8 hover:border-[#4a8c3f] hover:shadow-lg hover:-translate-y-1 transition-all duration-300 ease-out">
+                <span className="absolute left-0 top-0 h-full w-1 transition-all duration-300 group-hover:w-1.5" style={{ background: c.accent }} />
+                <div className="flex h-11 w-11 items-center justify-center rounded-[4px] text-[22px] transition-transform duration-300 group-hover:scale-105 group-hover:rotate-1" style={{ background: c.iconBg }}>{c.icon}</div>
+                <div className="mt-5 flex items-center gap-2.5">
+                  <h3 className="text-[22px] font-medium text-[var(--text-dark)]" style={{ fontFamily: "Playfair Display, serif" }}>{c.title}</h3>
+                  <span className={`rounded-[2px] px-2 py-0.5 text-[12px] font-bold tracking-[0.1em] uppercase ${c.live ? "bg-[#e8f3e5] text-[#4a8c3f] dark:bg-[#1a3a1a] dark:text-[#6db862]" : "bg-[#fdf3e5] text-[#b07a20]"}`}>{c.badge}</span>
+                </div>
+                <p className="mt-2.5 text-[15px] font-light leading-7 text-[var(--text-mid)]">{c.desc}</p>
+                <div className="mt-5 flex items-center justify-between border-t border-[var(--border)] pt-4">
+                  <span className="text-[14px] font-bold tracking-[0.06em] uppercase text-[var(--text-light)]">{c.count}</span>
+                  <span className="text-[20px] font-light text-[#4a8c3f] group-hover:translate-x-1 transition-transform">→</span>
+                </div>
+              </Link>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* PRINCIPLES */}
+      <section id="principles" className="py-[72px] bg-[var(--background)]">
+        <div className="mx-auto max-w-[1140px] px-6 lg:px-10">
+          <p className="text-[13px] font-bold tracking-[0.18em] uppercase text-[#4a8c3f]">Design Principles</p>
+          <h2 className="mt-3.5 text-[35px] font-medium text-[var(--text-dark)]" style={{ fontFamily: "Playfair Display, serif" }}>How We Build It</h2>
+          <p className="mt-4 max-w-[640px] text-[15px] font-light leading-7 text-[var(--text-mid)]">Seven principles govern every decision about the repository, from content standards to navigation to governance. They are drawn from best practice in knowledge management and comparable repositories in the climate and development sector.</p>
+          <div className="mt-12 grid gap-5 lg:grid-cols-3">
+            {[
+              [Users, "Practitioner First", "Every design decision starts with the innovator, policymaker, or funder trying to use the knowledge. Academic rigour matters, but not at the cost of usability."],
+              [Search, "Findable Before Comprehensive", "50 well-organised resources outperform 500 that cannot be navigated. Structure and quality come before volume. Effective taxonomy reduces search time by up to 60 percent."],
+              [Unlock, "Open by Default", "Content is freely accessible without registration wherever possible. Paywalled content is not hosted or linked as a primary resource."],
+              [Globe, "Africa-Centred", "The repository serves the African climate AI ecosystem. Global resources are relevant only insofar as they apply to African innovators in African conditions."],
+              [RefreshCw, "Living, Not Archived", "Content is reviewed, updated, and retired on a defined cycle. Every item has an owner, a review date, and a clear process for updating or archiving."],
+              [Layers, "Multiple Entry Points", "Different users arrive with different questions. The repository provides at minimum three ways to find any piece of content: by collection, by tag, and by search."],
+            ].map(([Icon, title, desc]) => (
+              <div key={title as string} className="group relative flex flex-col rounded-[4px] border border-[var(--border)] bg-white dark:bg-[#1a221a] p-7 lg:p-8 overflow-hidden hover:border-[#4a8c3f]/30 hover:shadow-[0_16px_40px_rgba(26,58,26,0.08)] hover:-translate-y-1 transition-all duration-300">
+                <span className="pointer-events-none absolute left-0 top-0 h-1 w-full bg-[#1a3a1a] opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                <div className="flex items-center gap-3">
+                  <span className="flex h-10 w-10 items-center justify-center rounded-[4px] bg-[#1a3a1a] text-white group-hover:bg-[#4a8c3f] transition-colors duration-300">
+                    {(Icon as any) && <Icon className="h-5 w-5" />}
+                  </span>
+                  <span className="h-px flex-1 bg-[var(--border)] group-hover:bg-[#4a8c3f]/15 transition-colors duration-300" />
+                </div>
+                <h4 className="mt-5 text-[15px] font-bold tracking-[0.06em] uppercase leading-tight text-[#1a3a1a] dark:text-white">{title as string}</h4>
+                <p className="mt-3 text-[15px] font-light leading-7 text-[var(--text-mid)] flex-1">{desc as string}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* PHASES */}
+      <section id="phases" className="bg-[#1a3a1a] py-[72px]">
+        <div className="mx-auto max-w-[1140px] px-6 lg:px-10">
+          <p className="text-[13px] font-bold tracking-[0.18em] uppercase text-[#6db862]">Phased Build Plan</p>
+          <h2 className="mt-3.5 text-[35px] font-medium text-white" style={{ fontFamily: "Playfair Display, serif" }}>How the Repository Grows</h2>
+          <p className="mt-4 max-w-[640px] text-[15px] font-light leading-7 text-white/65">Built incrementally, with a small number of high-quality resources before expanding. Each phase has clear milestones and minimum content targets.</p>
+          <div className="mt-12 grid gap-3 lg:grid-cols-3">
+            {[
+              { tag: "Now Active", title: "Phase 1: Foundation", period: "Months 1 to 6", items: ["Four-collection structure live", "Tag taxonomy defined and enforced", "Submission form published", "Repository Lead and Collection Owners named", "Content lifecycle policy documented", "16 to 25 founding resources published"], target: "20+ resources", current: true },
+              { tag: "Months 7 to 18", title: "Phase 2: Growth", period: "Open contribution pathway", items: ["2 to 3 new resources per month", "Partner contribution pathway open", "First live ecosystem map published", "First cross-case synthesis", "Search quality review conducted", "Editorial Advisory Group convened"], target: "70 to 95 resources", current: false },
+              { tag: "Month 19 onwards", title: "Phase 3: Maturity", period: "Public knowledge commons", items: ["Indexed by major external platforms", "Multilingual content introduced", "Community features added", "Annual repository audit published", "User survey conducted", "30+ case studies documented"], target: "150+ resources", current: false },
+            ].map((ph) => (
+              <div key={ph.title} className={`group rounded-[4px] p-7 lg:p-8 border transition-all duration-300 ease-out hover:-translate-y-1 hover:shadow-xl ${ph.current ? "bg-[#4a8c3f] border-[#4a8c3f] hover:shadow-[0_8px_30px_rgba(74,140,63,0.3)]" : "bg-white/5 border-white/10 hover:bg-white/[0.07] hover:border-white/20"}`}>
+                <p className={`text-[12px] font-bold tracking-[0.14em] uppercase ${ph.current ? "text-white/80" : "text-white/50"}`}>{ph.tag}</p>
+                <h3 className="mt-2 text-[24px] font-medium text-white" style={{ fontFamily: "Playfair Display, serif" }}>{ph.title}</h3>
+                <p className={`text-[14px] font-light ${ph.current ? "text-white/75" : "text-white/50"}`}>{ph.period}</p>
+                <ul className="mt-6 flex flex-col gap-2.5">
+                  {ph.items.map((it) => (
+                    <li key={it} className={`relative pl-4 text-[15.5px] font-light leading-[1.5] ${ph.current ? "text-white/90" : "text-white/70"}`}>
+                      <span className={`absolute left-0 top-[7px] h-[5px] w-[5px] rounded-full ${ph.current ? "bg-white/70" : "bg-white/30"}`} />
+                      {it}
+                    </li>
+                  ))}
+                </ul>
+                <div className={`mt-6 border-t pt-4 text-[14px] font-light ${ph.current ? "border-white/20 text-white/80" : "border-white/10 text-white/50"}`}>Target: <strong className={ph.current ? "text-white" : "text-[#6db862]"}>{ph.target}</strong> {ph.current ? "at launch" : ph.title.includes("Phase 2") ? "by Month 18" : ", 5+ external citations"}</div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ARTICLES */}
+      <section className="py-[72px] bg-[var(--background)]">
+        <div className="mx-auto max-w-[1140px] px-6 lg:px-10">
+          <div className="flex flex-wrap items-end justify-between gap-4 mb-10">
+            <div>
+              <p className="text-[13px] font-bold tracking-[0.18em] uppercase text-[#4a8c3f]">Latest from RICH</p>
+              <h2 className="mt-3.5 text-[35px] font-medium leading-none text-[var(--text-dark)]" style={{ fontFamily: "Playfair Display, serif" }}>Articles and Insights</h2>
+            </div>
+            <Link href="/articles" className="inline-flex items-center gap-2 border-b border-[#4a8c3f] pb-0.5 text-[15px] font-bold tracking-[0.07em] uppercase text-[#4a8c3f]">View all articles →</Link>
+          </div>
+          <div className="grid gap-7 lg:grid-cols-3">
+            {articles.map((a) => (
+              <Link key={a.slug} href={`/articles/${a.slug}`} className="group flex flex-col overflow-hidden rounded-[4px] border border-[var(--border)] bg-white dark:bg-[#1a221a] hover:border-[#4a8c3f] hover:shadow-lg hover:-translate-y-1 transition-all duration-300 ease-out">
+                <div className="relative h-[180px] overflow-hidden">
+                  <div className="absolute inset-0 bg-cover bg-center transition-transform duration-500 ease-out group-hover:scale-[1.06]" style={{ backgroundImage: `url('${a.image}')` }} />
+                  <div className="absolute inset-0 bg-gradient-to-br from-black/40 to-transparent transition-opacity duration-300 group-hover:from-black/50" />
+                  <span className="absolute bottom-3 left-3 rounded-[4px] bg-[#1a3a1a] px-2.5 py-1 text-[12px] font-bold tracking-[0.1em] uppercase text-white">{a.category}</span>
+                  {a.comingSoon && <span className="absolute top-3 right-3 rounded-[4px] bg-amber-500 px-2 py-1 text-[12px] font-bold uppercase text-white">Coming Soon</span>}
+                </div>
+                <div className="flex flex-1 flex-col p-[22px]">
+                  <p className="text-[13.5px] text-[var(--text-light)]">{a.date} · {a.author}</p>
+                  <h3 className="mt-2.5 flex-1 text-[19px] font-medium leading-[1.35] text-[var(--text-dark)] group-hover:text-[#4a8c3f] transition-colors duration-300" style={{ fontFamily: "Playfair Display, serif" }}>{a.title}</h3>
+                  <p className="mt-3 text-[15px] font-light leading-6 text-[var(--text-mid)] line-clamp-3">{a.excerpt}</p>
+                  <span className="mt-4 inline-flex items-center gap-1.5 text-[14px] font-bold tracking-[0.07em] uppercase text-[#4a8c3f] transition-transform duration-300 group-hover:translate-x-1">{a.comingSoon ? "Preview →" : "Read more →"}</span>
+                </div>
+              </Link>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* CTA */}
+      <section className="bg-[#2d5a27] py-14">
+        <div className="mx-auto flex max-w-[1140px] flex-col lg:flex-row items-center justify-between gap-10 px-6 lg:px-10">
+          <div>
+            <h2 className="text-[32px] font-medium leading-none text-white" style={{ fontFamily: "Playfair Display, serif" }}>Contribute to the Repository</h2>
+            <p className="mt-2.5 max-w-[560px] text-[15px] font-light text-white/75">Have a case study, research output, or resource that belongs here? Submit through our open contribution pathway. Review decision within four weeks.</p>
+          </div>
+          <div className="flex shrink-0 flex-wrap gap-3.5">
+            <Link href="/submit" className="inline-flex rounded-[4px] bg-white px-6 py-3 text-[12px] font-bold tracking-[0.07em] uppercase text-[#2d5a27] hover:bg-white/90 hover:shadow-lg hover:-translate-y-0.5 transition-all duration-300 ease-out">Submit a Resource</Link>
+            <Link href="/submit/guidelines" className="inline-flex rounded-[4px] border border-white/40 px-6 py-3 text-[12px] font-bold tracking-[0.07em] uppercase text-white hover:border-white hover:bg-white/10 transition-all duration-300 ease-out">View Submission Guidelines</Link>
+          </div>
+        </div>
+      </section>
+
+      {/* PARTNERS */}
+      <section className="bg-[var(--off-white)] dark:bg-[#111a11] border-y border-[var(--border)] py-12">
+        <div className="mx-auto max-w-[1140px] px-6 lg:px-10">
+          <p className="text-center text-[13px] font-bold tracking-[0.14em] uppercase text-[var(--text-light)]">Implemented by and in partnership with</p>
+          <div className="mt-7">
+            <PartnerCarousel />
           </div>
         </div>
       </section>
