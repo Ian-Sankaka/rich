@@ -16,6 +16,7 @@ type Submission = {
   date: string;
   status: Status;
   excerpt: string;
+  isNew?: boolean;
 };
 
 const initial: Submission[] = [
@@ -98,6 +99,32 @@ export default function DashboardPage() {
   useEffect(() => {
     if (displayName === "" && userName !== "there") setDisplayName(userName);
   }, [userName, displayName]);
+
+  // fetch user-submitted resources and show as New for review
+  useEffect(() => {
+    fetch("/api/resources")
+      .then((r) => (r.ok ? r.json() : null))
+      .then((j) => {
+        if (!j?.resources?.length) return;
+        const mapped: Submission[] = j.resources.map((r: any) => ({
+          id: String(r.id),
+          title: String(r.title),
+          collection: r.collection === "research_outputs" ? "Research Outputs" : r.collection === "innovation_case_studies" ? "Innovation Case Studies" : r.collection === "ecosystem_insights" ? "Ecosystem Insights" : r.collection === "policy_resources" ? "Policy Resources" : String(r.collection),
+          author: "Contributor",
+          date: new Date(r.created_at).toLocaleDateString("en-GB", { day: "2-digit", month: "short", year: "numeric" }),
+          status: (r.status === "pending" ? "pending" : r.status === "in_review" ? "in_review" : r.status === "published" ? "published" : "pending") as Status,
+          excerpt: String(r.summary || "").slice(0, 140) + (String(r.summary || "").length > 140 ? "…" : ""),
+          isNew: r.status === "pending",
+        }));
+        setSubs((prev) => {
+          const existing = new Set(prev.map((p) => p.id));
+          const news = mapped.filter((m) => !existing.has(m.id));
+          if (news.length === 0) return prev;
+          return [...news, ...prev];
+        });
+      })
+      .catch(() => {});
+  }, []);
 
   const filtered = subs.filter((s) => {
     const statusMatch =
@@ -348,6 +375,7 @@ export default function DashboardPage() {
                   <div className="flex-1 min-w-0">
                     <div className="flex flex-wrap items-center gap-2.5">
                       <p className="text-[16px] font-semibold leading-6 text-[var(--text-dark)] group-hover:text-[#4a8c3f] transition-colors line-clamp-1">{s.title}</p>
+                      {s.isNew && <span className="inline-flex rounded-full bg-[#4a8c3f] text-white px-2.5 py-1 text-[11px] font-bold uppercase tracking-wide animate-pulse">New</span>}
                       <StatusBadge s={s.status} />
                     </div>
                     <p className="mt-1.5 text-[14px] font-medium text-[var(--text-light)]">{s.collection} • {s.author} • {s.date}</p>
