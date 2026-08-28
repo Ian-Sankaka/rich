@@ -49,8 +49,8 @@ function StatusBadge({ s }: { s: Status }) {
   };
   const c = cfg[s];
   return (
-    <span className={`inline-flex items-center gap-1.5 rounded-full border px-3 py-1 text-[12px] font-extrabold uppercase tracking-widest ${c.cls}`}>
-      <span className={`h-1.5 w-1.5 rounded-full ${c.dot} ${s === "pending" || s === "in_review" ? "animate-pulse" : ""}`} />
+    <span className={`inline-flex items-center justify-center gap-1.5 rounded-full border px-3 py-1 text-[11px] font-extrabold uppercase tracking-widest leading-none h-[22px] ${c.cls}`}>
+      <span className={`h-2 w-2 rounded-full shrink-0 ${c.dot} ${s === "pending" || s === "in_review" ? "animate-pulse" : ""}`} />
       {c.label}
     </span>
   );
@@ -58,8 +58,8 @@ function StatusBadge({ s }: { s: Status }) {
 
 function NewBadge() {
   return (
-    <span className="inline-flex items-center gap-1.5 rounded-full bg-gradient-to-r from-[#1a3a1a] via-[#2d5a27] to-[#4a8c3f] px-3 py-1 text-[11px] font-extrabold uppercase tracking-widest text-white shadow-md ring-1 ring-white/20">
-      <span className="relative flex h-2 w-2">
+    <span className="inline-flex items-center justify-center gap-1.5 rounded-full border border-white/20 bg-gradient-to-r from-[#1a3a1a] via-[#2d5a27] to-[#4a8c3f] px-3 py-1 text-[11px] font-extrabold uppercase tracking-widest leading-none h-[22px] text-white shadow-md">
+      <span className="relative flex h-2 w-2 shrink-0">
         <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-white opacity-60" />
         <span className="relative inline-flex h-2 w-2 rounded-full bg-white" />
       </span>
