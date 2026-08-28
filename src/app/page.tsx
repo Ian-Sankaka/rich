@@ -130,7 +130,7 @@ export default function Home() {
       <section id="principles" className="py-[72px] bg-[var(--background)]">
         <div className="mx-auto max-w-[1140px] px-6 lg:px-10">
           <p className="text-[13px] font-bold tracking-[0.18em] uppercase text-[#4a8c3f]">Design Principles</p>
-          <h2 className="mt-3.5 text-[35px] font-medium text-[var(--text-dark)]" style={{ fontFamily: "Playfair Display, serif" }}>How We Build It</h2>
+          <h2 className="mt-3.5 text-[35px] font-medium text-[var(--text-dark)]" style={{ fontFamily: "Playfair Display, serif" }}>How we built it</h2>
           <p className="mt-4 max-w-[640px] text-[15px] font-light leading-7 text-[var(--text-mid)]">Seven principles govern every decision about the repository, from content standards to navigation to governance. They are drawn from best practice in knowledge management and comparable repositories in the climate and development sector.</p>
           <div className="mt-12 grid gap-5 lg:grid-cols-3">
             {[
