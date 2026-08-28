@@ -17,11 +17,7 @@ type Submission = {
   excerpt: string;
 };
 
-const initial: Submission[] = [
-  { id: "1", title: "Community Drone Mapping for Flood Resilience — Turkana Pilot", collection: "Innovation Case Studies", date: "25 Feb 2026", status: "pending", excerpt: "Awaiting editorial review. You'll be notified when status changes." },
-  { id: "2", title: "Smallholder Advisory Chatbot — Scaling from SMS to WhatsApp", collection: "Research Outputs", date: "22 Feb 2026", status: "in_review", excerpt: "With editors. Editorial team is reviewing structure and evidence." },
-  { id: "3", title: "Responsible AI Governance Toolkit for County Governments", collection: "Policy Resources", date: "24 Feb 2026", status: "published", excerpt: "Live in repository — discoverable by collection, tag and search." },
-];
+const initial: Submission[] = [] as Submission[];
 
 function StatusBadge({ s }: { s: Status }) {
   const map: Record<Status, string> = {
@@ -165,26 +161,13 @@ export default function UserDashboardPage() {
               );
             })}
           </div>
-          <div className="rounded-[16px] border border-[var(--border)] bg-[var(--off-white)] dark:bg-white/5 p-5">
-            <p className="text-[14px] font-bold uppercase tracking-widest text-[var(--text-light)]">Your progress</p>
-            <div className="mt-4 space-y-4">
-              <div className="flex justify-between text-[16px]"><span className="text-[var(--text-mid)]">Published</span><span className="font-bold text-[#4a8c3f]">{Math.round((stats.published / Math.max(1, stats.total)) * 100)}%</span></div>
-              <div className="h-2.5 overflow-hidden rounded-full bg-white dark:bg-white/10">
-                <div className="h-full rounded-full bg-[#4a8c3f] transition-all duration-700" style={{ width: `${(stats.published / Math.max(1, stats.total)) * 100}%` }} />
-              </div>
-              <p className="text-[14px] text-[var(--text-light)]">{stats.pending} pending • {stats.review} in review</p>
-            </div>
-          </div>
-          <div className="pt-2">
-            <p className="px-2 text-[13px] font-bold uppercase tracking-widest text-[var(--text-light)]">Quick actions</p>
-            <Link href="/submit" className="mt-3 flex w-full cursor-pointer items-center justify-center gap-2 rounded-[4px] bg-[#4a8c3f] px-4 py-3 text-[16px] font-bold text-white hover:bg-[#2d5a27] transition-all"><Plus className="h-4 w-4" /> Submit new resource</Link>
-          </div>
+
         </nav>
         <div className="p-4 border-t border-[var(--border)] shrink-0">
           <button onClick={() => setProfileModalOpen(true)} className="flex w-full items-center gap-3 rounded-[4px] px-2 py-2.5 hover:bg-[var(--off-white)] dark:hover:bg-white/5 transition-colors text-left cursor-pointer">
-            <div className="flex h-10 w-10 shrink-0 items-center justify-center overflow-hidden rounded-full bg-gradient-to-br from-[#1a3a1a] to-[#4a8c3f] text-white font-bold text-[18px]">{avatar ? <img src={avatar} alt="" className="h-full w-full object-cover" /> : userName[0]?.toUpperCase() || "U"}</div>
+            <div className="flex h-10 w-10 shrink-0 items-center justify-center overflow-hidden rounded-full bg-gradient-to-br from-[#1a3a1a] to-[#4a8c3f] text-white font-bold text-[18px]">{avatar ? <img src={avatar} alt="" className="h-full w-full object-cover" /> : (userName[0]?.toUpperCase() || "U")}</div>
             <div className="flex-1 min-w-0">
-              <p className="text-[16px] font-bold leading-none text-[var(--text-dark)]" style={{ fontFamily: "Roboto, sans-serif" }}>{displayName || userName}</p>
+              <p className="text-[16px] font-bold leading-none text-[var(--text-dark)]" style={{ fontFamily: "Roboto, sans-serif" }}>{userName !== "there" ? userName : (displayName.split(" ")[0] || "User")}</p>
               <p className="text-[13px] text-[var(--text-light)] truncate" style={{ fontFamily: "Roboto, sans-serif" }}>{userEmail}</p>
             </div>
             <Settings className="h-4 w-4 text-[var(--text-light)] shrink-0" />
@@ -212,9 +195,9 @@ export default function UserDashboardPage() {
                 <h2 className="mt-2 flex items-center gap-2 text-[26px] lg:text-[28px] font-bold leading-tight">Welcome, {userName} <span className="inline-block animate-[wave_2s_ease-in-out_infinite] origin-[70%_70%]">👋</span></h2>
                 <p className="mt-2 max-w-2xl text-[15px] font-light leading-6 text-white/80">Submit resources, track review status, and see your published work live in the repository.</p>
               </div>
-              <div className="hidden lg:flex shrink-0 gap-3">
-                <Link href="/submit" className="inline-flex items-center justify-center rounded-[4px] bg-white px-6 py-3 text-[15px] font-bold text-[#1a3a1a] hover:bg-white/90 transition-all">Submit a resource</Link>
-                <Link href="/collections" className="inline-flex items-center justify-center rounded-[4px] border border-white/20 px-6 py-3 text-[15px] font-bold text-white hover:bg-white/10 transition-colors">Browse</Link>
+              <div className="flex shrink-0 gap-3">
+                <Link href="/submit" className="inline-flex items-center justify-center gap-2 rounded-[4px] bg-white px-6 py-3 text-[15px] font-bold text-[#1a3a1a] hover:bg-white/90 transition-all"><Plus className="h-4 w-4" /> Add Article</Link>
+                <Link href="/collections" className="hidden sm:inline-flex items-center justify-center rounded-[4px] border border-white/20 px-6 py-3 text-[15px] font-bold text-white hover:bg-white/10 transition-colors">Browse</Link>
               </div>
             </div>
           </div>
@@ -281,7 +264,16 @@ export default function UserDashboardPage() {
                   </div>
                 </div>
               ))}
-              {filtered.length === 0 && <div className="px-6 py-16 text-center text-[16px] text-[var(--text-light)]">No submissions yet. <Link href="/submit" className="text-[#4a8c3f] font-semibold hover:underline">Submit your first resource</Link>.</div>}
+              {filtered.length === 0 && (
+                <div className="px-6 py-16 text-center">
+                  <div className="mx-auto max-w-md rounded-[12px] border-2 border-dashed border-[var(--border)] bg-[var(--off-white)]/50 p-8">
+                    <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-[#e8f3e5] dark:bg-[#14311a] text-[#4a8c3f]"><Plus className="h-6 w-6" /></div>
+                    <h4 className="mt-4 text-[18px] font-bold text-[var(--text-dark)]">No submissions yet</h4>
+                    <p className="mt-1 text-[15px] text-[var(--text-mid)]">Start by adding your first article. It will appear here with its review status.</p>
+                    <Link href="/submit" className="mt-5 inline-flex items-center justify-center gap-2 rounded-[4px] bg-[#4a8c3f] px-6 py-3 text-[15px] font-bold text-white hover:bg-[#2d5a27] transition-colors"><Plus className="h-4 w-4" /> Add Article</Link>
+                  </div>
+                </div>
+              )}
             </div>
           </div>
         </div>
