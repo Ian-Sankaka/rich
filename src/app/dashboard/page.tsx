@@ -42,7 +42,7 @@ const initial: Submission[] = [
 
 function StatusBadge({ s }: { s: Status }) {
   const cfg: Record<Status, { label: string; cls: string; dot: string }> = {
-    pending: { label: "Pending", cls: "bg-orange-500 text-white border-orange-600 dark:bg-orange-600 dark:text-white dark:border-orange-700 shadow-sm", dot: "bg-white" },
+    pending: { label: "Pending", cls: "bg-[#ff6900] text-white border-[#ea580c] dark:bg-[#ff6900] dark:text-white dark:border-[#ea580c] shadow-sm", dot: "bg-white" },
     in_review: { label: "In review", cls: "bg-sky-50 text-sky-800 border-sky-300 dark:bg-sky-950/40 dark:text-sky-300 dark:border-sky-900/70 shadow-sm", dot: "bg-sky-500" },
     published: { label: "Published", cls: "bg-emerald-50 text-emerald-800 border-emerald-300 dark:bg-emerald-950/40 dark:text-emerald-300 dark:border-emerald-900/70 shadow-sm", dot: "bg-emerald-500" },
     declined: { label: "Declined", cls: "bg-red-50 text-red-700 border-red-200 dark:bg-red-950/40 dark:text-red-300 dark:border-red-900 shadow-sm", dot: "bg-red-500" },
@@ -351,7 +351,7 @@ export default function DashboardPage() {
           >
             {[
               { label: "Submissions", value: stats.total, hint: "All time", sub: "Total intake", icon: FileText, color: "bg-[#1a3a1a]", lightBg: "bg-[#f4f7f3] dark:bg-[#1a221a]", pct: 100 },
-              { label: "Pending", value: stats.pending, hint: "Needs decision", sub: "Awaiting triage", icon: Clock, color: "bg-amber-500", lightBg: "bg-amber-50/70 dark:bg-amber-950/20", pct: stats.total ? (stats.pending / stats.total) * 100 : 0 },
+              { label: "Pending", value: stats.pending, hint: "Needs decision", sub: "Awaiting review", icon: Clock, color: "bg-orange-500", lightBg: "bg-orange-50/70 dark:bg-orange-950/20", pct: stats.total ? (stats.pending / stats.total) * 100 : 0 },
               { label: "In review", value: stats.review, hint: "With editors", sub: "Editorial queue", icon: Users, color: "bg-sky-500", lightBg: "bg-sky-50/70 dark:bg-sky-950/20", pct: stats.total ? (stats.review / stats.total) * 100 : 0 },
               { label: "Published", value: stats.published, hint: "Live in repo", sub: "Discoverable now", icon: CheckCircle, color: "bg-emerald-500", lightBg: "bg-emerald-50/70 dark:bg-emerald-950/20", pct: stats.total ? (stats.published / stats.total) * 100 : 0 },
             ].map((c) => {
