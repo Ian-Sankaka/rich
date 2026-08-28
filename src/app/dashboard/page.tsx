@@ -19,16 +19,25 @@ type Submission = {
   createdAtRaw: string;
   status: Status;
   excerpt: string;
+  abstract: string;
+  type: string;
+  geography: string;
+  themes: string;
+  cluster: string;
+  pathway: string;
+  audience: string;
+  licensing: string;
+  publicationDate: string;
   isNew?: boolean;
 };
 
 const initial: Submission[] = [
-  { id: "1", title: "Embedding Indigenous Knowledge in Regional Policy Frameworks", collection: "Policy Resources", author: "A. Okoro", authorEmail: "", date: "28 Feb 2026", dateTime: "28 Feb 2026, 09:00 AM", createdAtRaw: "", status: "published", excerpt: "Plain-language synthesis of AU/EAC frameworks with NDC alignment checklist. Ready for repository." },
-  { id: "2", title: "Early Warning Systems in the Horn of Africa — LDRI Deployment", collection: "Innovation Case Studies", author: "M. Irura", authorEmail: "", date: "27 Feb 2026", dateTime: "27 Feb 2026, 09:00 AM", createdAtRaw: "", status: "published", excerpt: "Lived case covering deployment, failures, and scaling pathway for EWS. Primary evidence." },
-  { id: "3", title: "Climate AI Ecosystem Map 2026 — East Africa", collection: "Ecosystem Insights", author: "L. Mutuku", authorEmail: "", date: "26 Feb 2026", dateTime: "26 Feb 2026, 09:00 AM", createdAtRaw: "", status: "in_review", excerpt: "Sector briefing with funder landscape and trend signals. Awaiting editorial review." },
-  { id: "4", title: "Community Drone Mapping for Flood Resilience — Turkana Pilot", collection: "Innovation Case Studies", author: "J. Kamau", authorEmail: "", date: "25 Feb 2026", dateTime: "25 Feb 2026, 09:00 AM", createdAtRaw: "", status: "pending", excerpt: "Case study submission via open pathway. Needs consistent structure check." },
-  { id: "5", title: "Responsible AI Governance Toolkit for County Governments", collection: "Policy Resources", author: "S. Njeri", authorEmail: "", date: "24 Feb 2026", dateTime: "24 Feb 2026, 09:00 AM", createdAtRaw: "", status: "pending", excerpt: "Checklist and template for county-level procurement of climate AI tools." },
-  { id: "6", title: "Smallholder Advisory Chatbot — Scaling from SMS to WhatsApp", collection: "Research Outputs", author: "P. Ochieng", authorEmail: "", date: "22 Feb 2026", dateTime: "22 Feb 2026, 09:00 AM", createdAtRaw: "", status: "pending", excerpt: "Working paper with plain-language summary and key finding: adoption +18%." },
+  { id: "1", title: "Embedding Indigenous Knowledge in Regional Policy Frameworks", collection: "Policy Resources", author: "A. Okoro", authorEmail: "", date: "28 Feb 2026", dateTime: "28 Feb 2026, 09:00 AM", createdAtRaw: "", status: "published", excerpt: "Plain-language synthesis of AU/EAC frameworks with NDC alignment checklist. Ready for repository.", abstract: "Plain-language synthesis of AU/EAC frameworks with NDC alignment checklist. Ready for repository.", type: "Policy Brief", geography: "Pan-African", themes: "Climate Adaptation", cluster: "Governance & Ethics", pathway: "Systemic Adoption", audience: "Policymakers", licensing: "CC BY 4.0 (Open)", publicationDate: "2026-02-28" },
+  { id: "2", title: "Early Warning Systems in the Horn of Africa — LDRI Deployment", collection: "Innovation Case Studies", author: "M. Irura", authorEmail: "", date: "27 Feb 2026", dateTime: "27 Feb 2026, 09:00 AM", createdAtRaw: "", status: "published", excerpt: "Lived case covering deployment, failures, and scaling pathway for EWS. Primary evidence.", abstract: "Lived case covering deployment, failures, and scaling pathway for EWS. Primary evidence.", type: "Case Study", geography: "East Africa", themes: "Early Warning", cluster: "Deployment & Scale", pathway: "Scale-up", audience: "Innovators", licensing: "CC BY 4.0 (Open)", publicationDate: "2026-02-27" },
+  { id: "3", title: "Climate AI Ecosystem Map 2026 — East Africa", collection: "Ecosystem Insights", author: "L. Mutuku", authorEmail: "", date: "26 Feb 2026", dateTime: "26 Feb 2026, 09:00 AM", createdAtRaw: "", status: "in_review", excerpt: "Sector briefing with funder landscape and trend signals. Awaiting editorial review.", abstract: "Sector briefing with funder landscape and trend signals. Awaiting editorial review.", type: "Synthesis Report", geography: "East Africa", themes: "Data & Infrastructure", cluster: "Data & Infrastructure", pathway: "Pilot", audience: "Funders", licensing: "CC BY 4.0 (Open)", publicationDate: "2026-02-26" },
+  { id: "4", title: "Community Drone Mapping for Flood Resilience — Turkana Pilot", collection: "Innovation Case Studies", author: "J. Kamau", authorEmail: "", date: "25 Feb 2026", dateTime: "25 Feb 2026, 09:00 AM", createdAtRaw: "", status: "pending", excerpt: "Case study submission via open pathway. Needs consistent structure check.", abstract: "Case study submission via open pathway. Needs consistent structure check.", type: "Case Study", geography: "Kenya", themes: "Water", cluster: "Deployment & Scale", pathway: "Pilot", audience: "Researchers", licensing: "CC BY 4.0 (Open)", publicationDate: "2026-02-25" },
+  { id: "5", title: "Responsible AI Governance Toolkit for County Governments", collection: "Policy Resources", author: "S. Njeri", authorEmail: "", date: "24 Feb 2026", dateTime: "24 Feb 2026, 09:00 AM", createdAtRaw: "", status: "pending", excerpt: "Checklist and template for county-level procurement of climate AI tools.", abstract: "Checklist and template for county-level procurement of climate AI tools.", type: "Policy Brief", geography: "Kenya", themes: "Responsible AI", cluster: "Governance & Ethics", pathway: "Validation", audience: "Government Staff", licensing: "CC BY 4.0 (Open)", publicationDate: "2026-02-24" },
+  { id: "6", title: "Smallholder Advisory Chatbot — Scaling from SMS to WhatsApp", collection: "Research Outputs", author: "P. Ochieng", authorEmail: "", date: "22 Feb 2026", dateTime: "22 Feb 2026, 09:00 AM", createdAtRaw: "", status: "pending", excerpt: "Working paper with plain-language summary and key finding: adoption +18%.", abstract: "Working paper with plain-language summary and key finding: adoption +18%.", type: "Working Paper", geography: "Pan-African", themes: "Food & Agriculture", cluster: "Models & Tools", pathway: "Scale-up", audience: "Researchers", licensing: "CC BY 4.0 (Open)", publicationDate: "2026-02-22" },
 ];
 
 function StatusBadge({ s }: { s: Status }) {
@@ -138,7 +147,16 @@ export default function DashboardPage() {
             dateTime: d.toLocaleString("en-GB", { day: "2-digit", month: "short", year: "numeric", hour: "2-digit", minute: "2-digit", hour12: true }),
             createdAtRaw: String(r.created_at),
             status: (r.status === "pending" ? "pending" : r.status === "in_review" ? "in_review" : r.status === "published" ? "published" : "pending") as Status,
-            excerpt: String(r.summary || "").slice(0, 140) + (String(r.summary || "").length > 140 ? "…" : ""),
+            excerpt: String(r.summary || r.abstract || "").slice(0, 140) + (String(r.summary || r.abstract || "").length > 140 ? "…" : ""),
+            abstract: String(r.abstract || r.summary || ""),
+            type: String(r.content_type || ""),
+            geography: String(r.geography || ""),
+            themes: String(r.themes || ""),
+            cluster: String(r.cluster || ""),
+            pathway: String(r.pathway || ""),
+            audience: String(r.audience || ""),
+            licensing: String(r.license || "CC BY 4.0 (Open)"),
+            publicationDate: String(r.publication_date || ""),
             isNew: r.status === "pending",
           };
         });
@@ -510,7 +528,28 @@ export default function DashboardPage() {
             <div className="bg-white dark:bg-[#1a221a] p-6 space-y-5">
               <div>
                 <p className="text-[12px] font-bold uppercase tracking-widest text-[var(--text-light)]">Abstract</p>
-                <p className="mt-2 text-[15px] leading-7 text-[var(--text-mid)]">{selected.excerpt}</p>
+                <p className="mt-2 text-[15px] leading-7 text-[var(--text-mid)] whitespace-pre-wrap break-words">{selected.abstract || selected.excerpt}</p>
+              </div>
+              <div className="grid gap-0 rounded-[12px] border border-[var(--border)] divide-y divide-[var(--border)] overflow-hidden bg-[var(--off-white)]/60 dark:bg-white/5">
+                {[
+                  ["Resource type", selected.type || "—"],
+                  ["Collection", selected.collection],
+                  ["Geography", selected.geography || "—"],
+                  ["Themes", selected.themes || "—"],
+                  ["Cluster", selected.cluster || "—"],
+                  ["Scaling pathway", selected.pathway || "—"],
+                  ["Audience", selected.audience || "—"],
+                  ["Author / organisation", `${selected.author || "—"}${selected.authorEmail ? ` • ${selected.authorEmail}` : ""}`],
+                  ["Publication date", selected.publicationDate || "—"],
+                  ["Licensing", selected.licensing || "—"],
+                  ["Submitted", selected.dateTime || selected.date],
+                  ["Status", selected.status],
+                ].map(([k, v]) => (
+                  <div key={k} className="grid grid-cols-[150px_1fr] gap-3 px-4 py-3 text-[13px]">
+                    <span className="font-bold uppercase tracking-wide text-[var(--text-light)]">{k}</span>
+                    <span className="text-[var(--text-dark)] break-words">{String(v)}</span>
+                  </div>
+                ))}
               </div>
               <div className="rounded-[12px] bg-[var(--off-white)] dark:bg-white/5 border border-[var(--border)] p-4">
                 <p className="text-[14px] font-bold uppercase tracking-wide text-[var(--text-light)]">Decision</p>
