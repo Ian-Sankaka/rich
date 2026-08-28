@@ -44,8 +44,13 @@ export default function UserDashboardPage() {
   const { toast } = useToast();
   const [userName, setUserName] = useState("there");
   const [userEmail, setUserEmail] = useState("you@rich.local");
-  const [subs] = useState<Submission[]>(initial);
+  const [subs, setSubs] = useState<Submission[]>(initial);
   const [filter, setFilter] = useState<Status | "all">("all");
+  const [contributeOpen, setContributeOpen] = useState(false);
+  const [cTitle, setCTitle] = useState("");
+  const [cAbstract, setCAbstract] = useState("");
+  const [cCollection, setCCollection] = useState("Research Outputs");
+  const [cType, setCType] = useState("Technical Note");
   const [query, setQuery] = useState("");
   const [selected, setSelected] = useState<Submission | null>(null);
   const [profileModalOpen, setProfileModalOpen] = useState(false);
@@ -129,6 +134,18 @@ export default function UserDashboardPage() {
     setTimeout(() => { setSavingPw(false); setPwCurrent(""); setPwNew(""); setPwConfirm(""); toast("Password updated", "success"); }, 600);
   };
 
+  const handleContribute = () => {
+    if (cTitle.trim().length < 8) { toast("Title must be at least 8 characters", "error"); return; }
+    if (cAbstract.trim().length < 30) { toast("Abstract must be at least 30 characters", "error"); return; }
+    const now = new Date().toLocaleDateString("en-GB", { day: "2-digit", month: "short", year: "numeric" });
+    const n: Submission = { id: String(Date.now()), title: cTitle.trim(), collection: cCollection, date: now, status: "pending", excerpt: cAbstract.trim().slice(0, 140) + (cAbstract.length > 140 ? "…" : "") };
+    setSubs((prev) => [n, ...prev]);
+    setFilter("all");
+    setContributeOpen(false);
+    setCTitle(""); setCAbstract(""); setCCollection("Research Outputs"); setCType("Technical Note");
+    toast("Resource submitted — pending review", "success");
+  };
+
   const signOut = async () => {
     try { await fetch("/api/logout", { method: "POST" }); } catch {}
     toast("Signed out", "info");
@@ -196,7 +213,7 @@ export default function UserDashboardPage() {
                 <p className="mt-2 max-w-2xl text-[15px] font-light leading-6 text-white/80">Submit resources, track review status, and see your published work live in the repository.</p>
               </div>
               <div className="flex shrink-0 gap-3">
-                <Link href="/submit" className="inline-flex items-center justify-center gap-2 rounded-[4px] bg-white px-6 py-3 text-[15px] font-bold text-[#1a3a1a] hover:bg-white/90 transition-all"><Plus className="h-4 w-4" /> Add Article</Link>
+                <button onClick={() => setContributeOpen(true)} className="inline-flex items-center justify-center gap-2 rounded-[4px] bg-white px-6 py-3 text-[15px] font-bold text-[#1a3a1a] hover:bg-white/90 transition-all cursor-pointer"><Plus className="h-4 w-4" /> Contribute Resource</button>
                 <Link href="/collections" className="hidden sm:inline-flex items-center justify-center rounded-[4px] border border-white/20 px-6 py-3 text-[15px] font-bold text-white hover:bg-white/10 transition-colors">Browse</Link>
               </div>
             </div>
@@ -270,7 +287,7 @@ export default function UserDashboardPage() {
                     <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-[#e8f3e5] dark:bg-[#14311a] text-[#4a8c3f]"><Plus className="h-6 w-6" /></div>
                     <h4 className="mt-4 text-[18px] font-bold text-[var(--text-dark)]">No submissions yet</h4>
                     <p className="mt-1 text-[15px] text-[var(--text-mid)]">Start by adding your first article. It will appear here with its review status.</p>
-                    <Link href="/submit" className="mt-5 inline-flex items-center justify-center gap-2 rounded-[4px] bg-[#4a8c3f] px-6 py-3 text-[15px] font-bold text-white hover:bg-[#2d5a27] transition-colors"><Plus className="h-4 w-4" /> Add Article</Link>
+                    <button onClick={() => setContributeOpen(true)} className="mt-5 inline-flex items-center justify-center gap-2 rounded-[4px] bg-[#4a8c3f] px-6 py-3 text-[15px] font-bold text-white hover:bg-[#2d5a27] transition-colors cursor-pointer"><Plus className="h-4 w-4" /> Contribute Resource</button>
                   </div>
                 </div>
               )}
@@ -331,6 +348,29 @@ export default function UserDashboardPage() {
               <div className="rounded-[8px] bg-[var(--off-white)] dark:bg-white/5 border border-[var(--border)] p-4">
                 <p className="text-[14px] font-bold uppercase tracking-wide text-[var(--text-light)]">Status</p>
                 <p className="mt-1 text-[16px] text-[var(--text-mid)]">{selected.status === "pending" ? "Your submission is awaiting triage. Editorial team will review within 4 weeks." : selected.status === "in_review" ? "With editors — you'll be notified when a decision is made." : "Published — discoverable in collections and search."}</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+      {contributeOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+          <div onClick={() => setContributeOpen(false)} className="absolute inset-0 bg-black/50 backdrop-blur-sm" />
+          <div className="relative w-full max-w-[640px] max-h-[90vh] overflow-auto rounded-[16px] bg-white dark:bg-[#1a221a] border border-[var(--border)] shadow-2xl animate-[toast-in_0.3s_ease]">
+            <div className="sticky top-0 flex items-center justify-between gap-4 border-b border-[var(--border)] bg-white dark:bg-[#1a221a] px-6 py-5">
+              <div><h3 className="text-[18px] font-bold text-[var(--text-dark)]">Contribute Resource</h3><p className="text-[13px] text-[var(--text-light)]">Add a resource without leaving your dashboard — it will appear below as Pending</p></div>
+              <button onClick={() => setContributeOpen(false)} className="flex h-9 w-9 items-center justify-center rounded-full border border-[var(--border)] hover:bg-[var(--off-white)] transition-colors">✕</button>
+            </div>
+            <div className="p-6 space-y-5">
+              <div><label className="text-[13px] font-bold tracking-[0.1em] uppercase text-[#5a5e5a] dark:text-white/60">Title *</label><input value={cTitle} onChange={(e) => setCTitle(e.target.value)} placeholder="e.g. Early warning for smallholder farmers in Turkana" className="mt-2 w-full rounded-[4px] border border-[#d6d9d6] dark:border-white/10 bg-white dark:bg-white/5 px-4 py-3.5 text-[15px] outline-none focus:border-[#4a8c3f] focus:ring-4 focus:ring-[#4a8c3f]/15" /></div>
+              <div><label className="text-[13px] font-bold tracking-[0.1em] uppercase text-[#5a5e5a] dark:text-white/60">Abstract *</label><textarea value={cAbstract} onChange={(e) => setCAbstract(e.target.value)} rows={4} placeholder="Plain-language summary — problem, approach, key finding (30+ chars)" className="mt-2 w-full rounded-[4px] border border-[#d6d9d6] dark:border-white/10 bg-white dark:bg-white/5 px-4 py-3.5 text-[15px] leading-7 outline-none focus:border-[#4a8c3f] focus:ring-4 focus:ring-[#4a8c3f]/15" /></div>
+              <div className="grid gap-4 sm:grid-cols-2">
+                <div><label className="text-[13px] font-bold tracking-[0.1em] uppercase text-[#5a5e5a] dark:text-white/60">Collection</label><select value={cCollection} onChange={(e) => setCCollection(e.target.value)} className="mt-2 w-full rounded-[4px] border border-[#d6d9d6] dark:border-white/10 bg-white dark:bg-[#1a221a] px-4 py-3 text-[15px] outline-none focus:border-[#4a8c3f]"><option>Research Outputs</option><option>Innovation Case Studies</option><option>Ecosystem Insights — Phase 2</option><option>Policy Resources</option></select></div>
+                <div><label className="text-[13px] font-bold tracking-[0.1em] uppercase text-[#5a5e5a] dark:text-white/60">Type</label><select value={cType} onChange={(e) => setCType(e.target.value)} className="mt-2 w-full rounded-[4px] border border-[#d6d9d6] dark:border-white/10 bg-white dark:bg-[#1a221a] px-4 py-3 text-[15px] outline-none focus:border-[#4a8c3f]"><option>Technical Note</option><option>Research Paper</option><option>Case Study</option><option>Policy Brief</option></select></div>
+              </div>
+              <div className="flex gap-3 pt-2">
+                <button onClick={() => setContributeOpen(false)} className="flex-1 rounded-[4px] border border-[var(--border)] bg-white dark:bg-white/5 px-6 py-3 text-[15px] font-bold text-[var(--text-dark)] hover:bg-[var(--off-white)] transition-colors">Cancel</button>
+                <button onClick={handleContribute} className="flex-1 rounded-[4px] bg-[#4a8c3f] px-6 py-3 text-[15px] font-bold text-white hover:bg-[#2d5a27] transition-colors">Submit</button>
               </div>
             </div>
           </div>
