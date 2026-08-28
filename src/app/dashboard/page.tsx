@@ -32,14 +32,31 @@ const initial: Submission[] = [
 ];
 
 function StatusBadge({ s }: { s: Status }) {
-  const map: Record<Status, string> = {
-    pending: "bg-amber-50 text-amber-700 border-amber-200 dark:bg-amber-950/40 dark:text-amber-300 dark:border-amber-900",
-    in_review: "bg-sky-50 text-sky-700 border-sky-200 dark:bg-sky-950/40 dark:text-sky-300 dark:border-sky-900",
-    published: "bg-emerald-50 text-emerald-700 border-emerald-200 dark:bg-emerald-950/40 dark:text-emerald-300 dark:border-emerald-900",
-    declined: "bg-red-50 text-red-700 border-red-200 dark:bg-red-950/40 dark:text-red-300 dark:border-red-900",
+  const cfg: Record<Status, { label: string; cls: string; dot: string }> = {
+    pending: { label: "Pending", cls: "bg-amber-50 text-amber-800 border-amber-300 dark:bg-amber-950/40 dark:text-amber-300 dark:border-amber-900/70 shadow-sm", dot: "bg-amber-500" },
+    in_review: { label: "In review", cls: "bg-sky-50 text-sky-800 border-sky-300 dark:bg-sky-950/40 dark:text-sky-300 dark:border-sky-900/70 shadow-sm", dot: "bg-sky-500" },
+    published: { label: "Published", cls: "bg-emerald-50 text-emerald-800 border-emerald-300 dark:bg-emerald-950/40 dark:text-emerald-300 dark:border-emerald-900/70 shadow-sm", dot: "bg-emerald-500" },
+    declined: { label: "Declined", cls: "bg-red-50 text-red-700 border-red-200 dark:bg-red-950/40 dark:text-red-300 dark:border-red-900 shadow-sm", dot: "bg-red-500" },
   };
-  const label = { pending: "Pending", in_review: "In review", published: "Published", declined: "Declined" }[s];
-  return <span className={`inline-flex rounded-full border px-2.5 py-1 text-[13px] font-bold uppercase tracking-wide ${map[s]}`}>{label}</span>;
+  const c = cfg[s];
+  return (
+    <span className={`inline-flex items-center gap-1.5 rounded-full border px-3 py-1 text-[12px] font-extrabold uppercase tracking-widest ${c.cls}`}>
+      <span className={`h-1.5 w-1.5 rounded-full ${c.dot} ${s === "pending" || s === "in_review" ? "animate-pulse" : ""}`} />
+      {c.label}
+    </span>
+  );
+}
+
+function NewBadge() {
+  return (
+    <span className="inline-flex items-center gap-1.5 rounded-full bg-gradient-to-r from-[#1a3a1a] via-[#2d5a27] to-[#4a8c3f] px-3 py-1 text-[11px] font-extrabold uppercase tracking-widest text-white shadow-md ring-1 ring-white/20">
+      <span className="relative flex h-2 w-2">
+        <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-white opacity-60" />
+        <span className="relative inline-flex h-2 w-2 rounded-full bg-white" />
+      </span>
+      New
+    </span>
+  );
 }
 
 function AnimatedNumber({ value }: { value: number }) {
@@ -384,7 +401,7 @@ export default function DashboardPage() {
                   <div className="flex-1 min-w-0">
                     <div className="flex flex-wrap items-center gap-2.5">
                       <p className="text-[16px] font-semibold leading-6 text-[var(--text-dark)] group-hover:text-[#4a8c3f] transition-colors line-clamp-1">{s.title}</p>
-                      {s.isNew && <span className="inline-flex rounded-full bg-[#4a8c3f] text-white px-2.5 py-1 text-[11px] font-bold uppercase tracking-wide animate-pulse">New</span>}
+                      {s.isNew && <NewBadge />}
                       <StatusBadge s={s.status} />
                     </div>
                     <p className="mt-1.5 text-[14px] font-medium text-[var(--text-light)]">{s.collection} • {s.author}{s.authorEmail ? ` (${s.authorEmail})` : ""} • {s.dateTime || s.date}</p>
@@ -472,32 +489,41 @@ export default function DashboardPage() {
         </div>
       )}
 
-      {/* DRAWER for submission */}
+      {/* CENTERED VIEW MODAL with blur — like new submission */}
       {selected && (
-        <div className="fixed inset-0 z-40 flex">
-          <div onClick={() => setSelected(null)} className="flex-1 bg-black/40 backdrop-blur-sm animate-[toast-in_0.2s_ease]" />
-          <div className="w-full max-w-[520px] bg-white dark:bg-[#0f1410] border-l border-[var(--border)] shadow-2xl overflow-auto animate-[toast-in_0.32s_ease]">
-            <div className="sticky top-0 bg-white dark:bg-[#0f1410] border-b border-[var(--border)] p-6 flex items-start justify-between gap-4">
-              <div>
-                <p className="text-[13px] font-bold uppercase tracking-widest text-[var(--text-light)]">{selected.collection}</p>
-                <h3 className="mt-1 text-[20px] font-bold leading-tight text-[var(--text-dark)]">{selected.title}</h3>
-                <p className="mt-1 text-[14px] text-[var(--text-light)]">{selected.author}{selected.authorEmail ? ` (${selected.authorEmail})` : ""} • {selected.dateTime || selected.date} • <StatusBadge s={selected.status} /></p>
-                <p className="mt-1 text-[12px] text-[var(--text-light)]">Submitted: {selected.dateTime || selected.date} {selected.createdAtRaw ? `• ${new Date(selected.createdAtRaw).toLocaleString()}` : ""}</p>
+        <div className="fixed inset-0 z-40 flex items-center justify-center p-4">
+          <div onClick={() => setSelected(null)} className="absolute inset-0 bg-black/50 backdrop-blur-sm animate-[toast-in_0.2s_ease]" />
+          <div className="relative w-full max-w-[640px] max-h-[90vh] overflow-auto rounded-[16px] bg-[#f7f6f4] dark:bg-[#0f1410] border border-[#e8ece8] dark:border-white/10 shadow-2xl animate-[toast-in_0.32s_ease]">
+            <div className="sticky top-0 bg-gradient-to-br from-[#1a3a1a] via-[#2d5a27] to-[#4a8c3f] p-6 flex items-start justify-between gap-4 rounded-t-[16px]">
+              <div className="flex-1 min-w-0">
+                <div className="flex flex-wrap items-center gap-2">
+                  <span className="inline-flex rounded-full bg-white/15 text-white px-2.5 py-1 text-[11px] font-bold uppercase tracking-widest border border-white/20">{selected.collection}</span>
+                  {selected.isNew && <NewBadge />}
+                  <StatusBadge s={selected.status} />
+                </div>
+                <h3 className="mt-3 text-[20px] font-bold leading-tight text-white">{selected.title}</h3>
+                <p className="mt-1.5 text-[13px] font-medium text-white/80">{selected.author}{selected.authorEmail ? ` • ${selected.authorEmail}` : ""}</p>
+                <p className="mt-1 flex items-center gap-1.5 text-[12px] text-white/70"><Clock className="h-3.5 w-3.5" /> {selected.dateTime || selected.date}{selected.createdAtRaw ? ` • Submitted ${new Date(selected.createdAtRaw).toLocaleString("en-GB", { day: "2-digit", month: "short", year: "numeric", hour: "2-digit", minute: "2-digit" })}` : ""}</p>
               </div>
-              <button onClick={() => setSelected(null)} className="rounded-full border border-[var(--border)] p-2 hover:bg-[var(--off-white)] transition-colors">✕</button>
+              <button onClick={() => setSelected(null)} className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-white/15 text-white hover:bg-white/25 border border-white/20 transition-colors">✕</button>
             </div>
-            <div className="p-6 space-y-4">
-              <p className="text-[16px] leading-7 text-[var(--text-mid)]">{selected.excerpt}</p>
-              <div className="rounded-[8px] bg-[var(--off-white)] dark:bg-white/5 border border-[var(--border)] p-4">
+            <div className="bg-white dark:bg-[#1a221a] p-6 space-y-5">
+              <div>
+                <p className="text-[12px] font-bold uppercase tracking-widest text-[var(--text-light)]">Abstract</p>
+                <p className="mt-2 text-[15px] leading-7 text-[var(--text-mid)]">{selected.excerpt}</p>
+              </div>
+              <div className="rounded-[12px] bg-[var(--off-white)] dark:bg-white/5 border border-[var(--border)] p-4">
                 <p className="text-[14px] font-bold uppercase tracking-wide text-[var(--text-light)]">Decision</p>
-                <p className="mt-1 text-[16px] text-[var(--text-mid)]">Publishing moves this submission to the live repository and makes it discoverable by collection, tag, and search.</p>
+                <p className="mt-1 text-[14px] leading-6 text-[var(--text-mid)]">Publishing moves this submission to the live repository and makes it discoverable by collection, tag, and search.</p>
                 <div className="mt-4 flex gap-2">
-                  <button onClick={() => act(selected.id, "published")} className="flex-1 rounded-[4px] bg-[#4a8c3f] py-3 text-[16px] font-bold text-white hover:bg-[#2d5a27] transition-colors">Publish to repository</button>
-                  <button onClick={() => act(selected.id, "declined")} className="rounded-[4px] border border-red-200 bg-white px-4 py-3 text-[16px] font-bold text-red-600 hover:bg-red-50 transition-colors">Decline</button>
+                  <button onClick={() => act(selected.id, "published")} className="flex-1 rounded-[4px] bg-[#4a8c3f] py-3 text-[15px] font-bold text-white hover:bg-[#2d5a27] hover:shadow transition-all">Publish to repository</button>
+                  <button onClick={() => act(selected.id, "declined")} className="rounded-[4px] border border-red-200 bg-white px-4 py-3 text-[15px] font-bold text-red-600 hover:bg-red-50 dark:border-red-900 dark:bg-red-950/40 dark:text-red-300 transition-colors">Decline</button>
                 </div>
               </div>
-              <div className="flex gap-2">
-                <Link href={`/collections/${selected.collection.toLowerCase().replace(/\s+/g, "_")}`} className="text-[16px] font-semibold text-[#4a8c3f] hover:underline">View collection →</Link>
+              <div className="flex flex-wrap items-center gap-3 pt-2 border-t border-[var(--border)]">
+                <Link href={`/collections/${selected.collection.toLowerCase().replace(/\s+/g, "_")}`} className="text-[14px] font-bold text-[#4a8c3f] hover:underline">View collection →</Link>
+                <span className="text-[var(--text-light)]">•</span>
+                <span className="text-[13px] text-[var(--text-light)]">ID: {selected.id.slice(0, 8)}…</span>
               </div>
             </div>
           </div>
