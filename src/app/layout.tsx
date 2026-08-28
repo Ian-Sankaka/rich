@@ -70,32 +70,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                   </div>
                 </div>
               </div>
-              <div className="mt-10 border-t border-white/10 pt-8">
-                <p className="text-[11px] font-bold tracking-[0.18em] uppercase text-white/40">Supported by</p>
-                <div className="mt-4 flex flex-wrap items-center gap-6 md:gap-8">
-                  <a href="https://idrc-crdi.ca" target="_blank" rel="noreferrer" className="flex h-10 items-center rounded bg-white px-3 py-2">
-                    {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img src="https://upload.wikimedia.org/wikipedia/commons/6/6d/Idrc-logo-full-name-wordmark.png" alt="IDRC · CRDI" className="h-6 w-auto object-contain" />
-                  </a>
-                  <a href="https://www.gov.uk/government/organisations/foreign-commonwealth-development-office" target="_blank" rel="noreferrer" className="flex h-10 items-center rounded bg-white px-3 py-2">
-                    {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img src="https://upload.wikimedia.org/wikipedia/commons/d/d4/UK_Foreign%2C_Commonwealth_and_Development_Office_logo.svg" alt="FCDO" className="h-6 w-auto object-contain" />
-                  </a>
-                  <a href="https://www.ai4d.ai" target="_blank" rel="noreferrer" className="flex h-10 items-center rounded bg-white px-3 py-2">
-                    {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img src="https://www.ai4d.ai/favicon.svg" alt="AI4D Africa" className="h-7 w-auto object-contain" />
-                    <span className="ml-2 text-[13px] font-bold tracking-wide text-[#1a221a]">AI4D Africa</span>
-                  </a>
-                  <a href="https://africlimate.ai" target="_blank" rel="noreferrer" className="flex h-10 items-center rounded bg-white px-3 py-2">
-                    {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img src="https://africlimate.ai/lovable-uploads/52cbd433-d762-4492-94e6-45e816d18bc9.png" alt="AfriClimate AI" className="h-7 w-auto object-contain" />
-                    <span className="ml-2 text-[13px] font-bold tracking-wide text-[#1a221a]">AfriClimate AI</span>
-                  </a>
-                  <span className="flex h-10 items-center rounded bg-white px-4 text-[13px] font-bold tracking-wide text-[#1a221a]">DeveloLocal</span>
-                </div>
-                <p className="mt-3 text-[12px] text-white/30">Google search links replaced with direct CDN assets — original search URLs are not embeddable images.</p>
-              </div>
-              <div className="mt-6 flex flex-col sm:flex-row items-center justify-between gap-3 border-t border-white/10 pt-6 text-[14px]">
+              <div className="mt-12 flex flex-col sm:flex-row items-center justify-between gap-3 border-t border-white/10 pt-6 text-[14px]">
                 <p className="text-white/35">&copy; 2026 Local Development Research Institute.</p>
                 <div className="flex items-center gap-4 text-white/45">
                   <a href="#" className="hover:text-white">Privacy Policy</a>
