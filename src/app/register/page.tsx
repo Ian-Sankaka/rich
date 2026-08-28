@@ -23,14 +23,23 @@ export default function RegisterPage() {
       const j = await res.json();
       if (!res.ok) {
         toast(j.error || "Registration failed", "error");
+        setLoading(false);
       } else {
         toast("Account created - welcome to RICH! 🎉", "success");
-        setTimeout(() => router.push("/login"), 900);
+        // auto-login then redirect to user dashboard
+        try {
+          const loginRes = await fetch("/api/login", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ email, password }) });
+          if (loginRes.ok) {
+            setTimeout(() => { window.location.href = "/user/dashboard"; }, 800);
+            return;
+          }
+        } catch {}
+        setTimeout(() => { window.location.href = "/login"; }, 900);
       }
     } catch {
       toast("Network error - try again", "error");
+      setLoading(false);
     }
-    setLoading(false);
   }
 
   return (

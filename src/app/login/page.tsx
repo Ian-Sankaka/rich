@@ -23,7 +23,8 @@ export default function LoginPage() {
         setLoading(false);
       } else {
         toast(`Welcome back, ${j.user.name}! 👋`, "success");
-        setTimeout(() => { window.location.href = "/dashboard"; }, 700);
+        const isAdmin = j.user.email === "lead@rich.africa" || j.user.email === "admin@rich.africa";
+        setTimeout(() => { window.location.href = isAdmin ? "/dashboard" : "/user/dashboard"; }, 700);
       }
     } catch {
       toast("Network error - try again", "error");

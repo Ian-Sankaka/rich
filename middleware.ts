@@ -4,7 +4,7 @@ const SESSION_COOKIE = "rich_session";
 
 export async function middleware(req: NextRequest) {
   const path = req.nextUrl.pathname;
-  if (path.startsWith("/dashboard")) {
+  if (path.startsWith("/dashboard") || path.startsWith("/user/dashboard")) {
     const token = req.cookies.get(SESSION_COOKIE)?.value;
     if (!token) {
       return NextResponse.redirect(new URL("/login", req.url));
@@ -24,5 +24,5 @@ export async function middleware(req: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/dashboard", "/dashboard/:path*"],
+  matcher: ["/dashboard", "/dashboard/:path*", "/user/dashboard", "/user/dashboard/:path*"],
 };
