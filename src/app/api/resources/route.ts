@@ -64,25 +64,69 @@ export async function PATCH(req: NextRequest) {
   const sess = await verifySession(token);
   if (!sess) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   const isAdmin = sess.email.toLowerCase() === "lead@rich.africa" || sess.email.toLowerCase() === "admin@rich.africa";
-  if (!isAdmin) return NextResponse.json({ error: "Forbidden — admin only" }, { status: 403 });
   let body: any;
   try { body = await req.json(); } catch { return NextResponse.json({ error: "Invalid request." }, { status: 400 }); }
-  const id = String(body.id || "").trim();
-  const status = String(body.status || "").trim();
-  const notes = String(body.notes || body.review_notes || "").trim().slice(0, 2000);
+
+  // Admin: status change (publish/decline) with optional notes
+  if (body.status) {
+    if (!isAdmin) return NextResponse.json({ error: "Forbidden — admin only" }, { status: 403 });
+    const id = String(body.id || "").trim();
+    const status = String(body.status || "").trim();
+    const notes = String(body.notes || body.review_notes || "").trim().slice(0, 2000);
+    if (!id) return NextResponse.json({ error: "Missing id" }, { status: 400 });
+    if (!["published", "declined", "pending", "in_review"].includes(status)) return NextResponse.json({ error: "Invalid status" }, { status: 400 });
+    if (status === "declined" && notes.length < 10) return NextResponse.json({ error: "Decline notes required (at least 10 characters)." }, { status: 400 });
+    try {
+      const { rows } = await pool.query(
+        `update public.resources set status=$1, review_notes=$2, reviewed_at=now(), updated_at=now() where id=$3 returning id, status, review_notes`,
+        [status, status === "declined" ? notes : null, id]
+      );
+      if (!rows.length) return NextResponse.json({ error: "Not found" }, { status: 404 });
+      return NextResponse.json({ ok: true, resource: rows[0] });
+    } catch (e) {
+      console.error("[resources PATCH]", e);
+      return NextResponse.json({ error: "Failed to update" }, { status: 500 });
+    }
+  }
+
+  // User: edit own declined submission and resubmit as pending
+  const id = String(body.id || body.resourceId || "").trim();
   if (!id) return NextResponse.json({ error: "Missing id" }, { status: 400 });
-  if (!["published", "declined", "pending", "in_review"].includes(status)) return NextResponse.json({ error: "Invalid status" }, { status: 400 });
-  if (status === "declined" && notes.length < 10) return NextResponse.json({ error: "Decline notes required (at least 10 characters)." }, { status: 400 });
+  // fetch owner check
   try {
+    const { rows: existing } = await pool.query(`select id, user_id, status from public.resources where id=$1`, [id]);
+    if (!existing.length) return NextResponse.json({ error: "Not found" }, { status: 404 });
+    const ownerId = String(existing[0].user_id);
+    if (ownerId !== String(sess.id) && !isAdmin) return NextResponse.json({ error: "Forbidden — not owner" }, { status: 403 });
+    if (!isAdmin && existing[0].status !== "declined") return NextResponse.json({ error: "Only declined submissions can be edited" }, { status: 400 });
+
+    const title = String(body.title || "").trim().slice(0, 120);
+    const abstract = String(body.abstract || body.summary || "").trim().slice(0, 5000);
+    const type = String(body.type || "").trim().slice(0, 80);
+    const collection = String(body.collection || "research_outputs").trim();
+    const author = String(body.author || sess.name).trim().slice(0, 200);
+    const date = String(body.date || "").trim();
+    const licensing = String(body.licensing || "CC BY 4.0 (Open)").trim();
+    const geography = Array.isArray(body.geography) ? body.geography.map((v: any) => String(v)).join(", ") : String(body.geography || "").slice(0, 500);
+    const themes = Array.isArray(body.themes) ? body.themes.map((v: any) => String(v)).join(", ") : String(body.themes || "").slice(0, 500);
+    const cluster = String(body.cluster || "").trim().slice(0, 100);
+    const pathway = String(body.pathway || "").trim().slice(0, 100);
+    const audience = Array.isArray(body.audience) ? body.audience.map((v: any) => String(v)).join(", ") : String(body.audience || "").slice(0, 500);
+
+    if (title.length < 8) return NextResponse.json({ error: "Title must be at least 8 characters." }, { status: 400 });
+    if (abstract.length < 30) return NextResponse.json({ error: "Abstract must be at least 30 characters." }, { status: 400 });
+    if (!type) return NextResponse.json({ error: "Resource type required." }, { status: 400 });
+
+    const slug = slugify(title);
+    const summary = abstract;
     const { rows } = await pool.query(
-      `update public.resources set status=$1, review_notes=$2, reviewed_at=now(), updated_at=now() where id=$3 returning id, status, review_notes`,
-      [status, status === "declined" ? notes : null, id]
+      `update public.resources set title=$1, slug=$2, summary=$3, abstract=$4, collection=$5, content_type=$6, author_name=$7, license=$8, geography=$9, themes=$10, cluster=$11, pathway=$12, audience=$13, publication_date=$14, status='pending', review_notes=null, updated_at=now() where id=$15 returning id, title, slug, status, created_at, review_notes`,
+      [title, slug, summary, abstract, collection, type, author, licensing, geography, themes, cluster, pathway, audience, date, id]
     );
-    if (!rows.length) return NextResponse.json({ error: "Not found" }, { status: 404 });
     return NextResponse.json({ ok: true, resource: rows[0] });
   } catch (e) {
-    console.error("[resources PATCH]", e);
-    return NextResponse.json({ error: "Failed to update" }, { status: 500 });
+    console.error("[resources PATCH edit]", e);
+    return NextResponse.json({ error: "Failed to update resource." }, { status: 500 });
   }
 }
 

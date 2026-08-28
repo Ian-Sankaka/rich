@@ -101,6 +101,7 @@ export default function UserDashboardPage() {
   const [contributeOpen, setContributeOpen] = useState(false);
   const [query, setQuery] = useState("");
   const [selected, setSelected] = useState<Submission | null>(null);
+  const [editingId, setEditingId] = useState<string | null>(null);
   const [profileModalOpen, setProfileModalOpen] = useState(false);
   const [displayName, setDisplayName] = useState("");
   const [emailField, setEmailField] = useState("");
@@ -134,6 +135,33 @@ export default function UserDashboardPage() {
   const canNext3 = author.trim().length >= 3 && date !== "" && audience.length > 0 && licensing !== "";
   function toggle(set: React.Dispatch<React.SetStateAction<string[]>>, arr: string[], v: string) {
     set(arr.includes(v) ? arr.filter((x) => x !== v) : [...arr, v]);
+  }
+  function parseCsv(s: string): string[] { return s.split(",").map((x) => x.trim()).filter(Boolean); }
+  function openNew() {
+    setEditingId(null);
+    setStep(1);
+    setTitle(""); setAbstract(""); setType(""); setCollection("research_outputs"); setGeography([]); setThemes([]); setCluster(""); setPathway(""); setAudience([]); setAuthor(""); setDate(""); setLicensing("CC BY 4.0 (Open)");
+    setContributeOpen(true);
+  }
+  function openEdit(s: Submission) {
+    setEditingId(s.id);
+    setTitle(s.title);
+    setAbstract(s.abstract || "");
+    setType(s.type || "");
+    // collection value = key
+    const collMap: Record<string, string> = { "Research Outputs": "research_outputs", "Innovation Case Studies": "innovation_case_studies", "Ecosystem Insights": "ecosystem_insights", "Policy Resources": "policy_resources" };
+    setCollection(collMap[s.collection] || "research_outputs");
+    setGeography(parseCsv(s.geography || ""));
+    setThemes(parseCsv(s.themes || ""));
+    setCluster(s.cluster || "");
+    setPathway(s.pathway || "");
+    setAudience(parseCsv(s.audience || ""));
+    setAuthor(s.author || "");
+    setDate(s.publicationDate || "");
+    setLicensing(s.licensing || "CC BY 4.0 (Open)");
+    setStep(1);
+    setContributeOpen(true);
+    setSelected(null);
   }
 
   React.useLayoutEffect(() => {
@@ -265,7 +293,32 @@ export default function UserDashboardPage() {
       return;
     }
     setSubmitting(true);
-    const payload = { title, abstract, type, collection, geography, themes, cluster, pathway, audience, author, date, licensing };
+    const payload: any = { title, abstract, type, collection, geography, themes, cluster, pathway, audience, author, date, licensing };
+    // Edit existing declined submission -> PATCH as owner, resubmit as pending
+    if (editingId) {
+      try {
+        const res = await fetch("/api/resources", { method: "PATCH", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ id: editingId, ...payload }) });
+        const j = await res.json().catch(() => ({}));
+        if (!res.ok) {
+          toast(j.error || "Update failed - please retry", "error");
+          setSubmitting(false);
+          return;
+        }
+        // update local list: keep original created_at, reset to pending, clear reviewNotes
+        setSubs((prev) => prev.map((p) => p.id === editingId ? { ...p, title: title.trim(), collection: COLLECTIONS.find((c)=>c.v===collection)?.l || collection, status: "pending" as Status, excerpt: abstract.trim().slice(0, 140) + (abstract.length > 140 ? "…" : ""), abstract: abstract.trim(), type, geography: geography.join(", "), themes: themes.join(", "), cluster, pathway, audience: audience.join(", "), licensing, publicationDate: date, reviewNotes: "", isNew: true } : p));
+        setContributeOpen(false);
+        setEditingId(null);
+        setStep(1);
+        setTitle(""); setAbstract(""); setType(""); setGeography([]); setThemes([]); setCluster(""); setPathway(""); setAudience([]); setAuthor(""); setDate(""); setLicensing("CC BY 4.0 (Open)");
+        setSubmitting(false);
+        toast("Submission updated — pending review again", "success");
+        return;
+      } catch {
+        toast("Network error", "error");
+        setSubmitting(false);
+        return;
+      }
+    }
     let serverResource: any = null;
     try {
       const res = await fetch("/api/resources", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(payload) });
@@ -309,6 +362,7 @@ export default function UserDashboardPage() {
     setSubs((prev) => [n, ...prev]);
     setFilter("all");
     setContributeOpen(false);
+    setEditingId(null);
     setStep(1);
     setTitle(""); setAbstract(""); setType(""); setGeography([]); setThemes([]); setCluster(""); setPathway(""); setAudience([]); setAuthor(""); setDate(""); setLicensing("CC BY 4.0 (Open)");
     setSubmitting(false);
@@ -382,7 +436,7 @@ export default function UserDashboardPage() {
                 <p className="mt-2 max-w-2xl text-[15px] font-light leading-6 text-white/80">Submit resources, track review status, and see your published work live in the repository.</p>
               </div>
               <div className="flex shrink-0 gap-3">
-                <button onClick={() => { setStep(1); setContributeOpen(true); }} className="inline-flex items-center justify-center gap-2 rounded-[4px] bg-white px-6 py-3 text-[15px] font-bold text-[#1a3a1a] hover:bg-white/90 transition-all cursor-pointer"><Plus className="h-4 w-4" /> Contribute Resource</button>
+                <button onClick={openNew} className="inline-flex items-center justify-center gap-2 rounded-[4px] bg-white px-6 py-3 text-[15px] font-bold text-[#1a3a1a] hover:bg-white/90 transition-all cursor-pointer"><Plus className="h-4 w-4" /> Contribute Resource</button>
                 <Link href="/collections" className="hidden sm:inline-flex items-center justify-center rounded-[4px] border border-white/20 px-6 py-3 text-[15px] font-bold text-white hover:bg-white/10 transition-colors">Browse</Link>
               </div>
             </div>
@@ -448,6 +502,9 @@ export default function UserDashboardPage() {
                   </div>
                   <div className="flex shrink-0 gap-2 sm:ml-auto">
                     <button onClick={(e) => { e.stopPropagation(); setSelected(s); }} className="rounded-[4px] border border-[var(--border)] bg-white dark:bg-white/5 px-4 py-2.5 text-[14px] font-bold text-[var(--text-dark)] hover:border-[#4a8c3f] transition-colors">View</button>
+                    {s.status === "declined" && (
+                      <button onClick={(e) => { e.stopPropagation(); openEdit(s); }} className="rounded-[4px] bg-[#1a3a1a] px-4 py-2.5 text-[14px] font-bold text-white hover:bg-black transition-colors">Edit & resubmit</button>
+                    )}
                   </div>
                 </div>
               ))}
@@ -457,7 +514,7 @@ export default function UserDashboardPage() {
                     <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-[#e8f3e5] dark:bg-[#14311a] text-[#4a8c3f]"><Plus className="h-6 w-6" /></div>
                     <h4 className="mt-4 text-[18px] font-bold text-[var(--text-dark)]">No submissions yet</h4>
                     <p className="mt-1 text-[15px] text-[var(--text-mid)]">Start by adding your first article. It will appear here with its review status.</p>
-                    <button onClick={() => { setStep(1); setContributeOpen(true); }} className="mt-5 inline-flex items-center justify-center gap-2 rounded-[4px] bg-[#4a8c3f] px-6 py-3 text-[15px] font-bold text-white hover:bg-[#2d5a27] transition-colors cursor-pointer"><Plus className="h-4 w-4" /> Contribute Resource</button>
+                    <button onClick={openNew} className="mt-5 inline-flex items-center justify-center gap-2 rounded-[4px] bg-[#4a8c3f] px-6 py-3 text-[15px] font-bold text-white hover:bg-[#2d5a27] transition-colors cursor-pointer"><Plus className="h-4 w-4" /> Contribute Resource</button>
                   </div>
                 </div>
               )}
@@ -558,21 +615,25 @@ export default function UserDashboardPage() {
               )}
               <div className="rounded-[12px] bg-[var(--off-white)] dark:bg-white/5 border border-[var(--border)] p-4">
                 <p className="text-[12px] font-bold uppercase tracking-widest text-[var(--text-light)]">Status</p>
-                <p className="mt-1 text-[14px] leading-6 text-[var(--text-mid)]">{selected.status === "pending" ? "Your submission is awaiting review. Editorial team will review within 4 weeks." : selected.status === "in_review" ? "With editors — you'll be notified when a decision is made." : selected.status === "published" ? "Published — discoverable in collections and search." : selected.reviewNotes ? "Declined — see notes above." : "Declined — contact editorial team for feedback."}</p>
+                <p className="mt-1 text-[14px] leading-6 text-[var(--text-mid)]">{selected.status === "pending" ? "Your submission is awaiting review. Editorial team will review within 4 weeks." : selected.status === "in_review" ? "With editors — you'll be notified when a decision is made." : selected.status === "published" ? "Published — discoverable in collections and search." : selected.reviewNotes ? "Declined — see notes above. Fix and resubmit." : "Declined — contact editorial team for feedback."}</p>
               </div>
+              {selected.status === "declined" && (
+                <button onClick={() => openEdit(selected)} className="w-full rounded-[4px] bg-[#1a3a1a] px-6 py-3 text-[14px] font-bold text-white hover:bg-black transition-colors">Edit to fix & resubmit →</button>
+              )}
             </div>
           </div>
         </div>
       )}
       {contributeOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-          <div onClick={() => setContributeOpen(false)} className="absolute inset-0 bg-black/50 backdrop-blur-sm" />
+          <div onClick={() => { setContributeOpen(false); setEditingId(null); }} className="absolute inset-0 bg-black/50 backdrop-blur-sm" />
           <div className="relative w-full max-w-[880px] max-h-[90vh] overflow-auto rounded-[16px] bg-[#f7f6f4] dark:bg-[#070d07] border border-[#e8ece8] dark:border-white/10 shadow-2xl animate-[toast-in_0.3s_ease] flex flex-col">
             {/* header like /submit */}
             <div className="shrink-0 bg-[#1a3a1a] border-b border-white/5 px-6 lg:px-8 py-8">
-              <p className="text-[14px] font-bold tracking-[0.20em] uppercase text-[#6db862]">Contribution · Phase 1 intake</p>
-              <h3 className="mt-2 text-[28px] font-medium leading-none text-white" style={{ fontFamily: "Playfair Display, serif" }}>Contribute Resource</h3>
-              <p className="mt-2 max-w-[660px] text-[14px] font-light leading-6 text-white/80">Same form as Submit — reviewed within 4 weeks. Your submission will appear in My Submissions as Pending.</p>
+              <p className="text-[14px] font-bold tracking-[0.20em] uppercase text-[#6db862]">{editingId ? "Editing · Fix & resubmit" : "Contribution · Phase 1 intake"}</p>
+              <h3 className="mt-2 text-[28px] font-medium leading-none text-white" style={{ fontFamily: "Playfair Display, serif" }}>{editingId ? "Edit Submission" : "Contribute Resource"}</h3>
+              <p className="mt-2 max-w-[660px] text-[14px] font-light leading-6 text-white/80">{editingId ? "Fix based on decline notes below, then resubmit. It will return to Pending for review." : "Same form as Submit — reviewed within 4 weeks. Your submission will appear in My Submissions as Pending."}</p>
+              {editingId && (() => { const ed = subs.find((x) => x.id === editingId); return ed?.reviewNotes ? <div className="mt-4 rounded-[8px] bg-red-500/20 border border-red-400/30 p-3"><p className="text-[12px] font-bold uppercase tracking-widest text-red-200">Decline notes to address</p><p className="mt-1 text-[13px] leading-6 text-white/90 whitespace-pre-wrap">{ed.reviewNotes}</p></div> : null; })()}
             </div>
             {/* stepper */}
             <div className="shrink-0 bg-white dark:bg-[#1a221a] border-b border-[#e8ece8] dark:border-white/10 px-6 lg:px-8 pt-6 pb-4">
@@ -660,10 +721,10 @@ export default function UserDashboardPage() {
               <button type="button" onClick={() => setStep((s) => Math.max(1, s - 1))} disabled={step === 1} className="inline-flex items-center gap-2 rounded-[4px] border border-[#d6d9d6] bg-white px-5 py-2.5 text-[12px] font-bold tracking-[0.06em] uppercase disabled:opacity-40 hover:border-[#4a8c3f]">← Back</button>
               <div className="flex items-center gap-3">
                 <span className="hidden sm:inline text-[12px] text-[#9aa09a]">Step {step} of 4</span>
-                {step < 4 ? <button type="button" onClick={handleNext} className="inline-flex items-center gap-2 rounded-[4px] bg-[#4a8c3f] px-6 py-3 text-[12px] font-bold tracking-[0.07em] uppercase text-white hover:bg-[#2d5a27]">Continue →</button> : <button type="button" onClick={handleContributeSubmit} disabled={submitting} className="inline-flex items-center gap-2 rounded-[4px] bg-[#1a3a1a] px-6 py-3 text-[12px] font-bold tracking-[0.07em] uppercase text-white hover:bg-black disabled:opacity-40">{submitting ? "Submitting…" : "Submit for review →"}</button>}
+                {step < 4 ? <button type="button" onClick={handleNext} className="inline-flex items-center gap-2 rounded-[4px] bg-[#4a8c3f] px-6 py-3 text-[12px] font-bold tracking-[0.07em] uppercase text-white hover:bg-[#2d5a27]">Continue →</button> : <button type="button" onClick={handleContributeSubmit} disabled={submitting} className="inline-flex items-center gap-2 rounded-[4px] bg-[#1a3a1a] px-6 py-3 text-[12px] font-bold tracking-[0.07em] uppercase text-white hover:bg-black disabled:opacity-40">{submitting ? (editingId ? "Saving…" : "Submitting…") : editingId ? "Save & resubmit →" : "Submit for review →"}</button>}
               </div>
             </div>
-            <button onClick={() => setContributeOpen(false)} className="absolute top-3 right-3 hidden">x</button>
+            <button onClick={() => { setContributeOpen(false); setEditingId(null); }} className="absolute top-3 right-3 hidden">x</button>
           </div>
         </div>
       )}
