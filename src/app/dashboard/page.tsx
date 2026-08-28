@@ -543,13 +543,16 @@ export default function DashboardPage() {
                   ["Publication date", selected.publicationDate || "—"],
                   ["Licensing", selected.licensing || "—"],
                   ["Submitted", selected.dateTime || selected.date],
-                  ["Status", selected.status],
                 ].map(([k, v]) => (
-                  <div key={k} className="grid grid-cols-[150px_1fr] gap-3 px-4 py-3 text-[13px]">
-                    <span className="font-bold uppercase tracking-wide text-[var(--text-light)]">{k}</span>
-                    <span className="text-[var(--text-dark)] break-words">{String(v)}</span>
+                  <div key={k} className="grid grid-cols-[150px_1fr] gap-3 px-4 py-3">
+                    <span className="text-[12px] font-bold uppercase tracking-wide text-[var(--text-light)]">{k}</span>
+                    <span className="text-[14px] font-medium leading-6 text-[var(--text-dark)] break-words">{String(v)}</span>
                   </div>
                 ))}
+                <div className="grid grid-cols-[150px_1fr] gap-3 px-4 py-3 items-center">
+                  <span className="text-[12px] font-bold uppercase tracking-wide text-[var(--text-light)]">Status</span>
+                  <span><StatusBadge s={selected.status} /></span>
+                </div>
               </div>
               <div className="rounded-[12px] bg-[var(--off-white)] dark:bg-white/5 border border-[var(--border)] p-4">
                 <p className="text-[14px] font-bold uppercase tracking-wide text-[var(--text-light)]">Decision</p>
@@ -558,11 +561,6 @@ export default function DashboardPage() {
                   <button onClick={() => act(selected.id, "published")} className="flex-1 rounded-[4px] bg-[#4a8c3f] py-3 text-[15px] font-bold text-white hover:bg-[#2d5a27] hover:shadow transition-all">Publish to repository</button>
                   <button onClick={() => act(selected.id, "declined")} className="rounded-[4px] border border-red-200 bg-white px-4 py-3 text-[15px] font-bold text-red-600 hover:bg-red-50 dark:border-red-900 dark:bg-red-950/40 dark:text-red-300 transition-colors">Decline</button>
                 </div>
-              </div>
-              <div className="flex flex-wrap items-center gap-3 pt-2 border-t border-[var(--border)]">
-                <Link href={`/collections/${selected.collection.toLowerCase().replace(/\s+/g, "_")}`} className="text-[14px] font-bold text-[#4a8c3f] hover:underline">View collection →</Link>
-                <span className="text-[var(--text-light)]">•</span>
-                <span className="text-[13px] text-[var(--text-light)]">ID: {selected.id.slice(0, 8)}…</span>
               </div>
             </div>
           </div>
