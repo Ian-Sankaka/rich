@@ -9,7 +9,7 @@ export default async function ResourcePage({ params }: { params: Promise<{ slug:
   let r: any = null;
   try {
     const { rows } = await pool.query(
-      `select id, title, slug, summary, abstract, collection, content_type, author_name, author_email, license, geography, themes, cluster, pathway, audience, publication_date, is_featured, created_at, updated_at from public.resources where slug=$1 or id::text=$1 limit 1`,
+      `select id, title, slug, summary, abstract, collection, content_type, author_name, author_email, license, geography, themes, cluster, pathway, audience, publication_date, is_featured, created_at, updated_at from public.resources where slug=$1 or slug like $1 || '-%' or id::text=$1 limit 1`,
       [slug]
     );
     r = rows[0] || null;
