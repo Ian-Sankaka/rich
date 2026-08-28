@@ -42,26 +42,14 @@ export async function POST(req: NextRequest) {
 
   try {
     const { rows } = await pool.query(
-      `insert into public.resources (id, title, slug, summary, collection, content_type, status, author_id, created_at, updated_at)
-       values (gen_random_uuid()::text, $1,$2,$3,$4,$5,$6,$7, now(), now()) returning id, title, slug, status, created_at`,
-      [title, slug, summary, collection, contentType, status, sess.id]
+      `insert into public.resources (title, slug, summary, abstract, collection, content_type, status, user_id, author_name, author_email, created_at, updated_at)
+       values ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10, now(), now()) returning id, title, slug, status, created_at`,
+      [title, slug, summary, abstract, collection, contentType, status, sess.id, author, sess.email]
     );
     return NextResponse.json({ ok: true, resource: rows[0] });
   } catch (e: unknown) {
     console.error("[resources POST]", e);
-    // fallback if gen_random_uuid not available, use cuid-like
-    try {
-      const fallbackId = `res_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`;
-      const { rows } = await pool.query(
-        `insert into public.resources (id, title, slug, summary, collection, content_type, status, author_id, created_at, updated_at)
-         values ($1,$2,$3,$4,$5,$6,$7,$8, now(), now()) returning id, title, slug, status, created_at`,
-        [fallbackId, title, slug, summary, collection, contentType, status, sess.id]
-      );
-      return NextResponse.json({ ok: true, resource: rows[0] });
-    } catch (e2) {
-      console.error("[resources POST fallback]", e2);
-      return NextResponse.json({ error: "Failed to save resource." }, { status: 500 });
-    }
+    return NextResponse.json({ error: "Failed to save resource." }, { status: 500 });
   }
 }
 
@@ -76,8 +64,8 @@ export async function GET(req: NextRequest) {
 
   try {
     const sql = mine
-      ? `select id, title, slug, summary, collection, content_type, status, author_id, created_at from public.resources where author_id = $1 order by created_at desc limit 100`
-      : `select id, title, slug, summary, collection, content_type, status, author_id, created_at from public.resources order by created_at desc limit 100`;
+      ? `select id, title, slug, summary, collection, content_type, status, user_id, created_at from public.resources where user_id = $1 order by created_at desc limit 100`
+      : `select id, title, slug, summary, collection, content_type, status, user_id, created_at from public.resources order by created_at desc limit 100`;
     const params = mine ? [sess.id] : [];
     const { rows } = await pool.query(sql, params);
     return NextResponse.json({ resources: rows });
