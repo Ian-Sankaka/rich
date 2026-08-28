@@ -13,6 +13,8 @@ type Submission = {
   title: string;
   collection: string;
   date: string;
+  dateTime: string;
+  createdAtRaw: string;
   status: Status;
   excerpt: string;
 };
@@ -136,14 +138,19 @@ export default function UserDashboardPage() {
       .then((r) => (r.ok ? r.json() : null))
       .then((j) => {
         if (!j?.resources?.length) return;
-        const mapped: Submission[] = j.resources.map((r: any) => ({
-          id: String(r.id),
-          title: String(r.title),
-          collection: r.collection === "research_outputs" ? "Research Outputs" : r.collection === "innovation_case_studies" ? "Innovation Case Studies" : r.collection === "ecosystem_insights" ? "Ecosystem Insights" : r.collection === "policy_resources" ? "Policy Resources" : String(r.collection),
-          date: new Date(r.created_at).toLocaleDateString("en-GB", { day: "2-digit", month: "short", year: "numeric" }),
-          status: (r.status === "pending" ? "pending" : r.status === "in_review" ? "in_review" : r.status === "published" ? "published" : "pending") as Status,
-          excerpt: String(r.summary || "").slice(0, 140) + (String(r.summary || "").length > 140 ? "…" : ""),
-        }));
+        const mapped: Submission[] = j.resources.map((r: any) => {
+          const d = new Date(r.created_at);
+          return {
+            id: String(r.id),
+            title: String(r.title),
+            collection: r.collection === "research_outputs" ? "Research Outputs" : r.collection === "innovation_case_studies" ? "Innovation Case Studies" : r.collection === "ecosystem_insights" ? "Ecosystem Insights" : r.collection === "policy_resources" ? "Policy Resources" : String(r.collection),
+            date: d.toLocaleDateString("en-GB", { day: "2-digit", month: "short", year: "numeric" }),
+            dateTime: d.toLocaleString("en-GB", { day: "2-digit", month: "short", year: "numeric", hour: "2-digit", minute: "2-digit", hour12: true }),
+            createdAtRaw: String(r.created_at),
+            status: (r.status === "pending" ? "pending" : r.status === "in_review" ? "in_review" : r.status === "published" ? "published" : "pending") as Status,
+            excerpt: String(r.summary || "").slice(0, 140) + (String(r.summary || "").length > 140 ? "…" : ""),
+          };
+        });
         setSubs(mapped);
       })
       .catch(() => {});
@@ -216,18 +223,24 @@ export default function UserDashboardPage() {
     }
     setSubmitting(true);
     const payload = { title, abstract, type, collection, geography, themes, cluster, pathway, audience, author, date, licensing };
+    let serverResource: any = null;
     try {
       const res = await fetch("/api/resources", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(payload) });
-      // treat 404 (no endpoint yet) as success for local dashboard
       if (!res.ok && res.status !== 404) {
         const j = await res.json().catch(() => ({}));
         toast(j.error || "Submission failed - please retry", "error");
         setSubmitting(false);
         return;
       }
+      if (res.ok) {
+        const j = await res.json().catch(() => null);
+        if (j?.resource) serverResource = j.resource;
+      }
     } catch {}
-    const now = new Date().toLocaleDateString("en-GB", { day: "2-digit", month: "short", year: "numeric" });
-    const n: Submission = { id: String(Date.now()), title: title.trim(), collection: COLLECTIONS.find((c)=>c.v===collection)?.l || collection, date: now, status: "pending", excerpt: abstract.trim().slice(0, 140) + (abstract.length > 140 ? "…" : "") };
+    const srcDate = serverResource?.created_at ? new Date(serverResource.created_at) : new Date();
+    const now = srcDate.toLocaleDateString("en-GB", { day: "2-digit", month: "short", year: "numeric" });
+    const nowTime = srcDate.toLocaleString("en-GB", { day: "2-digit", month: "short", year: "numeric", hour: "2-digit", minute: "2-digit", hour12: true });
+    const n: Submission = { id: String(serverResource?.id || Date.now()), title: title.trim(), collection: COLLECTIONS.find((c)=>c.v===collection)?.l || collection, date: now, dateTime: nowTime, createdAtRaw: String(serverResource?.created_at || srcDate.toISOString()), status: "pending", excerpt: abstract.trim().slice(0, 140) + (abstract.length > 140 ? "…" : "") };
     setSubs((prev) => [n, ...prev]);
     setFilter("all");
     setContributeOpen(false);
@@ -364,7 +377,7 @@ export default function UserDashboardPage() {
                       <p className="text-[16px] font-semibold leading-6 text-[var(--text-dark)] group-hover:text-[#4a8c3f] transition-colors line-clamp-1">{s.title}</p>
                       <StatusBadge s={s.status} />
                     </div>
-                    <p className="mt-1.5 text-[14px] font-medium text-[var(--text-light)]">{s.collection} • {s.date}</p>
+                    <p className="mt-1.5 text-[14px] font-medium text-[var(--text-light)]">{s.collection} • {s.dateTime || s.date}</p>
                     <p className="mt-2 text-[16px] font-light leading-6 text-[var(--text-mid)] line-clamp-1">{s.excerpt}</p>
                   </div>
                   <div className="flex shrink-0 gap-2 sm:ml-auto">
@@ -431,7 +444,7 @@ export default function UserDashboardPage() {
           <div onClick={() => setSelected(null)} className="flex-1 bg-black/40 backdrop-blur-sm animate-[toast-in_0.2s_ease]" />
           <div className="w-full max-w-[520px] bg-white dark:bg-[#0f1410] border-l border-[var(--border)] shadow-2xl overflow-auto animate-[toast-in_0.32s_ease]">
             <div className="sticky top-0 bg-white dark:bg-[#0f1410] border-b border-[var(--border)] p-6 flex items-start justify-between gap-4">
-              <div><p className="text-[13px] font-bold uppercase tracking-widest text-[var(--text-light)]">{selected.collection}</p><h3 className="mt-1 text-[20px] font-bold leading-tight text-[var(--text-dark)]">{selected.title}</h3><p className="mt-1 text-[14px] text-[var(--text-light)]">{selected.date} • <StatusBadge s={selected.status} /></p></div>
+              <div><p className="text-[13px] font-bold uppercase tracking-widest text-[var(--text-light)]">{selected.collection}</p><h3 className="mt-1 text-[20px] font-bold leading-tight text-[var(--text-dark)]">{selected.title}</h3><p className="mt-1 text-[14px] text-[var(--text-light)]">{selected.dateTime || selected.date} • <StatusBadge s={selected.status} /></p><p className="mt-1 text-[12px] text-[var(--text-light)]">Submitted: {selected.dateTime || selected.date} {selected.createdAtRaw ? `• ${new Date(selected.createdAtRaw).toLocaleString()}` : ""}</p></div>
               <button onClick={() => setSelected(null)} className="rounded-full border border-[var(--border)] p-2 hover:bg-[var(--off-white)] transition-colors">✕</button>
             </div>
             <div className="p-6 space-y-4">

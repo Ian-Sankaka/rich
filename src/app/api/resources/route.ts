@@ -61,13 +61,33 @@ export async function GET(req: NextRequest) {
 
   const url = new URL(req.url);
   const mine = url.searchParams.get("mine") === "1";
+  const isAdmin = sess.email.toLowerCase() === "lead@rich.africa" || sess.email.toLowerCase() === "admin@rich.africa";
 
   try {
-    const sql = mine
-      ? `select id, title, slug, summary, collection, content_type, status, user_id, created_at from public.resources where user_id = $1 order by created_at desc limit 100`
-      : `select id, title, slug, summary, collection, content_type, status, user_id, created_at from public.resources order by created_at desc limit 100`;
-    const params = mine ? [sess.id] : [];
-    const { rows } = await pool.query(sql, params);
+    // mine=1 → only caller's submissions; otherwise admin sees all, regular users fall back to theirs
+    if (mine) {
+      const { rows } = await pool.query(
+        `select r.id, r.title, r.slug, r.summary, r.collection, r.content_type, r.status, r.user_id, r.author_name, r.author_email, r.created_at, u.name as user_name, u.email as user_email
+         from public.resources r left join public.users u on u.id = r.user_id
+         where r.user_id = $1 order by r.created_at desc limit 100`,
+        [sess.id]
+      );
+      return NextResponse.json({ resources: rows });
+    }
+    if (!isAdmin) {
+      const { rows } = await pool.query(
+        `select r.id, r.title, r.slug, r.summary, r.collection, r.content_type, r.status, r.user_id, r.author_name, r.author_email, r.created_at, u.name as user_name, u.email as user_email
+         from public.resources r left join public.users u on u.id = r.user_id
+         where r.user_id = $1 order by r.created_at desc limit 100`,
+        [sess.id]
+      );
+      return NextResponse.json({ resources: rows });
+    }
+    const { rows } = await pool.query(
+      `select r.id, r.title, r.slug, r.summary, r.collection, r.content_type, r.status, r.user_id, r.author_name, r.author_email, r.created_at, u.name as user_name, u.email as user_email
+       from public.resources r left join public.users u on u.id = r.user_id
+       order by r.created_at desc limit 100`
+    );
     return NextResponse.json({ resources: rows });
   } catch (e) {
     console.error("[resources GET]", e);

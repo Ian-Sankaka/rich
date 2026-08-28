@@ -13,19 +13,22 @@ type Submission = {
   title: string;
   collection: string;
   author: string;
+  authorEmail: string;
   date: string;
+  dateTime: string;
+  createdAtRaw: string;
   status: Status;
   excerpt: string;
   isNew?: boolean;
 };
 
 const initial: Submission[] = [
-  { id: "1", title: "Embedding Indigenous Knowledge in Regional Policy Frameworks", collection: "Policy Resources", author: "A. Okoro", date: "28 Feb 2026", status: "published", excerpt: "Plain-language synthesis of AU/EAC frameworks with NDC alignment checklist. Ready for repository." },
-  { id: "2", title: "Early Warning Systems in the Horn of Africa — LDRI Deployment", collection: "Innovation Case Studies", author: "M. Irura", date: "27 Feb 2026", status: "published", excerpt: "Lived case covering deployment, failures, and scaling pathway for EWS. Primary evidence." },
-  { id: "3", title: "Climate AI Ecosystem Map 2026 — East Africa", collection: "Ecosystem Insights", author: "L. Mutuku", date: "26 Feb 2026", status: "in_review", excerpt: "Sector briefing with funder landscape and trend signals. Awaiting editorial review." },
-  { id: "4", title: "Community Drone Mapping for Flood Resilience — Turkana Pilot", collection: "Innovation Case Studies", author: "J. Kamau", date: "25 Feb 2026", status: "pending", excerpt: "Case study submission via open pathway. Needs consistent structure check." },
-  { id: "5", title: "Responsible AI Governance Toolkit for County Governments", collection: "Policy Resources", author: "S. Njeri", date: "24 Feb 2026", status: "pending", excerpt: "Checklist and template for county-level procurement of climate AI tools." },
-  { id: "6", title: "Smallholder Advisory Chatbot — Scaling from SMS to WhatsApp", collection: "Research Outputs", author: "P. Ochieng", date: "22 Feb 2026", status: "pending", excerpt: "Working paper with plain-language summary and key finding: adoption +18%." },
+  { id: "1", title: "Embedding Indigenous Knowledge in Regional Policy Frameworks", collection: "Policy Resources", author: "A. Okoro", authorEmail: "", date: "28 Feb 2026", dateTime: "28 Feb 2026, 09:00 AM", createdAtRaw: "", status: "published", excerpt: "Plain-language synthesis of AU/EAC frameworks with NDC alignment checklist. Ready for repository." },
+  { id: "2", title: "Early Warning Systems in the Horn of Africa — LDRI Deployment", collection: "Innovation Case Studies", author: "M. Irura", authorEmail: "", date: "27 Feb 2026", dateTime: "27 Feb 2026, 09:00 AM", createdAtRaw: "", status: "published", excerpt: "Lived case covering deployment, failures, and scaling pathway for EWS. Primary evidence." },
+  { id: "3", title: "Climate AI Ecosystem Map 2026 — East Africa", collection: "Ecosystem Insights", author: "L. Mutuku", authorEmail: "", date: "26 Feb 2026", dateTime: "26 Feb 2026, 09:00 AM", createdAtRaw: "", status: "in_review", excerpt: "Sector briefing with funder landscape and trend signals. Awaiting editorial review." },
+  { id: "4", title: "Community Drone Mapping for Flood Resilience — Turkana Pilot", collection: "Innovation Case Studies", author: "J. Kamau", authorEmail: "", date: "25 Feb 2026", dateTime: "25 Feb 2026, 09:00 AM", createdAtRaw: "", status: "pending", excerpt: "Case study submission via open pathway. Needs consistent structure check." },
+  { id: "5", title: "Responsible AI Governance Toolkit for County Governments", collection: "Policy Resources", author: "S. Njeri", authorEmail: "", date: "24 Feb 2026", dateTime: "24 Feb 2026, 09:00 AM", createdAtRaw: "", status: "pending", excerpt: "Checklist and template for county-level procurement of climate AI tools." },
+  { id: "6", title: "Smallholder Advisory Chatbot — Scaling from SMS to WhatsApp", collection: "Research Outputs", author: "P. Ochieng", authorEmail: "", date: "22 Feb 2026", dateTime: "22 Feb 2026, 09:00 AM", createdAtRaw: "", status: "pending", excerpt: "Working paper with plain-language summary and key finding: adoption +18%." },
 ];
 
 function StatusBadge({ s }: { s: Status }) {
@@ -100,22 +103,28 @@ export default function DashboardPage() {
     if (displayName === "" && userName !== "there") setDisplayName(userName);
   }, [userName, displayName]);
 
-  // fetch user-submitted resources and show as New for review
+  // fetch user-submitted resources and show as New for review — admin sees ALL users
   useEffect(() => {
     fetch("/api/resources", { credentials: "include", cache: "no-store" })
       .then((r) => (r.ok ? r.json() : null))
       .then((j) => {
         if (!j?.resources?.length) return;
-        const mapped: Submission[] = j.resources.map((r: any) => ({
-          id: String(r.id),
-          title: String(r.title),
-          collection: r.collection === "research_outputs" ? "Research Outputs" : r.collection === "innovation_case_studies" ? "Innovation Case Studies" : r.collection === "ecosystem_insights" ? "Ecosystem Insights" : r.collection === "policy_resources" ? "Policy Resources" : String(r.collection),
-          author: "Contributor",
-          date: new Date(r.created_at).toLocaleDateString("en-GB", { day: "2-digit", month: "short", year: "numeric" }),
-          status: (r.status === "pending" ? "pending" : r.status === "in_review" ? "in_review" : r.status === "published" ? "published" : "pending") as Status,
-          excerpt: String(r.summary || "").slice(0, 140) + (String(r.summary || "").length > 140 ? "…" : ""),
-          isNew: r.status === "pending",
-        }));
+        const mapped: Submission[] = j.resources.map((r: any) => {
+          const d = new Date(r.created_at);
+          return {
+            id: String(r.id),
+            title: String(r.title),
+            collection: r.collection === "research_outputs" ? "Research Outputs" : r.collection === "innovation_case_studies" ? "Innovation Case Studies" : r.collection === "ecosystem_insights" ? "Ecosystem Insights" : r.collection === "policy_resources" ? "Policy Resources" : String(r.collection),
+            author: String(r.author_name || r.user_name || r.author_email || "Contributor"),
+            authorEmail: String(r.author_email || r.user_email || ""),
+            date: d.toLocaleDateString("en-GB", { day: "2-digit", month: "short", year: "numeric" }),
+            dateTime: d.toLocaleString("en-GB", { day: "2-digit", month: "short", year: "numeric", hour: "2-digit", minute: "2-digit", hour12: true }),
+            createdAtRaw: String(r.created_at),
+            status: (r.status === "pending" ? "pending" : r.status === "in_review" ? "in_review" : r.status === "published" ? "published" : "pending") as Status,
+            excerpt: String(r.summary || "").slice(0, 140) + (String(r.summary || "").length > 140 ? "…" : ""),
+            isNew: r.status === "pending",
+          };
+        });
         setSubs((prev) => {
           const existing = new Set(prev.map((p) => p.id));
           const news = mapped.filter((m) => !existing.has(m.id));
@@ -378,7 +387,7 @@ export default function DashboardPage() {
                       {s.isNew && <span className="inline-flex rounded-full bg-[#4a8c3f] text-white px-2.5 py-1 text-[11px] font-bold uppercase tracking-wide animate-pulse">New</span>}
                       <StatusBadge s={s.status} />
                     </div>
-                    <p className="mt-1.5 text-[14px] font-medium text-[var(--text-light)]">{s.collection} • {s.author} • {s.date}</p>
+                    <p className="mt-1.5 text-[14px] font-medium text-[var(--text-light)]">{s.collection} • {s.author}{s.authorEmail ? ` (${s.authorEmail})` : ""} • {s.dateTime || s.date}</p>
                     <p className="mt-2 text-[16px] font-light leading-6 text-[var(--text-mid)] line-clamp-1">{s.excerpt}</p>
                   </div>
                   <div className="flex shrink-0 gap-2 sm:ml-auto">
@@ -472,7 +481,8 @@ export default function DashboardPage() {
               <div>
                 <p className="text-[13px] font-bold uppercase tracking-widest text-[var(--text-light)]">{selected.collection}</p>
                 <h3 className="mt-1 text-[20px] font-bold leading-tight text-[var(--text-dark)]">{selected.title}</h3>
-                <p className="mt-1 text-[14px] text-[var(--text-light)]">{selected.author} • {selected.date} • <StatusBadge s={selected.status} /></p>
+                <p className="mt-1 text-[14px] text-[var(--text-light)]">{selected.author}{selected.authorEmail ? ` (${selected.authorEmail})` : ""} • {selected.dateTime || selected.date} • <StatusBadge s={selected.status} /></p>
+                <p className="mt-1 text-[12px] text-[var(--text-light)]">Submitted: {selected.dateTime || selected.date} {selected.createdAtRaw ? `• ${new Date(selected.createdAtRaw).toLocaleString()}` : ""}</p>
               </div>
               <button onClick={() => setSelected(null)} className="rounded-full border border-[var(--border)] p-2 hover:bg-[var(--off-white)] transition-colors">✕</button>
             </div>
