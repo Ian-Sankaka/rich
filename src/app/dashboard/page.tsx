@@ -102,7 +102,7 @@ export default function DashboardPage() {
 
   // fetch user-submitted resources and show as New for review
   useEffect(() => {
-    fetch("/api/resources")
+    fetch("/api/resources", { credentials: "include", cache: "no-store" })
       .then((r) => (r.ok ? r.json() : null))
       .then((j) => {
         if (!j?.resources?.length) return;

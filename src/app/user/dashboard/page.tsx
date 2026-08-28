@@ -132,7 +132,7 @@ export default function UserDashboardPage() {
 
   // hydrate user's own submissions from DB — persists across logouts/logins
   useEffect(() => {
-    fetch("/api/resources?mine=1")
+    fetch("/api/resources?mine=1", { credentials: "include", cache: "no-store" })
       .then((r) => (r.ok ? r.json() : null))
       .then((j) => {
         if (!j?.resources?.length) return;
