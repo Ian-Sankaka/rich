@@ -4,6 +4,19 @@ import { ThemeProvider } from "@/components/ThemeProvider";
 import { ToastProvider } from "@/components/ToastProvider";
 import Link from "next/link";
 import SiteHeader from "@/components/SiteHeader";
+import { Inter, Bricolage_Grotesque } from "next/font/google";
+
+const inter = Inter({
+  subsets: ["latin"],
+  variable: "--font-inter",
+  display: "swap",
+});
+
+const bricolage = Bricolage_Grotesque({
+  subsets: ["latin"],
+  variable: "--font-heading",
+  display: "swap",
+});
 
 export const metadata: Metadata = {
   title: "RICH Knowledge Repository",
@@ -37,13 +50,13 @@ function TopBar() {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" suppressHydrationWarning>
+    <html lang="en" suppressHydrationWarning className={`${inter.variable} ${bricolage.variable}`}>
       <head>
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
         <link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,300;0,400;0,500;0,700;0,900;1,300;1,400&family=Playfair+Display:wght@400;500;600&family=Space+Grotesk:wght@400;500;700&display=swap" rel="stylesheet" />
         <script dangerouslySetInnerHTML={{ __html: `(function(){try{var t=localStorage.getItem('rich-theme');var d=t? t==='dark' : window.matchMedia('(prefers-color-scheme: dark)').matches; document.documentElement.classList.toggle('dark', d);}catch(e){}})()` }} />
-        <script dangerouslySetInnerHTML={{ __html: `(function(){try{if(location.pathname.startsWith('/dashboard')){document.documentElement.classList.add('dashboard-hide');}}catch(e){}} )()` }} />
+        <script dangerouslySetInnerHTML={{ __html: `(function(){try{function a(){var p=location.pathname;var h=p.startsWith('/dashboard')||p==='/login'||p==='/register'||p.startsWith('/login/')||p.startsWith('/register/');document.documentElement.classList.toggle('dashboard-hide',h);}a();var ps=history.pushState;history.pushState=function(){var r=ps.apply(this,arguments);a();return r;};var rs=history.replaceState;history.replaceState=function(){var r=rs.apply(this,arguments);a();return r;};window.addEventListener('popstate',a);}catch(e){}})()` }} />
         <style dangerouslySetInnerHTML={{ __html: `html.dashboard-hide header, html.dashboard-hide footer, html.dashboard-hide #site-topbar{display:none !important}` }} />
       </head>
       <body suppressHydrationWarning className="bg-[var(--background)] text-[var(--foreground)] antialiased">

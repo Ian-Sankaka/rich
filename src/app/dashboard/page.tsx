@@ -118,6 +118,7 @@ export default function DashboardPage() {
         if (u) {
           if (u.name) { setUserName(String(u.name).split(" ")[0]); setDisplayName(String(u.name)); }
           if (u.email) { setUserEmail(String(u.email)); setEmailField(String(u.email)); }
+          if (u.avatar) setAvatar(String(u.avatar));
         } else {
           setDisplayName("Administrator");
           setEmailField("lead@rich.africa");
@@ -241,18 +242,35 @@ export default function DashboardPage() {
     r.readAsDataURL(f);
   };
 
-  const saveProfile = () => {
-    if (!displayName.trim().slice(0,100)) { toast("Name is required", "error"); return; }
+  const saveProfile = async () => {
+    if (!displayName.trim().slice(0, 100)) { toast("Name is required", "error"); return; }
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(emailField)) { toast("Enter a valid email", "error"); return; }
     setSavingProfile(true);
-    setTimeout(() => {
-      // profile is local-only UI for now; don't store in cookie (httpOnly session holds truth)
-      setUserName(displayName.trim().slice(0,100).split(" ")[0]);
-      setUserEmail(emailField.trim().toLowerCase().slice(0,254));
-      setSavingProfile(false);
-      toast("Profile saved (local)", "success");
+    try {
+      const res = await fetch("/api/me", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name: displayName.trim().slice(0, 100), email: emailField.trim().toLowerCase().slice(0, 254), avatar }),
+      });
+      const j = await res.json().catch(() => ({}));
+      if (!res.ok) {
+        toast(j.error || "Failed to save profile", "error");
+        setSavingProfile(false);
+        return;
+      }
+      const u = j.user;
+      setUserName(String(u.name).split(" ")[0]);
+      setUserEmail(String(u.email));
+      setDisplayName(String(u.name));
+      setEmailField(String(u.email));
+      if (u.avatar) setAvatar(String(u.avatar));
+      else if (avatar === null) setAvatar(null);
+      toast("Profile saved", "success");
       setProfileModalOpen(false);
-    }, 500);
+    } catch {
+      toast("Network error", "error");
+    }
+    setSavingProfile(false);
   };
 
   const resetPw = () => {
@@ -331,12 +349,12 @@ export default function DashboardPage() {
                 // eslint-disable-next-line @next/next/no-img-element
                 <img src={avatar} alt="" className="h-full w-full object-cover" />
               ) : (
-                "A"
+                (displayName || userName || "A")[0]?.toUpperCase() || "A"
               )}
             </div>
             <div className="flex-1 min-w-0">
-              <p className="text-[16px] font-bold leading-none text-[var(--text-dark)]" style={{ fontFamily: "Roboto, sans-serif" }}>Administrator</p>
-              <p className="text-[13px] text-[var(--text-light)] truncate" style={{ fontFamily: "Roboto, sans-serif" }}>Repository Lead</p>
+              <p className="text-[16px] font-bold leading-none text-[var(--text-dark)]" style={{ fontFamily: "Roboto, sans-serif" }}>{displayName || (userName !== "there" ? userName : "Administrator")}</p>
+              <p className="text-[13px] text-[var(--text-light)] truncate" style={{ fontFamily: "Roboto, sans-serif" }}>{emailField || userEmail}</p>
             </div>
             <Settings className="h-4 w-4 text-[var(--text-light)] shrink-0" />
           </button>
@@ -501,7 +519,7 @@ export default function DashboardPage() {
                       // eslint-disable-next-line @next/next/no-img-element
                       <img src={avatar} alt="avatar" className="h-full w-full object-cover" />
                     ) : (
-                      <span className="text-[28px] font-black text-[#4a8c3f]">A</span>
+                      <span className="text-[28px] font-black text-[#4a8c3f]">{(displayName || userName || "A")[0]?.toUpperCase() || "A"}</span>
                     )}
                   </div>
                   <button onClick={() => fileRef.current?.click()} className="absolute -bottom-1 -right-1 rounded-full bg-[#1a3a1a] p-2 text-white shadow hover:bg-[#2d5a27] transition-colors" title="Change image">

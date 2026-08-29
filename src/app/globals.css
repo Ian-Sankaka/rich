@@ -32,8 +32,9 @@
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: 'Roboto', system-ui, sans-serif;
-  --font-display: 'Playfair Display', serif;
+  --font-sans: var(--font-inter), 'Roboto', system-ui, sans-serif;
+  --font-display: var(--font-heading), 'Playfair Display', serif;
+  --font-heading: var(--font-heading), 'Bricolage Grotesque', sans-serif;
 }
 
 * { scrollbar-width: thin; }
@@ -45,7 +46,8 @@ html { scroll-behavior: smooth; }
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: 'Roboto', system-ui, sans-serif;
+  font-family: var(--font-sans);
+  font-feature-settings: "cv02", "cv03", "cv04", "cv11";
 }
 
 /* hide scrollbar for nav overflow */

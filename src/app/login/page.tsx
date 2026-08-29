@@ -33,7 +33,7 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="min-h-[calc(100dvh-62px)] bg-[#f7f6f4] dark:bg-[#0a0f0a] flex font-sans antialiased scroll-mt-0">
+    <div className="min-h-dvh bg-[#f7f6f4] dark:bg-[#0a0f0a] flex font-sans antialiased scroll-mt-0">
       <div className="flex-1 flex items-center justify-center px-6 lg:px-16 py-10">
         <div className="w-full max-w-[560px] animate-[toast-in_0.5s_ease]">
           <div className="relative rounded-[18px] bg-white dark:bg-[#1a221a] border border-transparent dark:border-white/10 px-8 lg:px-10 py-10 lg:py-12 shadow-[0_22px_70px_rgba(59,45,36,0.10)] dark:shadow-none">
@@ -98,6 +98,11 @@ export default function LoginPage() {
             </button>
 
             <p className="mt-8 text-center text-[16px] font-medium text-[#756b62] dark:text-white/60">Don&apos;t have an account? <Link href="/register" className="font-semibold text-[#16a34a] dark:text-[#6db862] hover:underline">Sign up</Link></p>
+          </div>
+          <div className="mt-5 flex items-center justify-center gap-2 px-1 text-[14px] font-medium text-[#8d8278] dark:text-white/50">
+            <Link href="/privacy" className="hover:text-[#4a8c3f] transition">Privacy Policy</Link>
+            <span>·</span>
+            <Link href="/terms" className="hover:text-[#4a8c3f] transition">Terms of Service</Link>
           </div>
         </div>
       </div>
