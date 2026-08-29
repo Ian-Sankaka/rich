@@ -32,14 +32,14 @@ export default function PrivacyPage() {
               <li><strong>Account information:</strong> name, email address and profile image when you register directly or via Google OAuth (Sign in with Google). We receive only basic profile data (name, email, avatar) from Google.</li>
               <li><strong>Submissions:</strong> resources, case studies and metadata you submit through the contribution pathway.</li>
               <li><strong>Usage data:</strong> pages viewed, search queries, device/browser info and approximate location via standard web logs and analytics.</li>
-              <li><strong>Cookies:</strong> essential session cookie (<code>rich_session</code>) to keep you signed in, plus preferences (theme). No advertising cookies.</li>
+              <li><strong>Cookies:</strong> essential session cookies to keep you signed in, plus preferences (theme). No advertising cookies.</li>
             </ul>
           </section>
 
           <section>
             <h2 className="text-[18px] font-bold text-[var(--text-dark)]">3. How we use it</h2>
             <ul className="mt-3 list-disc pl-6 space-y-1">
-              <li>To create and manage your account and authenticate you (including via Supabase Auth for Google sign-in).</li>
+              <li>To create and manage your account and authenticate you (including secure sign-in with Google).</li>
               <li>To review, publish and attribute contributed resources.</li>
               <li>To improve the repository, respond to enquiries and send essential service updates (you may opt out of the newsletter).</li>
               <li>To comply with legal obligations and protect against misuse.</li>
@@ -54,8 +54,7 @@ export default function PrivacyPage() {
               consent (newsletter, Google OAuth). We share data only with service providers who help us run the platform:
             </p>
             <ul className="mt-2 list-disc pl-6 space-y-1">
-              <li><strong>Supabase</strong> (authentication &amp; database, EU region)</li>
-              <li><strong>Vercel</strong> (hosting &amp; logs)</li>
+              <li><strong>Secure hosting and database providers</strong> who store and process data on our behalf</li>
               <li><strong>Google</strong> (only if you choose Sign in with Google — Google&apos;s Privacy Policy applies)</li>
             </ul>
             <p className="mt-3">All providers are contractually bound to protect your data. We do not transfer data outside Kenya/EU except as needed to provide the service.</p>
@@ -83,7 +82,7 @@ export default function PrivacyPage() {
           <section>
             <h2 className="text-[18px] font-bold text-[var(--text-dark)]">7. Security</h2>
             <p className="mt-3">
-              We use HTTPS, encrypted passwords (bcrypt), secure httpOnly cookies and role-based access controls. No system is 100% secure —
+              We use HTTPS, encrypted passwords, secure httpOnly cookies and role-based access controls. No system is 100% secure —
               please use a strong, unique password and notify us of any suspected breach.
             </p>
           </section>

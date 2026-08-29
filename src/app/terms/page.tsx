@@ -75,8 +75,8 @@ export default function TermsPage() {
           <section>
             <h2 className="text-[18px] font-bold text-[var(--text-dark)]">7. Third-party links &amp; services</h2>
             <p className="mt-3">
-              The Platform links to external sites and uses Google OAuth, Supabase and Vercel. We are not responsible for external content or
-              their terms/privacy practices. Use at your own discretion.
+              The Platform links to external sites and uses trusted third-party services for authentication and hosting. We are not responsible
+              for external content or their terms/privacy practices. Use at your own discretion.
             </p>
           </section>
 
