@@ -94,6 +94,7 @@ function AnimatedNumber({ value }: { value: number }) {
 
 export default function UserDashboardPage() {
   const { toast } = useToast();
+  const [profileLoaded, setProfileLoaded] = useState(false);
   const [userName, setUserName] = useState("there");
   const [userEmail, setUserEmail] = useState("you@rich.local");
   const [subs, setSubs] = useState<Submission[]>(initial);
@@ -169,6 +170,16 @@ export default function UserDashboardPage() {
     return () => document.documentElement.classList.remove("dashboard-hide");
   }, []);
 
+  // hydrate from localStorage synchronously before paint to avoid flash of default name
+  React.useLayoutEffect(() => {
+    try {
+      const c = JSON.parse(localStorage.getItem("rich_profile") || "null");
+      if (c?.name) { setUserName(String(c.name).split(" ")[0]); setDisplayName(String(c.name)); }
+      if (c?.email) { setUserEmail(String(c.email)); setEmailField(String(c.email)); }
+      if (c?.avatar) setAvatar(String(c.avatar));
+    } catch {}
+  }, []);
+
   useEffect(() => {
     fetch("/api/me")
       .then((r) => (r.ok ? r.json() : null))
@@ -178,14 +189,18 @@ export default function UserDashboardPage() {
           if (u.name) { setUserName(String(u.name).split(" ")[0]); setDisplayName(String(u.name)); }
           if (u.email) { setUserEmail(String(u.email)); setEmailField(String(u.email)); }
           if (u.avatar) setAvatar(String(u.avatar));
-        } else {
-          setDisplayName("User");
-          setEmailField("user@rich.africa");
+          else setAvatar((prev) => (u.avatar === null ? null : prev));
+          try { localStorage.setItem("rich_profile", JSON.stringify({ name: String(u.name || ""), email: String(u.email || ""), avatar: u.avatar ? String(u.avatar) : null })); } catch {}
+        } else if (!profileLoaded) {
+          setDisplayName((prev) => prev || "User");
+          setEmailField((prev) => prev || "user@rich.africa");
         }
+        setProfileLoaded(true);
       })
       .catch(() => {
-        setDisplayName("User");
-        setEmailField("user@rich.africa");
+        setDisplayName((prev) => prev || "User");
+        setEmailField((prev) => prev || "user@rich.africa");
+        setProfileLoaded(true);
       });
   }, []);
 
@@ -271,6 +286,8 @@ export default function UserDashboardPage() {
       setUserName(String(u.name).split(" ")[0]);
       setUserEmail(String(u.email));
       if (u.avatar) setAvatar(String(u.avatar));
+      else if (avatar === null) setAvatar(null);
+      try { localStorage.setItem("rich_profile", JSON.stringify({ name: String(u.name), email: String(u.email), avatar: u.avatar ? String(u.avatar) : null })); } catch {}
       setSavingProfile(false);
       toast("Profile saved", "success");
       setProfileModalOpen(false);
@@ -387,6 +404,7 @@ export default function UserDashboardPage() {
   }
 
   const signOut = async () => {
+    try { localStorage.removeItem("rich_profile"); } catch {}
     try { await fetch("/api/logout", { method: "POST" }); } catch {}
     toast("Signed out", "info");
     setTimeout(() => { window.location.href = "/login"; }, 300);
@@ -449,7 +467,7 @@ export default function UserDashboardPage() {
             <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6">
               <div className="flex-1">
                 <p className="text-[13px] font-bold tracking-[0.14em] uppercase text-white/60">Contributor Hub</p>
-                <h2 className="mt-2 flex items-center gap-2 text-[26px] lg:text-[28px] font-bold leading-tight">Welcome, {userName} <span className="inline-block animate-[wave_2s_ease-in-out_infinite] origin-[70%_70%]">👋</span></h2>
+                <h2 className="mt-2 flex items-center gap-2 text-[26px] lg:text-[28px] font-bold leading-tight">Welcome, {profileLoaded || userName !== "there" ? userName : <span className="inline-block h-7 w-24 animate-pulse bg-white/20 rounded align-middle" />} <span className="inline-block animate-[wave_2s_ease-in-out_infinite] origin-[70%_70%]">👋</span></h2>
                 <p className="mt-2 max-w-2xl text-[15px] font-light leading-6 text-white/80">Submit resources, track review status, and see your published work live in the repository.</p>
               </div>
               <div className="flex shrink-0 gap-3">

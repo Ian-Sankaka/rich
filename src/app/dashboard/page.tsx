@@ -81,6 +81,7 @@ function AnimatedNumber({ value }: { value: number }) {
 
 export default function DashboardPage() {
   const { toast } = useToast();
+  const [profileLoaded, setProfileLoaded] = useState(false);
   const [userName, setUserName] = useState("there");
   const [userEmail, setUserEmail] = useState("you@rich.local");
   const [subs, setSubs] = useState<Submission[]>(initial);
@@ -109,6 +110,16 @@ export default function DashboardPage() {
     return () => document.documentElement.classList.remove("dashboard-hide");
   }, []);
 
+  // hydrate from localStorage synchronously before paint to avoid flash of default name
+  React.useLayoutEffect(() => {
+    try {
+      const c = JSON.parse(localStorage.getItem("rich_profile") || "null");
+      if (c?.name) { setUserName(String(c.name).split(" ")[0]); setDisplayName(String(c.name)); }
+      if (c?.email) { setUserEmail(String(c.email)); setEmailField(String(c.email)); }
+      if (c?.avatar) setAvatar(String(c.avatar));
+    } catch {}
+  }, []);
+
   useEffect(() => {
     // fetch authenticated user via httpOnly session (no client cookie parsing)
     fetch("/api/me")
@@ -119,14 +130,18 @@ export default function DashboardPage() {
           if (u.name) { setUserName(String(u.name).split(" ")[0]); setDisplayName(String(u.name)); }
           if (u.email) { setUserEmail(String(u.email)); setEmailField(String(u.email)); }
           if (u.avatar) setAvatar(String(u.avatar));
-        } else {
-          setDisplayName("Administrator");
-          setEmailField("lead@rich.africa");
+          else setAvatar((prev) => (u.avatar === null ? null : prev));
+          try { localStorage.setItem("rich_profile", JSON.stringify({ name: String(u.name || ""), email: String(u.email || ""), avatar: u.avatar ? String(u.avatar) : null })); } catch {}
+        } else if (!profileLoaded) {
+          setDisplayName((prev) => prev || "Administrator");
+          setEmailField((prev) => prev || "lead@rich.africa");
         }
+        setProfileLoaded(true);
       })
       .catch(() => {
-        setDisplayName("Administrator");
-        setEmailField("lead@rich.africa");
+        setDisplayName((prev) => prev || "Administrator");
+        setEmailField((prev) => prev || "lead@rich.africa");
+        setProfileLoaded(true);
       });
   }, []);
 
@@ -265,6 +280,7 @@ export default function DashboardPage() {
       setEmailField(String(u.email));
       if (u.avatar) setAvatar(String(u.avatar));
       else if (avatar === null) setAvatar(null);
+      try { localStorage.setItem("rich_profile", JSON.stringify({ name: String(u.name), email: String(u.email), avatar: u.avatar ? String(u.avatar) : null })); } catch {}
       toast("Profile saved", "success");
       setProfileModalOpen(false);
     } catch {
@@ -286,6 +302,7 @@ export default function DashboardPage() {
   };
 
   const signOut = async () => {
+    try { localStorage.removeItem("rich_profile"); } catch {}
     try { await fetch("/api/logout", { method: "POST" }); } catch {}
     toast("Signed out", "info");
     setTimeout(() => { window.location.href = "/login"; }, 300);
@@ -386,7 +403,7 @@ export default function DashboardPage() {
               <div className="flex-1">
                 <p className="text-[13px] font-bold tracking-[0.14em] uppercase text-white/60">Control Hub</p>
                 <h2 className="mt-2 flex items-center gap-2 text-[26px] lg:text-[28px] font-bold leading-tight">
-                  Welcome back, {userName}
+                  Welcome back, {profileLoaded || userName !== "there" ? userName : <span className="inline-block h-7 w-24 animate-pulse bg-white/20 rounded align-middle" />}
                   <span className="inline-block animate-[wave_2s_ease-in-out_infinite] origin-[70%_70%]">👋</span>
                 </h2>
                 <p className="mt-2 max-w-2xl text-[15px] font-light leading-6 text-white/80">Review open submissions, publish to the four collections, and keep the repository living - not archived.</p>

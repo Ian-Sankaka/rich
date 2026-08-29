@@ -1,7 +1,10 @@
 "use client";
 import Link from "next/link";
 import { useEffect, useState } from "react";
+import { Manrope } from "next/font/google";
 import { useToast } from "@/components/ToastProvider";
+
+const manrope = Manrope({ subsets: ["latin"], display: "swap" });
 
 export default function LoginPage() {
   const { toast } = useToast();
@@ -22,6 +25,11 @@ export default function LoginPage() {
         toast(j.error || "Login failed", "error");
         setLoading(false);
       } else {
+        try {
+          let prevAvatar: string | null = null;
+          try { const prev = JSON.parse(localStorage.getItem("rich_profile") || "null"); prevAvatar = prev?.avatar || null; } catch {}
+          localStorage.setItem("rich_profile", JSON.stringify({ name: String(j.user.name), email: String(j.user.email), avatar: (j.user as any).avatar ?? prevAvatar }));
+        } catch {}
         toast(`Welcome back, ${j.user.name}! 👋`, "success");
         const isAdmin = j.user.email === "lead@rich.africa" || j.user.email === "admin@rich.africa";
         setTimeout(() => { window.location.href = isAdmin ? "/dashboard" : "/user/dashboard"; }, 700);
@@ -33,10 +41,10 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="min-h-dvh bg-[#f7f6f4] dark:bg-[#0a0f0a] flex font-sans antialiased scroll-mt-0">
-      <div className="flex-1 flex items-center justify-center px-6 lg:px-16 py-10">
+    <div className={`${manrope.className} min-h-dvh bg-[#f7f6f4] dark:bg-[#0a0f0a] flex antialiased scroll-mt-0 overflow-x-hidden`}>
+      <div className="flex-1 flex items-center justify-center px-4 sm:px-6 lg:px-16 py-6 sm:py-10">
         <div className="w-full max-w-[560px] animate-[toast-in_0.5s_ease]">
-          <div className="relative rounded-[18px] bg-white dark:bg-[#1a221a] border border-transparent dark:border-white/10 px-8 lg:px-10 py-10 lg:py-12 shadow-[0_22px_70px_rgba(59,45,36,0.10)] dark:shadow-none">
+          <div className="relative rounded-[18px] bg-white dark:bg-[#1a221a] border border-transparent dark:border-white/10 px-5 sm:px-8 lg:px-10 py-8 sm:py-10 lg:py-12 shadow-[0_22px_70px_rgba(59,45,36,0.10)] dark:shadow-none">
             <div className="flex justify-center mb-8">
               <Link href="/" className="flex items-center gap-2.5">
                 <span className="w-8 h-8 rounded-lg bg-[#4a8c3f] flex items-center justify-center text-white font-black text-[18px]" style={{ fontFamily: "Roboto, sans-serif" }}>R</span>
@@ -52,21 +60,21 @@ export default function LoginPage() {
                   <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>
                 </span>
                 <input id="email" type="email" required autoComplete="email" placeholder="Email address" value={email} onChange={(e) => setEmail(e.target.value)}
-                  className="w-full rounded-xl border border-[#ddd6cf] dark:border-white/10 bg-white dark:bg-white/5 py-4 pr-4 text-[17px] text-gray-900 dark:text-white placeholder:text-[#9c9188] placeholder:text-[14px] outline-none focus:border-[#4a8c3f] focus:ring-4 focus:ring-[#4a8c3f]/15 pl-12 transition-all" />
+                  className="w-full rounded-xl border border-[#ddd6cf] dark:border-white/10 bg-white dark:bg-white/5 py-4 pr-4 text-[17px] text-gray-900 dark:text-white placeholder:text-[#9c9188] placeholder:text-[15px] outline-none focus:border-[#4a8c3f] focus:ring-4 focus:ring-[#4a8c3f]/15 pl-12 transition-all" />
               </div>
               <div className="relative">
                 <span className="absolute inset-y-0 left-0 flex items-center pl-4 text-[#8d8278] pointer-events-none">
                   <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect width="18" height="11" x="3" y="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
                 </span>
                 <input id="password" type={show ? "text" : "password"} required autoComplete="current-password" placeholder="Password" value={password} onChange={(e) => setPassword(e.target.value)}
-                  className="w-full rounded-xl border border-[#ddd6cf] dark:border-white/10 bg-white dark:bg-white/5 py-4 pr-12 text-[17px] text-gray-900 dark:text-white placeholder:text-[#9c9188] placeholder:text-[14px] outline-none focus:border-[#4a8c3f] focus:ring-4 focus:ring-[#4a8c3f]/15 pl-12 transition-all" />
+                  className="w-full rounded-xl border border-[#ddd6cf] dark:border-white/10 bg-white dark:bg-white/5 py-4 pr-12 text-[17px] text-gray-900 dark:text-white placeholder:text-[#9c9188] placeholder:text-[15px] outline-none focus:border-[#4a8c3f] focus:ring-4 focus:ring-[#4a8c3f]/15 pl-12 transition-all" />
                 <button type="button" onClick={() => setShow(!show)} className="absolute right-4 top-1/2 -translate-y-1/2 text-[#8d8278] hover:text-gray-600 dark:hover:text-white/80 transition-colors">
                   <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M2.062 12.348a1 1 0 0 1 0-.696 10.75 10.75 0 0 1 19.876 0 1 1 0 0 1 0 .696 10.75 10.75 0 0 1-19.876 0"/><circle cx="12" cy="12" r="3"/></svg>
                 </button>
               </div>
 
               <div className="flex items-center justify-between">
-                <Link href="#" onClick={(e)=>{e.preventDefault(); toast("Password reset coming soon","info")}} className="text-[16px] font-semibold text-[#756b62] dark:text-white/60 hover:text-[#4a8c3f] transition-colors">Forgot Password?</Link>
+                <Link href="#" onClick={(e)=>{e.preventDefault(); toast("Password reset coming soon","info")}} className="text-[14px] font-semibold text-[#756b62] dark:text-white/60 hover:text-[#4a8c3f] transition-colors">Forgot Password?</Link>
               </div>
 
               <button type="submit" disabled={loading} className="cursor-pointer w-full rounded-full bg-[#16a34a] dark:bg-[#4a8c3f] px-6 py-4 text-[18px] font-bold text-white shadow-[0_12px_24px_rgba(22,163,74,0.28)] hover:shadow-[0_16px_32px_rgba(22,163,74,0.35)] hover:scale-[1.01] active:scale-[0.98] disabled:opacity-60 transition-all flex items-center justify-center">

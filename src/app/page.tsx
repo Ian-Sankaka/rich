@@ -56,25 +56,25 @@ export default function Home() {
     <>
       {/* HERO + STATS as full viewport block - fills viewport to stats */}
       <div className="flex flex-col min-h-[calc(100dvh-96px)]">
-        <section className="relative flex flex-1 min-h-[520px] items-center overflow-hidden">
+        <section className="relative flex flex-1 min-h-[480px] sm:min-h-[520px] items-center overflow-hidden">
           <div className="absolute inset-0 bg-cover bg-center" style={{ backgroundImage: "url('https://images.unsplash.com/photo-1500382017468-9049fed747ef?w=1400&q=80')", animation: "hero-zoom 1.4s ease-out both" }} />
           <div className="absolute inset-0" style={{ background: "linear-gradient(135deg, rgba(18,50,18,0.82) 0%, rgba(30,70,20,0.55) 60%, rgba(10,30,10,0.4) 100%)" }} />
-          <div className="relative z-10 mx-auto w-full max-w-[1140px] px-6 lg:px-10 py-16" style={{ animation: "hero-fade 0.9s ease-out 0.3s both" }}>
-            <div className="flex items-center gap-2.5 text-[13px] font-bold tracking-[0.18em] uppercase text-[#6db862] mb-[18px]">
+          <div className="relative z-10 mx-auto w-full max-w-[1140px] px-4 sm:px-6 lg:px-10 py-12 sm:py-16" style={{ animation: "hero-fade 0.9s ease-out 0.3s both" }}>
+            <div className="flex items-center gap-2.5 text-[12px] sm:text-[13px] font-bold tracking-[0.18em] uppercase text-[#6db862] mb-[14px] sm:mb-[18px]">
               <span className="h-0.5 w-7 bg-[#6db862]" />
               Knowledge Repository
             </div>
-            <h1 className="max-w-[640px] text-[42px] lg:text-[52px] font-medium leading-[1.15] text-white" style={{ fontFamily: "Playfair Display, serif" }}>
+            <h1 className="max-w-[640px] text-[30px] sm:text-[38px] lg:text-[52px] font-medium leading-[1.15] text-white text-balance" style={{ fontFamily: "Playfair Display, serif" }}>
               Africa&apos;s Central Platform for Climate AI Knowledge
             </h1>
-            <p className="mt-[22px] max-w-[520px] text-[15px] font-light leading-7 text-white/80">
+            <p className="mt-4 sm:mt-[22px] max-w-[520px] text-[15px] font-light leading-7 text-white/85">
               Research outputs, innovation case studies, ecosystem insights, and policy resources — practical knowledge built for innovators, policymakers, and partners working on climate AI in Africa.
             </p>
-            <div className="mt-9 flex flex-wrap gap-3.5">
-              <Link href="/collections" className="inline-flex items-center rounded-[4px] bg-[#4a8c3f] px-7 py-[13px] text-[15px] font-bold tracking-[0.07em] uppercase text-white hover:bg-[#2d5a27] hover:shadow-lg hover:-translate-y-0.5 transition-all duration-300 ease-out">
+            <div className="mt-7 sm:mt-9 flex flex-col sm:flex-row flex-wrap gap-3">
+              <Link href="/collections" className="inline-flex items-center justify-center rounded-[4px] bg-[#4a8c3f] px-6 sm:px-7 py-3 sm:py-[13px] text-[14px] sm:text-[15px] font-bold tracking-[0.07em] uppercase text-white hover:bg-[#2d5a27] hover:shadow-lg hover:-translate-y-0.5 active:translate-y-0 transition-all duration-300 ease-out touch-manipulation">
                 Browse the Repository
               </Link>
-              <Link href="/submit" className="inline-flex items-center rounded-[4px] border border-white/40 px-7 py-[13px] text-[15px] font-bold tracking-[0.07em] uppercase text-white/90 hover:border-white hover:text-white hover:bg-white/10 transition-all duration-300 ease-out">
+              <Link href="/submit" className="inline-flex items-center justify-center rounded-[4px] border border-white/40 px-6 sm:px-7 py-3 sm:py-[13px] text-[14px] sm:text-[15px] font-bold tracking-[0.07em] uppercase text-white/90 hover:border-white hover:text-white hover:bg-white/10 active:bg-white/15 transition-all duration-300 ease-out touch-manipulation">
                 Submit a Resource
               </Link>
             </div>
@@ -85,15 +85,15 @@ export default function Home() {
       </div>
 
       {/* ABOUT */}
-      <section className="py-[72px] bg-[var(--background)] dark:bg-[var(--background)]">
-        <div className="mx-auto max-w-[1140px] px-6 lg:px-10">
-          <div className="grid items-center gap-16 lg:grid-cols-2">
+      <section className="py-10 sm:py-[72px] bg-[var(--background)] dark:bg-[var(--background)] overflow-x-hidden">
+        <div className="mx-auto max-w-[1140px] px-4 sm:px-6 lg:px-10">
+          <div className="grid items-center gap-8 sm:gap-16 lg:grid-cols-2">
             <div className="group relative aspect-[4/3] overflow-hidden rounded-[4px] bg-cover bg-center transition-all duration-500 ease-out hover:shadow-xl" style={{ backgroundImage: "linear-gradient(160deg, rgba(30,70,20,0.7) 0%, rgba(20,50,10,0.3) 100%), url('https://images.unsplash.com/photo-1625246333195-78d9c38ad449?w=800&q=80')" }}>
               <span className="absolute bottom-5 left-5 rounded-[4px] bg-[#1a3a1a] px-3.5 py-2 text-[13px] font-bold tracking-[0.1em] uppercase text-white transition-transform duration-300 group-hover:translate-y-0">RICH Knowledge Platform</span>
             </div>
             <div>
               <p className="text-[13px] font-bold tracking-[0.18em] uppercase text-[#4a8c3f]">About the Repository</p>
-              <h2 className="mt-3.5 text-[35px] font-medium leading-tight text-[var(--text-dark)]" style={{ fontFamily: "Playfair Display, serif" }}>A living knowledge platform, not an archive</h2>
+              <h2 className="mt-3.5 text-[28px] sm:text-[35px] font-medium leading-tight text-[var(--text-dark)] text-balance" style={{ fontFamily: "Playfair Display, serif" }}>A living knowledge platform, not an archive</h2>
               <p className="mt-5 text-[15px] font-light leading-7 text-[var(--text-mid)]">The RICH Knowledge Repository is the central knowledge platform for the Regional Innovation and Climate Hub. It is designed to make practical, high-quality knowledge about climate AI innovation in Africa discoverable, accessible, and usable by the people who need it most.</p>
               <p className="mt-4 text-[15px] font-light leading-7 text-[var(--text-mid)]">Every resource is reviewed, tagged, and maintained on a defined cycle. Every case study follows a consistent structure that makes it usable. Every policy brief is designed so that a senior government official can understand the key message in two minutes.</p>
               <Link href="#principles" className="mt-6 inline-flex items-center gap-2 border-b border-[#4a8c3f] pb-0.5 text-[15px] font-bold tracking-[0.07em] uppercase text-[#4a8c3f] hover:text-[#2d5a27]">Learn about our design principles →</Link>
@@ -103,10 +103,10 @@ export default function Home() {
       </section>
 
       {/* COLLECTIONS */}
-      <section className="bg-[var(--off-white)] dark:bg-[#0f1410] py-[72px] border-y border-[var(--border)]">
-        <div className="mx-auto max-w-[1140px] px-6 lg:px-10">
+      <section className="bg-[var(--off-white)] dark:bg-[#0f1410] py-10 sm:py-[72px] border-y border-[var(--border)] overflow-x-hidden">
+        <div className="mx-auto max-w-[1140px] px-4 sm:px-6 lg:px-10">
           <p className="text-[13px] font-bold tracking-[0.18em] uppercase text-[#4a8c3f]">The Four Collections</p>
-          <h2 className="mt-3.5 text-[35px] font-medium leading-none text-[var(--text-dark)]" style={{ fontFamily: "Playfair Display, serif" }}>What the Repository Hosts</h2>
+          <h2 className="mt-3.5 text-[28px] sm:text-[35px] font-medium leading-none text-[var(--text-dark)] text-balance" style={{ fontFamily: "Playfair Display, serif" }}>What the Repository Hosts</h2>
           <p className="mt-4 max-w-[640px] text-[15px] font-light leading-7 text-[var(--text-mid)]">Four collections, each with a distinct purpose, audience, and content standard. Every resource belongs to one collection and carries a standardised set of tags to enable filtering across all of them.</p>
           <div className="mt-12 grid gap-6 lg:grid-cols-2">
             {collections.map((c) => (
@@ -129,10 +129,10 @@ export default function Home() {
       </section>
 
       {/* PRINCIPLES */}
-      <section id="principles" className="py-[72px] bg-[var(--background)]">
-        <div className="mx-auto max-w-[1140px] px-6 lg:px-10">
+      <section id="principles" className="py-10 sm:py-[72px] bg-[var(--background)] overflow-x-hidden">
+        <div className="mx-auto max-w-[1140px] px-4 sm:px-6 lg:px-10">
           <p className="text-[13px] font-bold tracking-[0.18em] uppercase text-[#4a8c3f]">Design Principles</p>
-          <h2 className="mt-3.5 text-[35px] font-medium text-[var(--text-dark)]" style={{ fontFamily: "Playfair Display, serif" }}>How we built it</h2>
+          <h2 className="mt-3.5 text-[28px] sm:text-[35px] font-medium text-[var(--text-dark)] text-balance" style={{ fontFamily: "Playfair Display, serif" }}>How we built it</h2>
           <p className="mt-4 max-w-[640px] text-[15px] font-light leading-7 text-[var(--text-mid)]">Seven principles govern every decision about the repository, from content standards to navigation to governance. They are drawn from best practice in knowledge management and comparable repositories in the climate and development sector.</p>
           <div className="mt-12 grid gap-5 lg:grid-cols-3">
             {[
@@ -160,10 +160,10 @@ export default function Home() {
       </section>
 
       {/* PHASES */}
-      <section id="phases" className="bg-[#1a3a1a] py-[72px]">
-        <div className="mx-auto max-w-[1140px] px-6 lg:px-10">
+      <section id="phases" className="bg-[#1a3a1a] py-10 sm:py-[72px] overflow-x-hidden">
+        <div className="mx-auto max-w-[1140px] px-4 sm:px-6 lg:px-10">
           <p className="text-[13px] font-bold tracking-[0.18em] uppercase text-[#6db862]">Phased Build Plan</p>
-          <h2 className="mt-3.5 text-[35px] font-medium text-white" style={{ fontFamily: "Playfair Display, serif" }}>How the Repository Grows</h2>
+          <h2 className="mt-3.5 text-[28px] sm:text-[35px] font-medium text-white text-balance" style={{ fontFamily: "Playfair Display, serif" }}>How the Repository Grows</h2>
           <p className="mt-4 max-w-[640px] text-[15px] font-light leading-7 text-white/65">Built incrementally, with a small number of high-quality resources before expanding. Each phase has clear milestones and minimum content targets.</p>
           <div className="mt-12 grid gap-3 lg:grid-cols-3">
             {[
@@ -191,14 +191,14 @@ export default function Home() {
       </section>
 
       {/* ARTICLES */}
-      <section className="py-[72px] bg-[var(--background)]">
-        <div className="mx-auto max-w-[1140px] px-6 lg:px-10">
-          <div className="flex flex-wrap items-end justify-between gap-4 mb-10">
+      <section className="py-10 sm:py-[72px] bg-[var(--background)] overflow-x-hidden">
+        <div className="mx-auto max-w-[1140px] px-4 sm:px-6 lg:px-10">
+          <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-8 sm:mb-10">
             <div>
               <p className="text-[13px] font-bold tracking-[0.18em] uppercase text-[#4a8c3f]">Latest from RICH</p>
-              <h2 className="mt-3.5 text-[35px] font-medium leading-none text-[var(--text-dark)]" style={{ fontFamily: "Playfair Display, serif" }}>Articles and Insights</h2>
+              <h2 className="mt-3.5 text-[28px] sm:text-[35px] font-medium leading-none text-[var(--text-dark)] text-balance" style={{ fontFamily: "Playfair Display, serif" }}>Articles and Insights</h2>
             </div>
-            <Link href="/articles" className="inline-flex items-center gap-2 border-b border-[#4a8c3f] pb-0.5 text-[15px] font-bold tracking-[0.07em] uppercase text-[#4a8c3f]">View all articles →</Link>
+            <Link href="/articles" className="inline-flex items-center gap-2 border-b border-[#4a8c3f] pb-0.5 text-[15px] font-bold tracking-[0.07em] uppercase text-[#4a8c3f] self-start sm:self-auto">View all articles →</Link>
           </div>
           <div className="grid gap-7 lg:grid-cols-3">
             {articles.map((a) => (
@@ -222,8 +222,8 @@ export default function Home() {
       </section>
 
       {/* CTA */}
-      <section className="bg-[#2d5a27] py-14">
-        <div className="mx-auto flex max-w-[1140px] flex-col lg:flex-row items-center justify-between gap-10 px-6 lg:px-10">
+      <section className="bg-[#2d5a27] py-10 sm:py-14 overflow-x-hidden">
+        <div className="mx-auto flex max-w-[1140px] flex-col lg:flex-row items-center justify-between gap-6 sm:gap-10 px-4 sm:px-6 lg:px-10">
           <div>
             <h2 className="text-[32px] font-medium leading-none text-white" style={{ fontFamily: "Playfair Display, serif" }}>Contribute to the Repository</h2>
             <p className="mt-2.5 max-w-[560px] text-[15px] font-light text-white/75">Have a case study, research output, or resource that belongs here? Submit through our open contribution pathway. Review decision within four weeks.</p>
@@ -236,8 +236,8 @@ export default function Home() {
       </section>
 
       {/* PARTNERS */}
-      <section className="bg-[var(--off-white)] dark:bg-[#111a11] border-y border-[var(--border)] py-12">
-        <div className="mx-auto max-w-[1140px] px-6 lg:px-10">
+      <section className="bg-[var(--off-white)] dark:bg-[#111a11] border-y border-[var(--border)] py-10 sm:py-12 overflow-x-hidden">
+        <div className="mx-auto max-w-[1140px] px-4 sm:px-6 lg:px-10">
           <p className="text-center text-[13px] font-bold tracking-[0.14em] uppercase text-[var(--text-light)]">Implemented by and in partnership with</p>
           <div className="mt-7">
             <PartnerCarousel />

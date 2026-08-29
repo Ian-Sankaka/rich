@@ -8,9 +8,12 @@ export async function GET(req: NextRequest) {
   if (!token) return NextResponse.json({ user: null }, { status: 401 });
   const payload = await verifySession(token);
   if (!payload) return NextResponse.json({ user: null }, { status: 401 });
-  // include avatar from DB if present
+  // include avatar from DB if present — ensure column exists (production may be behind)
   try {
     const { pool } = await import("@/lib/db");
+    try {
+      await pool.query(`alter table public.users add column if not exists avatar text`);
+    } catch {}
     const { rows } = await pool.query(`select avatar from public.users where id=$1`, [payload.id]);
     const avatar = rows[0]?.avatar || null;
     return NextResponse.json({ user: { ...payload, avatar } });
@@ -38,13 +41,17 @@ export async function PATCH(req: NextRequest) {
 
   try {
     const { pool } = await import("@/lib/db");
+    // ensure avatar column exists before any update (fixes production where column is missing)
+    try {
+      await pool.query(`alter table public.users add column if not exists avatar text`);
+    } catch {}
     // check email uniqueness if changed
     if (rawEmail !== payload.email.toLowerCase()) {
       const { rows: exists } = await pool.query(`select id from public.users where lower(email)=lower($1) and id<>$2`, [rawEmail, payload.id]);
       if (exists.length) return NextResponse.json({ error: "Email already in use" }, { status: 409 });
     }
 
-    // update user - avatar column may not exist on older DBs, handle gracefully
+    // update user
     let updated: any;
     try {
       const { rows } = await pool.query(
@@ -53,7 +60,7 @@ export async function PATCH(req: NextRequest) {
       );
       updated = rows[0];
     } catch (e: any) {
-      // fallback without avatar if column missing
+      // fallback without avatar if column still missing (extra safety)
       if (e?.message?.includes("avatar")) {
         const { rows } = await pool.query(
           `update public.users set name=$1, email=$2, updated_at=now() where id=$3 returning id, email, name`,
