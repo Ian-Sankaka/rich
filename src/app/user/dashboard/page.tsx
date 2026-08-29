@@ -177,6 +177,7 @@ export default function UserDashboardPage() {
         if (u) {
           if (u.name) { setUserName(String(u.name).split(" ")[0]); setDisplayName(String(u.name)); }
           if (u.email) { setUserEmail(String(u.email)); setEmailField(String(u.email)); }
+          if (u.avatar) setAvatar(String(u.avatar));
         } else {
           setDisplayName("User");
           setEmailField("user@rich.africa");
@@ -250,17 +251,33 @@ export default function UserDashboardPage() {
     r.readAsDataURL(f);
   };
 
-  const saveProfile = () => {
+  const saveProfile = async () => {
     if (!displayName.trim().slice(0,100)) { toast("Name is required", "error"); return; }
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(emailField)) { toast("Enter a valid email", "error"); return; }
     setSavingProfile(true);
-    setTimeout(() => {
-      setUserName(displayName.trim().slice(0,100).split(" ")[0]);
-      setUserEmail(emailField.trim().toLowerCase().slice(0,254));
+    try {
+      const res = await fetch("/api/me", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name: displayName.trim().slice(0, 100), email: emailField.trim().toLowerCase().slice(0, 254), avatar }),
+      });
+      const j = await res.json().catch(() => ({}));
+      if (!res.ok) {
+        toast(j.error || "Failed to save profile", "error");
+        setSavingProfile(false);
+        return;
+      }
+      const u = j.user;
+      setUserName(String(u.name).split(" ")[0]);
+      setUserEmail(String(u.email));
+      if (u.avatar) setAvatar(String(u.avatar));
       setSavingProfile(false);
-      toast("Profile saved (local)", "success");
+      toast("Profile saved", "success");
       setProfileModalOpen(false);
-    }, 500);
+    } catch {
+      toast("Network error", "error");
+      setSavingProfile(false);
+    }
   };
 
   const resetPw = () => {
