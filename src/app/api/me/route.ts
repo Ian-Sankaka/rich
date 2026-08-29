@@ -8,11 +8,14 @@ export async function GET(req: NextRequest) {
   if (!token) return NextResponse.json({ user: null }, { status: 401 });
   const payload = await verifySession(token);
   if (!payload) return NextResponse.json({ user: null }, { status: 401 });
-  // include avatar from DB if present — ensure column exists (production may be behind)
+  // include avatar from DB if present — ensure column exists and is TEXT (production may be varchar(255))
   try {
     const { pool } = await import("@/lib/db");
     try {
       await pool.query(`alter table public.users add column if not exists avatar text`);
+    } catch {}
+    try {
+      await pool.query(`alter table public.users alter column avatar type text using avatar::text`);
     } catch {}
     const { rows } = await pool.query(`select avatar from public.users where id=$1`, [payload.id]);
     const avatar = rows[0]?.avatar || null;
@@ -41,9 +44,12 @@ export async function PATCH(req: NextRequest) {
 
   try {
     const { pool } = await import("@/lib/db");
-    // ensure avatar column exists before any update (fixes production where column is missing)
+    // ensure avatar column exists and is TEXT (fixes production where column is varchar(255))
     try {
       await pool.query(`alter table public.users add column if not exists avatar text`);
+    } catch {}
+    try {
+      await pool.query(`alter table public.users alter column avatar type text using avatar::text`);
     } catch {}
     // check email uniqueness if changed
     if (rawEmail !== payload.email.toLowerCase()) {

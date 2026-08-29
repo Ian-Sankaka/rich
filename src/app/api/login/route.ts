@@ -28,7 +28,7 @@ export async function POST(req: NextRequest) {
     const password = String(passwordRaw).slice(0, 128);
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(cleanEmail)) return NextResponse.json({ error: "Those credentials do not match our records." }, { status: 401 });
 
-    const { rows } = await pool.query("select id, email, password, name from public.users where email = $1 limit 1", [cleanEmail]);
+    const { rows } = await pool.query("select id, email, password, name, avatar from public.users where email = $1 limit 1", [cleanEmail]);
     const user = rows[0];
     if (!user) return NextResponse.json({ error: "Those credentials do not match our records." }, { status: 401 });
 
@@ -36,7 +36,7 @@ export async function POST(req: NextRequest) {
     if (!ok) return NextResponse.json({ error: "Those credentials do not match our records." }, { status: 401 });
 
     const token = await signSession({ id: Number(user.id), name: user.name, email: user.email });
-    const res = NextResponse.json({ ok: true, user: { id: user.id, email: user.email, name: user.name } });
+    const res = NextResponse.json({ ok: true, user: { id: user.id, email: user.email, name: user.name, avatar: user.avatar || null } });
     res.cookies.set(SESSION_COOKIE, token, sessionCookieOptions());
     return res;
   } catch (e: unknown) {
