@@ -304,6 +304,8 @@ export default function DashboardPage() {
   const signOut = async () => {
     try { localStorage.removeItem("rich_profile"); } catch {}
     try { await fetch("/api/logout", { method: "POST" }); } catch {}
+    try { await fetch("/api/auth/signout", { method: "POST" }); } catch {}
+    try { const { signOut: nextAuthSignOut } = await import("next-auth/react"); await nextAuthSignOut({ redirect: false }); } catch {}
     setTimeout(() => { window.location.href = "/login"; }, 300);
   };
 
