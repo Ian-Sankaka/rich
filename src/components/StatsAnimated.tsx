@@ -39,7 +39,7 @@ function AnimatedStat({ raw }: { raw: string }) {
 
 export default function StatsAnimated() {
   return (
-    <section className="bg-[#1a3a1a] py-7">
+    <section className="bg-[#1a3a1a] py-5 sm:py-6 shrink-0">
       <div className="mx-auto grid max-w-[1140px] grid-cols-2 lg:grid-cols-4 px-6 lg:px-10">
         {items.map(([num, label], i) => (
           <div

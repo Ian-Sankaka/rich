@@ -38,7 +38,7 @@ const TYPES = ["Research Paper", "Case Study", "Policy Brief", "Working Paper", 
 const COLLECTIONS = [
   { v: "research_outputs", l: "Research Outputs" },
   { v: "innovation_case_studies", l: "Innovation Case Studies" },
-  { v: "ecosystem_insights", l: "Ecosystem Insights — Phase 2" },
+  { v: "ecosystem_insights", l: "Ecosystem Insights - Phase 2" },
   { v: "policy_resources", l: "Policy Resources" },
 ];
 const GEOGRAPHIES = ["Pan-African", "East Africa", "West Africa", "Southern Africa", "Central Africa", "North Africa", "Kenya", "Rwanda", "Nigeria", "South Africa", "Ethiopia"];
@@ -206,7 +206,7 @@ export default function UserDashboardPage() {
 
   useEffect(() => { if (displayName === "" && userName !== "there") setDisplayName(userName); }, [userName, displayName]);
 
-  // hydrate user's own submissions from DB — persists across logouts/logins
+  // hydrate user's own submissions from DB - persists across logouts/logins
   useEffect(() => {
     fetch("/api/resources?mine=1", { credentials: "include", cache: "no-store" })
       .then((r) => (r.ok ? r.json() : null))
@@ -345,7 +345,7 @@ export default function UserDashboardPage() {
         setStep(1);
         setTitle(""); setAbstract(""); setType(""); setGeography([]); setThemes([]); setCluster(""); setPathway(""); setAudience([]); setAuthor(""); setDate(""); setLicensing("CC BY 4.0 (Open)");
         setSubmitting(false);
-        toast("Submission updated — pending review again", "success");
+        toast("Submission updated - pending review again", "success");
         return;
       } catch {
         toast("Network error", "error");
@@ -400,7 +400,7 @@ export default function UserDashboardPage() {
     setStep(1);
     setTitle(""); setAbstract(""); setType(""); setGeography([]); setThemes([]); setCluster(""); setPathway(""); setAudience([]); setAuthor(""); setDate(""); setLicensing("CC BY 4.0 (Open)");
     setSubmitting(false);
-    toast("Resource submitted — pending review", "success");
+    toast("Resource submitted - pending review", "success");
   }
 
   const signOut = async () => {
@@ -621,16 +621,16 @@ export default function UserDashboardPage() {
               </div>
               <div className="grid gap-0 rounded-[12px] border border-[var(--border)] divide-y divide-[var(--border)] overflow-hidden bg-[var(--off-white)]/60 dark:bg-white/5">
                 {[
-                  ["Resource type", selected.type || "—"],
+                  ["Resource type", selected.type || "-"],
                   ["Collection", selected.collection],
-                  ["Geography", selected.geography || "—"],
-                  ["Themes", selected.themes || "—"],
-                  ["Cluster", selected.cluster || "—"],
-                  ["Scaling pathway", selected.pathway || "—"],
-                  ["Audience", selected.audience || "—"],
-                  ["Author / organisation", `${selected.author || "—"}${selected.authorEmail ? ` • ${selected.authorEmail}` : ""}`],
-                  ["Publication date", selected.publicationDate || "—"],
-                  ["Licensing", selected.licensing || "—"],
+                  ["Geography", selected.geography || "-"],
+                  ["Themes", selected.themes || "-"],
+                  ["Cluster", selected.cluster || "-"],
+                  ["Scaling pathway", selected.pathway || "-"],
+                  ["Audience", selected.audience || "-"],
+                  ["Author / organisation", `${selected.author || "-"}${selected.authorEmail ? ` • ${selected.authorEmail}` : ""}`],
+                  ["Publication date", selected.publicationDate || "-"],
+                  ["Licensing", selected.licensing || "-"],
                   ["Submitted", selected.dateTime || selected.date],
                 ].map(([k, v]) => (
                   <div key={k} className="grid grid-cols-[150px_1fr] gap-3 px-4 py-3">
@@ -651,7 +651,7 @@ export default function UserDashboardPage() {
               )}
               <div className="rounded-[12px] bg-[var(--off-white)] dark:bg-white/5 border border-[var(--border)] p-4">
                 <p className="text-[12px] font-bold uppercase tracking-widest text-[var(--text-light)]">Status</p>
-                <p className="mt-1 text-[14px] leading-6 text-[var(--text-mid)]">{selected.status === "pending" ? "Your submission is awaiting review. Editorial team will review within 4 weeks." : selected.status === "in_review" ? "With editors — you'll be notified when a decision is made." : selected.status === "published" ? "Published — discoverable in collections and search." : selected.reviewNotes ? "Declined — see notes above. Fix and resubmit." : "Declined — contact editorial team for feedback."}</p>
+                <p className="mt-1 text-[14px] leading-6 text-[var(--text-mid)]">{selected.status === "pending" ? "Your submission is awaiting review. Editorial team will review within 4 weeks." : selected.status === "in_review" ? "With editors - you'll be notified when a decision is made." : selected.status === "published" ? "Published - discoverable in collections and search." : selected.reviewNotes ? "Declined - see notes above. Fix and resubmit." : "Declined - contact editorial team for feedback."}</p>
               </div>
               {selected.status === "declined" && (
                 <button onClick={() => openEdit(selected)} className="w-full rounded-[4px] bg-[#1a3a1a] px-6 py-3 text-[14px] font-bold text-white hover:bg-black transition-colors">Edit to fix & resubmit →</button>
@@ -668,7 +668,7 @@ export default function UserDashboardPage() {
             <div className="shrink-0 bg-[#1a3a1a] border-b border-white/5 px-6 lg:px-8 py-8">
               <p className="text-[14px] font-bold tracking-[0.20em] uppercase text-[#6db862]">{editingId ? "Editing · Fix & resubmit" : "Contribution · Phase 1 intake"}</p>
               <h3 className="mt-2 text-[28px] font-medium leading-none text-white" style={{ fontFamily: "Playfair Display, serif" }}>{editingId ? "Edit Submission" : "Contribute Resource"}</h3>
-              <p className="mt-2 max-w-[660px] text-[14px] font-light leading-6 text-white/80">{editingId ? "Fix based on decline notes below, then resubmit. It will return to Pending for review." : "Same form as Submit — reviewed within 4 weeks. Your submission will appear in My Submissions as Pending."}</p>
+              <p className="mt-2 max-w-[660px] text-[14px] font-light leading-6 text-white/80">{editingId ? "Fix based on decline notes below, then resubmit. It will return to Pending for review." : "Same form as Submit - reviewed within 4 weeks. Your submission will appear in My Submissions as Pending."}</p>
               {editingId && (() => { const ed = subs.find((x) => x.id === editingId); return ed?.reviewNotes ? <div className="mt-4 rounded-[8px] bg-red-500/20 border border-red-400/30 p-3"><p className="text-[12px] font-bold uppercase tracking-widest text-red-200">Decline notes to address</p><p className="mt-1 text-[13px] leading-6 text-white/90 whitespace-pre-wrap">{ed.reviewNotes}</p></div> : null; })()}
             </div>
             {/* stepper */}

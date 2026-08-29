@@ -8,21 +8,21 @@ function buildBody(r: any): string[] {
   const abs = r.abstract || r.summary || "";
   const paras: string[] = [];
   if (abs) paras.push(abs);
-  // expand to full-page text like articles — use taxonomy to craft sections
+  // expand to full-page text like articles - use taxonomy to craft sections
   paras.push(
     `This ${r.content_type || "resource"} is part of the ${r.collection.replaceAll("_", " ")} collection and was authored by ${r.author_name || "the RICH Team"}${r.author_email ? ` (${r.author_email})` : ""}. Focus geography is ${r.geography || "Pan-African"} with themes in ${r.themes || "climate adaptation and AI governance"}. It is positioned at the ${r.pathway || "validation"} scaling pathway within the ${r.cluster || "Deployment & Scale"} cluster and is written for ${r.audience || "researchers and policymakers"}.`
   );
   paras.push(
-    `Background — The work responds to gaps identified across ${r.geography || "Africa"} where ${r.themes || "climate AI"} solutions struggle to move from pilot to scale. Drawing on desk review and stakeholder interviews, it maps current practice, highlights where data and institutional readiness are low, and identifies the conditions under which AI can responsibly support resilience rather than add risk.`
+    `Background - The work responds to gaps identified across ${r.geography || "Africa"} where ${r.themes || "climate AI"} solutions struggle to move from pilot to scale. Drawing on desk review and stakeholder interviews, it maps current practice, highlights where data and institutional readiness are low, and identifies the conditions under which AI can responsibly support resilience rather than add risk.`
   );
   paras.push(
-    `Method and evidence — The analysis combines literature synthesis, case documentation, and practitioner validation workshops. Each claim is tied to observable indicators (for example, accuracy, cost per user, and adoption) and is presented with a plain-language summary and a clear key finding so that non-technical readers can assess relevance quickly. Where evidence is thin, the resource notes uncertainty and points to the data needed to close the gap.`
+    `Method and evidence - The analysis combines literature synthesis, case documentation, and practitioner validation workshops. Each claim is tied to observable indicators (for example, accuracy, cost per user, and adoption) and is presented with a plain-language summary and a clear key finding so that non-technical readers can assess relevance quickly. Where evidence is thin, the resource notes uncertainty and points to the data needed to close the gap.`
   );
   paras.push(
-    `Key finding — Well-structured, locally owned deployment outperforms model accuracy alone. The most transferable lesson is that governance and trust — data consent, community co-design, and county or national procurement pathways — determine whether a ${r.content_type || "tool"} is used after the pilot ends. Readers will find a checklist for procurement, a failure log, and replication notes to adapt the approach to their own ${r.geography || "context"}.`
+    `Key finding - Well-structured, locally owned deployment outperforms model accuracy alone. The most transferable lesson is that governance and trust - data consent, community co-design, and county or national procurement pathways - determine whether a ${r.content_type || "tool"} is used after the pilot ends. Readers will find a checklist for procurement, a failure log, and replication notes to adapt the approach to their own ${r.geography || "context"}.`
   );
   paras.push(
-    `Use and licensing — Published ${r.publication_date || new Date(r.created_at).toLocaleDateString("en-GB")} under ${r.license || "CC BY 4.0"}. You may reuse with attribution. For questions, contact ${r.author_name || "the author"} or the RICH editorial team. Cite as: ${r.author_name || "RICH"} (${new Date(r.created_at).getFullYear()}). ${r.title}. RICH Knowledge Repository.`
+    `Use and licensing - Published ${r.publication_date || new Date(r.created_at).toLocaleDateString("en-GB")} under ${r.license || "CC BY 4.0"}. You may reuse with attribution. For questions, contact ${r.author_name || "the author"} or the RICH editorial team. Cite as: ${r.author_name || "RICH"} (${new Date(r.created_at).getFullYear()}). ${r.title}. RICH Knowledge Repository.`
   );
   return paras;
 }
@@ -54,32 +54,32 @@ export default async function ResourcePage({ params }: { params: Promise<{ slug:
             {r.cluster && <span className="w-fit bg-white/15 border border-white/20 px-2.5 py-1 text-[11px] font-bold uppercase tracking-widest text-white">{r.cluster}</span>}
             {r.is_featured && <span className="w-fit bg-amber-400 px-2.5 py-1 text-[11px] font-bold uppercase tracking-widest text-[#1a221a]">Featured</span>}
           </div>
-          <h1 className="mt-3 text-[30px] lg:text-[36px] font-medium leading-tight text-white" style={{ fontFamily: "Playfair Display, serif" }}>{title}</h1>
+          <h1 className="mt-3 text-[30px] lg:text-[36px] font-medium leading-tight text-white" style={{ fontFamily: "Playfair Display, serif" }}>{String(title).replaceAll("—", "-")}</h1>
           <p className="mt-2 text-[14px] text-white/75">{new Date(r.created_at).toLocaleDateString("en-GB", { day: "2-digit", month: "short", year: "numeric" })} • {r.author_name || "RICH Team"}{r.author_email ? ` • ${r.author_email}` : ""} {r.license ? `• ${r.license}` : ""}</p>
         </div>
       </div>
 
       <div className="mx-auto max-w-[720px] px-6 py-10 lg:px-0">
-        <p className="text-[19px] font-light leading-8 text-[var(--text-mid)] border-l-2 border-[#4a8c3f] pl-4 italic">{r.summary || r.abstract || ""}</p>
+        <p className="text-[19px] font-light leading-8 text-[var(--text-mid)] border-l-2 border-[#4a8c3f] pl-4 italic">{String(r.summary || r.abstract || "").replaceAll("—", "-")}</p>
 
         <div className="mt-8 space-y-5">
           {bodyParas.map((para, i) => (
-            <p key={i} className="text-[17px] font-light leading-8 text-[var(--text-dark)] whitespace-pre-wrap break-words">{para}</p>
+            <p key={i} className="text-[17px] font-light leading-8 text-[var(--text-dark)] whitespace-pre-wrap break-words">{String(para).replaceAll("—", "-")}</p>
           ))}
         </div>
 
         <div className="mt-10 rounded-[12px] border border-[var(--border)] bg-[var(--off-white)]/60 dark:bg-white/5 overflow-hidden divide-y divide-[var(--border)]">
           {[
             ["Collection", collectionLabel],
-            ["Resource type", r.content_type || "—"],
-            ["Geography", r.geography || "—"],
-            ["Themes", r.themes || "—"],
-            ["Cluster", r.cluster || "—"],
-            ["Scaling pathway", r.pathway || "—"],
-            ["Audience", r.audience || "—"],
-            ["Author / organisation", `${r.author_name || "—"}${r.author_email ? ` • ${r.author_email}` : ""}`],
-            ["Publication date", r.publication_date || "—"],
-            ["License", r.license || "—"],
+            ["Resource type", r.content_type || "-"],
+            ["Geography", r.geography || "-"],
+            ["Themes", r.themes || "-"],
+            ["Cluster", r.cluster || "-"],
+            ["Scaling pathway", r.pathway || "-"],
+            ["Audience", r.audience || "-"],
+            ["Author / organisation", `${r.author_name || "-"}${r.author_email ? ` • ${r.author_email}` : ""}`],
+            ["Publication date", r.publication_date || "-"],
+            ["License", r.license || "-"],
           ].map(([k, v]) => (
             <div key={k} className="grid grid-cols-[150px_1fr] gap-3 px-4 py-3">
               <span className="text-[12px] font-bold uppercase tracking-widest text-[var(--text-light)]">{k}</span>

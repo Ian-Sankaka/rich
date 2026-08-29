@@ -69,7 +69,7 @@ export async function PATCH(req: NextRequest) {
 
   // Admin: status change (publish/decline) with optional notes
   if (body.status) {
-    if (!isAdmin) return NextResponse.json({ error: "Forbidden — admin only" }, { status: 403 });
+    if (!isAdmin) return NextResponse.json({ error: "Forbidden - admin only" }, { status: 403 });
     const id = String(body.id || "").trim();
     const status = String(body.status || "").trim();
     const notes = String(body.notes || body.review_notes || "").trim().slice(0, 2000);
@@ -97,7 +97,7 @@ export async function PATCH(req: NextRequest) {
     const { rows: existing } = await pool.query(`select id, user_id, status from public.resources where id=$1`, [id]);
     if (!existing.length) return NextResponse.json({ error: "Not found" }, { status: 404 });
     const ownerId = String(existing[0].user_id);
-    if (ownerId !== String(sess.id) && !isAdmin) return NextResponse.json({ error: "Forbidden — not owner" }, { status: 403 });
+    if (ownerId !== String(sess.id) && !isAdmin) return NextResponse.json({ error: "Forbidden - not owner" }, { status: 403 });
     if (!isAdmin && existing[0].status !== "declined") return NextResponse.json({ error: "Only declined submissions can be edited" }, { status: 400 });
 
     const title = String(body.title || "").trim().slice(0, 120);

@@ -8,7 +8,7 @@ export async function GET(req: NextRequest) {
   if (!token) return NextResponse.json({ user: null }, { status: 401 });
   const payload = await verifySession(token);
   if (!payload) return NextResponse.json({ user: null }, { status: 401 });
-  // include avatar from DB if present — ensure column exists and is TEXT (production may be varchar(255))
+  // include avatar from DB if present - ensure column exists and is TEXT (production may be varchar(255))
   try {
     const { pool } = await import("@/lib/db");
     try {

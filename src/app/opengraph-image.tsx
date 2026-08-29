@@ -43,7 +43,7 @@ export default async function Image() {
           Knowledge Repository
         </div>
         <div style={{ marginTop: 16, color: "rgba(255,255,255,0.8)", fontSize: 22, maxWidth: 900 }}>
-          Africa&apos;s Central Platform for Climate AI Knowledge — research, case studies, ecosystem insights and policy resources.
+          Africa&apos;s Central Platform for Climate AI Knowledge - research, case studies, ecosystem insights and policy resources.
         </div>
         <div style={{ marginTop: 24, color: "#a0d88a", fontSize: 14, letterSpacing: 4, fontWeight: 700 }}>RICH.AFRICA · REGIONAL INNOVATION AND CLIMATE HUB</div>
       </div>

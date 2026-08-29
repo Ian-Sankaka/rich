@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Terms of Service — RICH",
+  title: "Terms of Service - RICH",
   description: "Terms of Service for the Regional Innovation and Climate Hub (RICH) Knowledge Repository.",
 };
 
@@ -13,7 +13,7 @@ export default function TermsPage() {
         <h1 className="mt-3 text-[36px] font-medium leading-tight text-[var(--text-dark)]" style={{ fontFamily: "Playfair Display, serif" }}>
           Terms of Service
         </h1>
-        <p className="mt-3 text-[14px] text-[var(--text-light)]">Last updated: 29 August 2026 — Regional Innovation and Climate Hub (RICH)</p>
+        <p className="mt-3 text-[14px] text-[var(--text-light)]">Last updated: 29 August 2026 - Regional Innovation and Climate Hub (RICH)</p>
 
         <div className="mt-10 space-y-10 text-[15px] font-light leading-7 text-[var(--text-mid)]">
           <section>
@@ -59,7 +59,7 @@ export default function TermsPage() {
             <ul className="mt-3 list-disc pl-6 space-y-1">
               <li>Do not upload unlawful, infringing, defamatory, or harmful content; spam; malware; or content that harvests personal data.</li>
               <li>Do not attempt to bypass security, scrape at scale without permission, or interfere with the Platform&apos;s operation.</li>
-              <li>Respect attribution — cite resources properly and do not misrepresent affiliation with RICH/LDRI.</li>
+              <li>Respect attribution - cite resources properly and do not misrepresent affiliation with RICH/LDRI.</li>
             </ul>
           </section>
 
@@ -93,7 +93,7 @@ export default function TermsPage() {
             <h2 className="text-[18px] font-bold text-[var(--text-dark)]">9. Termination</h2>
             <p className="mt-3">
               We may suspend or terminate access for breach of these Terms, legal requirements, or to protect the Platform. You may delete
-              your account via the dashboard or by emailing us — see Privacy Policy for data retention.
+              your account via the dashboard or by emailing us - see Privacy Policy for data retention.
             </p>
           </section>
 
@@ -116,7 +116,7 @@ export default function TermsPage() {
           <section className="rounded-[8px] border border-[var(--border)] bg-[var(--off-white)] dark:bg-[#1a221a] p-6">
             <h2 className="text-[16px] font-bold text-[var(--text-dark)]">Contact</h2>
             <p className="mt-2 text-[14px] leading-6">
-              Regional Innovation and Climate Hub (RICH) — Local Development Research Institute<br />
+              Regional Innovation and Climate Hub (RICH) - Local Development Research Institute<br />
               Email: <a href="mailto:thinking@developlocal.org" className="text-[#4a8c3f] underline">thinking@developlocal.org</a>
               <br />
               Phone: <a href="tel:+254718610298" className="text-[#4a8c3f] underline">+254 718 610298</a>

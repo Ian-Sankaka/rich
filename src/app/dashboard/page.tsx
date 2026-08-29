@@ -34,11 +34,11 @@ type Submission = {
 
 const initial: Submission[] = [
   { id: "1", title: "Embedding Indigenous Knowledge in Regional Policy Frameworks", collection: "Policy Resources", author: "A. Okoro", authorEmail: "", date: "28 Feb 2026", dateTime: "28 Feb 2026, 09:00 AM", createdAtRaw: "", status: "published", excerpt: "Plain-language synthesis of AU/EAC frameworks with NDC alignment checklist. Ready for repository.", abstract: "Plain-language synthesis of AU/EAC frameworks with NDC alignment checklist. Ready for repository.", type: "Policy Brief", geography: "Pan-African", themes: "Climate Adaptation", cluster: "Governance & Ethics", pathway: "Systemic Adoption", audience: "Policymakers", licensing: "CC BY 4.0 (Open)", publicationDate: "2026-02-28", reviewNotes: "" },
-  { id: "2", title: "Early Warning Systems in the Horn of Africa — LDRI Deployment", collection: "Innovation Case Studies", author: "M. Irura", authorEmail: "", date: "27 Feb 2026", dateTime: "27 Feb 2026, 09:00 AM", createdAtRaw: "", status: "published", excerpt: "Lived case covering deployment, failures, and scaling pathway for EWS. Primary evidence.", abstract: "Lived case covering deployment, failures, and scaling pathway for EWS. Primary evidence.", type: "Case Study", geography: "East Africa", themes: "Early Warning", cluster: "Deployment & Scale", pathway: "Scale-up", audience: "Innovators", licensing: "CC BY 4.0 (Open)", publicationDate: "2026-02-27", reviewNotes: "" },
-  { id: "3", title: "Climate AI Ecosystem Map 2026 — East Africa", collection: "Ecosystem Insights", author: "L. Mutuku", authorEmail: "", date: "26 Feb 2026", dateTime: "26 Feb 2026, 09:00 AM", createdAtRaw: "", status: "in_review", excerpt: "Sector briefing with funder landscape and trend signals. Awaiting editorial review.", abstract: "Sector briefing with funder landscape and trend signals. Awaiting editorial review.", type: "Synthesis Report", geography: "East Africa", themes: "Data & Infrastructure", cluster: "Data & Infrastructure", pathway: "Pilot", audience: "Funders", licensing: "CC BY 4.0 (Open)", publicationDate: "2026-02-26", reviewNotes: "" },
-  { id: "4", title: "Community Drone Mapping for Flood Resilience — Turkana Pilot", collection: "Innovation Case Studies", author: "J. Kamau", authorEmail: "", date: "25 Feb 2026", dateTime: "25 Feb 2026, 09:00 AM", createdAtRaw: "", status: "pending", excerpt: "Case study submission via open pathway. Needs consistent structure check.", abstract: "Case study submission via open pathway. Needs consistent structure check.", type: "Case Study", geography: "Kenya", themes: "Water", cluster: "Deployment & Scale", pathway: "Pilot", audience: "Researchers", licensing: "CC BY 4.0 (Open)", publicationDate: "2026-02-25", reviewNotes: "" },
+  { id: "2", title: "Early Warning Systems in the Horn of Africa - LDRI Deployment", collection: "Innovation Case Studies", author: "M. Irura", authorEmail: "", date: "27 Feb 2026", dateTime: "27 Feb 2026, 09:00 AM", createdAtRaw: "", status: "published", excerpt: "Lived case covering deployment, failures, and scaling pathway for EWS. Primary evidence.", abstract: "Lived case covering deployment, failures, and scaling pathway for EWS. Primary evidence.", type: "Case Study", geography: "East Africa", themes: "Early Warning", cluster: "Deployment & Scale", pathway: "Scale-up", audience: "Innovators", licensing: "CC BY 4.0 (Open)", publicationDate: "2026-02-27", reviewNotes: "" },
+  { id: "3", title: "Climate AI Ecosystem Map 2026 - East Africa", collection: "Ecosystem Insights", author: "L. Mutuku", authorEmail: "", date: "26 Feb 2026", dateTime: "26 Feb 2026, 09:00 AM", createdAtRaw: "", status: "in_review", excerpt: "Sector briefing with funder landscape and trend signals. Awaiting editorial review.", abstract: "Sector briefing with funder landscape and trend signals. Awaiting editorial review.", type: "Synthesis Report", geography: "East Africa", themes: "Data & Infrastructure", cluster: "Data & Infrastructure", pathway: "Pilot", audience: "Funders", licensing: "CC BY 4.0 (Open)", publicationDate: "2026-02-26", reviewNotes: "" },
+  { id: "4", title: "Community Drone Mapping for Flood Resilience - Turkana Pilot", collection: "Innovation Case Studies", author: "J. Kamau", authorEmail: "", date: "25 Feb 2026", dateTime: "25 Feb 2026, 09:00 AM", createdAtRaw: "", status: "pending", excerpt: "Case study submission via open pathway. Needs consistent structure check.", abstract: "Case study submission via open pathway. Needs consistent structure check.", type: "Case Study", geography: "Kenya", themes: "Water", cluster: "Deployment & Scale", pathway: "Pilot", audience: "Researchers", licensing: "CC BY 4.0 (Open)", publicationDate: "2026-02-25", reviewNotes: "" },
   { id: "5", title: "Responsible AI Governance Toolkit for County Governments", collection: "Policy Resources", author: "S. Njeri", authorEmail: "", date: "24 Feb 2026", dateTime: "24 Feb 2026, 09:00 AM", createdAtRaw: "", status: "pending", excerpt: "Checklist and template for county-level procurement of climate AI tools.", abstract: "Checklist and template for county-level procurement of climate AI tools.", type: "Policy Brief", geography: "Kenya", themes: "Responsible AI", cluster: "Governance & Ethics", pathway: "Validation", audience: "Government Staff", licensing: "CC BY 4.0 (Open)", publicationDate: "2026-02-24", reviewNotes: "" },
-  { id: "6", title: "Smallholder Advisory Chatbot — Scaling from SMS to WhatsApp", collection: "Research Outputs", author: "P. Ochieng", authorEmail: "", date: "22 Feb 2026", dateTime: "22 Feb 2026, 09:00 AM", createdAtRaw: "", status: "pending", excerpt: "Working paper with plain-language summary and key finding: adoption +18%.", abstract: "Working paper with plain-language summary and key finding: adoption +18%.", type: "Working Paper", geography: "Pan-African", themes: "Food & Agriculture", cluster: "Models & Tools", pathway: "Scale-up", audience: "Researchers", licensing: "CC BY 4.0 (Open)", publicationDate: "2026-02-22", reviewNotes: "" },
+  { id: "6", title: "Smallholder Advisory Chatbot - Scaling from SMS to WhatsApp", collection: "Research Outputs", author: "P. Ochieng", authorEmail: "", date: "22 Feb 2026", dateTime: "22 Feb 2026, 09:00 AM", createdAtRaw: "", status: "pending", excerpt: "Working paper with plain-language summary and key finding: adoption +18%.", abstract: "Working paper with plain-language summary and key finding: adoption +18%.", type: "Working Paper", geography: "Pan-African", themes: "Food & Agriculture", cluster: "Models & Tools", pathway: "Scale-up", audience: "Researchers", licensing: "CC BY 4.0 (Open)", publicationDate: "2026-02-22", reviewNotes: "" },
 ];
 
 function StatusBadge({ s }: { s: Status }) {
@@ -149,7 +149,7 @@ export default function DashboardPage() {
     if (displayName === "" && userName !== "there") setDisplayName(userName);
   }, [userName, displayName]);
 
-  // fetch user-submitted resources and show as New for review — admin sees ALL users
+  // fetch user-submitted resources and show as New for review - admin sees ALL users
   useEffect(() => {
     fetch("/api/resources", { credentials: "include", cache: "no-store" })
       .then((r) => (r.ok ? r.json() : null))
@@ -250,7 +250,7 @@ export default function DashboardPage() {
     const f = e.target.files?.[0];
     if (!f) return;
     if (f.size > 2 * 1024 * 1024) { toast("Image must be < 2MB", "error"); return; }
-    // only allow raster images — block svg/xml which can contain scripts
+    // only allow raster images - block svg/xml which can contain scripts
     if (!/^image\/(png|jpe?g|webp|gif)$/i.test(f.type)) { toast("Only PNG, JPEG, WEBP or GIF allowed", "error"); return; }
     const r = new FileReader();
     r.onload = () => { setAvatar(String(r.result)); toast("Profile image updated - save to keep", "info"); };
@@ -581,7 +581,7 @@ export default function DashboardPage() {
         </div>
       )}
 
-      {/* CENTERED VIEW MODAL with blur — like new submission */}
+      {/* CENTERED VIEW MODAL with blur - like new submission */}
       {selected && (
         <div className="fixed inset-0 z-40 flex items-center justify-center p-4">
           <div onClick={() => setSelected(null)} className="absolute inset-0 bg-black/50 backdrop-blur-sm animate-[toast-in_0.2s_ease]" />
@@ -606,16 +606,16 @@ export default function DashboardPage() {
               </div>
               <div className="grid gap-0 rounded-[12px] border border-[var(--border)] divide-y divide-[var(--border)] overflow-hidden bg-[var(--off-white)]/60 dark:bg-white/5">
                 {[
-                  ["Resource type", selected.type || "—"],
+                  ["Resource type", selected.type || "-"],
                   ["Collection", selected.collection],
-                  ["Geography", selected.geography || "—"],
-                  ["Themes", selected.themes || "—"],
-                  ["Cluster", selected.cluster || "—"],
-                  ["Scaling pathway", selected.pathway || "—"],
-                  ["Audience", selected.audience || "—"],
-                  ["Author / organisation", `${selected.author || "—"}${selected.authorEmail ? ` • ${selected.authorEmail}` : ""}`],
-                  ["Publication date", selected.publicationDate || "—"],
-                  ["Licensing", selected.licensing || "—"],
+                  ["Geography", selected.geography || "-"],
+                  ["Themes", selected.themes || "-"],
+                  ["Cluster", selected.cluster || "-"],
+                  ["Scaling pathway", selected.pathway || "-"],
+                  ["Audience", selected.audience || "-"],
+                  ["Author / organisation", `${selected.author || "-"}${selected.authorEmail ? ` • ${selected.authorEmail}` : ""}`],
+                  ["Publication date", selected.publicationDate || "-"],
+                  ["Licensing", selected.licensing || "-"],
                   ["Submitted", selected.dateTime || selected.date],
                 ].map(([k, v]) => (
                   <div key={k} className="grid grid-cols-[150px_1fr] gap-3 px-4 py-3">
@@ -662,7 +662,7 @@ export default function DashboardPage() {
             <div className="p-6 space-y-4">
               <div>
                 <label className="text-[12px] font-bold uppercase tracking-widest text-[var(--text-light)]">Decline notes *</label>
-                <textarea value={declineNotes} onChange={(e) => setDeclineNotes(e.target.value)} rows={4} placeholder="Explain why this is declined and what to improve — visible to the contributor in their dashboard." className="mt-2 w-full rounded-[8px] border border-[var(--border)] bg-white dark:bg-white/5 px-4 py-3 text-[14px] leading-6 outline-none focus:border-red-400 focus:ring-4 focus:ring-red-100 dark:focus:ring-red-900/30" />
+                <textarea value={declineNotes} onChange={(e) => setDeclineNotes(e.target.value)} rows={4} placeholder="Explain why this is declined and what to improve - visible to the contributor in their dashboard." className="mt-2 w-full rounded-[8px] border border-[var(--border)] bg-white dark:bg-white/5 px-4 py-3 text-[14px] leading-6 outline-none focus:border-red-400 focus:ring-4 focus:ring-red-100 dark:focus:ring-red-900/30" />
                 <p className="mt-1.5 text-[12px] text-[var(--text-light)]">{declineNotes.length}/2000 • at least 10 characters</p>
               </div>
               <div className="flex gap-3">

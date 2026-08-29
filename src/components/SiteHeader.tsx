@@ -23,19 +23,19 @@ export default function SiteHeader() {
 
   return (
     <header className="sticky top-0 z-50 bg-white dark:bg-[#111] border-b border-[#e8ece8] dark:border-white/5 overflow-x-clip">
-      <div className="mx-auto max-w-[1140px] flex h-[62px] items-center justify-between px-4 sm:px-6">
+      <div className="mx-auto max-w-[1140px] flex h-[93px] items-center justify-between px-4 sm:px-6">
         <Link href="/" className="flex items-center gap-[10px] shrink-0">
           <span className="flex h-9 w-9 items-center justify-center rounded-[4px] bg-[var(--green-accent)] text-white font-black text-[19px]" style={{ fontFamily: 'Roboto, sans-serif' }}>R</span>
           <span className="text-[16px] font-bold tracking-[0.08em] text-[#1a221a] dark:text-white uppercase">RICH</span>
         </Link>
 
         <nav className="hidden lg:flex items-center">
-          <Link href="/" className="h-[62px] flex items-center px-[14px] text-[13.5px] font-bold tracking-[0.1em] uppercase text-[#6db862] border-b-2 border-[#6db862]">Home</Link>
-          <Link href="/#about" className="h-[62px] flex items-center px-[14px] text-[13.5px] font-bold tracking-[0.1em] uppercase text-[#5a5e5a] dark:text-white/75 hover:text-[#1a221a] dark:hover:text-white border-b-2 border-transparent">The Hub</Link>
-          <Link href="/#principles" className="h-[62px] flex items-center px-[14px] text-[13.5px] font-bold tracking-[0.1em] uppercase text-[#5a5e5a] dark:text-white/75 hover:text-[#1a221a] dark:hover:text-white border-b-2 border-transparent">About AI4D</Link>
-          <Link href="/#phases" className="h-[62px] flex items-center px-[14px] text-[13.5px] font-bold tracking-[0.1em] uppercase text-[#5a5e5a] dark:text-white/75 hover:text-[#1a221a] dark:hover:text-white border-b-2 border-transparent">Our Approach</Link>
-          <Link href="/collections" className="h-[62px] flex items-center px-[14px] text-[13.5px] font-bold tracking-[0.1em] uppercase text-[#5a5e5a] dark:text-white/75 hover:text-[#1a221a] dark:hover:text-white border-b-2 border-transparent">Repository</Link>
-          <Link href="#contact" className="h-[62px] flex items-center px-[14px] text-[13.5px] font-bold tracking-[0.1em] uppercase text-[#5a5e5a] dark:text-white/75 hover:text-[#1a221a] dark:hover:text-white border-b-2 border-transparent">Contact</Link>
+          <Link href="/" className="h-[93px] flex items-center px-[14px] text-[13.5px] font-bold tracking-[0.1em] uppercase text-[#6db862] border-b-2 border-[#6db862]">Home</Link>
+          <Link href="/#about" className="h-[93px] flex items-center px-[14px] text-[13.5px] font-bold tracking-[0.1em] uppercase text-[#5a5e5a] dark:text-white/75 hover:text-[#1a221a] dark:hover:text-white border-b-2 border-transparent">The Hub</Link>
+          <Link href="/#principles" className="h-[93px] flex items-center px-[14px] text-[13.5px] font-bold tracking-[0.1em] uppercase text-[#5a5e5a] dark:text-white/75 hover:text-[#1a221a] dark:hover:text-white border-b-2 border-transparent">About AI4D</Link>
+          <Link href="/#phases" className="h-[93px] flex items-center px-[14px] text-[13.5px] font-bold tracking-[0.1em] uppercase text-[#5a5e5a] dark:text-white/75 hover:text-[#1a221a] dark:hover:text-white border-b-2 border-transparent">Our Approach</Link>
+          <Link href="/collections" className="h-[93px] flex items-center px-[14px] text-[13.5px] font-bold tracking-[0.1em] uppercase text-[#5a5e5a] dark:text-white/75 hover:text-[#1a221a] dark:hover:text-white border-b-2 border-transparent">Repository</Link>
+          <Link href="#contact" className="h-[93px] flex items-center px-[14px] text-[13.5px] font-bold tracking-[0.1em] uppercase text-[#5a5e5a] dark:text-white/75 hover:text-[#1a221a] dark:hover:text-white border-b-2 border-transparent">Contact</Link>
         </nav>
 
         <div className="flex items-center gap-2">
@@ -64,8 +64,8 @@ export default function SiteHeader() {
       </div>
       {mobileOpen && (
         <>
-          <div className="fixed inset-0 top-[62px] bg-black/20 backdrop-blur-sm lg:hidden z-40" onClick={() => setMobileOpen(false)} aria-hidden="true" />
-          <div className="absolute top-[62px] left-0 right-0 bg-white dark:bg-[#111] border-b border-[#e8ece8] dark:border-white/10 shadow-xl lg:hidden z-50 animate-[toast-in_0.2s_ease]">
+          <div className="fixed inset-0 top-[93px] bg-black/20 backdrop-blur-sm lg:hidden z-40" onClick={() => setMobileOpen(false)} aria-hidden="true" />
+          <div className="absolute top-[93px] left-0 right-0 bg-white dark:bg-[#111] border-b border-[#e8ece8] dark:border-white/10 shadow-xl lg:hidden z-50 animate-[toast-in_0.2s_ease]">
             <nav className="mx-auto max-w-[1140px] flex flex-col p-4 gap-1 pb-6">
               <Link href="/" onClick={() => setMobileOpen(false)} className="flex h-11 items-center px-3 text-[16px] font-medium text-[#1a221a] dark:text-white hover:bg-[#f7f6f4] dark:hover:bg-white/10 rounded-md transition-colors">Home</Link>
               <Link href="/#about" onClick={() => setMobileOpen(false)} className="flex h-11 items-center px-3 text-[16px] font-medium text-[#5a5e5a] dark:text-white/80 hover:bg-[#f7f6f4] dark:hover:bg-white/10 rounded-md transition-colors">The Hub</Link>

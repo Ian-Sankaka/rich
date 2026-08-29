@@ -29,7 +29,7 @@ export async function POST(req: NextRequest) {
     // mitigate enumeration: do existence check but return generic on conflict
     const exists = await pool.query("select id from public.users where email = $1 limit 1", [cleanEmail]);
     if (exists.rowCount && exists.rowCount > 0) {
-      // do not reveal existence — generic success-like message with 200
+      // do not reveal existence - generic success-like message with 200
       // To keep backwards compat with UI expecting 409, we still return 409 but with generic wording
       // Prefer 200 with message "If this email is not registered, account created. Check inbox for verification."
       return NextResponse.json({ error: "An account with this email already exists. Try signing in instead." }, { status: 409 });

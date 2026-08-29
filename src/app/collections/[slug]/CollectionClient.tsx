@@ -27,7 +27,7 @@ export default function CollectionClient({ resources, collectionTitle }: { resou
   const [tag, setTag] = useState("all");
   const [featuredOnly, setFeaturedOnly] = useState(false);
 
-  // derive all tag options — comprehensive: cluster, type, geography, themes, pathway, audience
+  // derive all tag options - comprehensive: cluster, type, geography, themes, pathway, audience
   const tags = useMemo(() => {
     const s = new Set<string>();
     resources.forEach((r) => {
@@ -65,7 +65,7 @@ export default function CollectionClient({ resources, collectionTitle }: { resou
     <div>
       <div className="mt-6 flex flex-col gap-4 rounded-[12px] border border-[var(--border)] bg-white dark:bg-[#1a221a] p-4">
         <div className="flex flex-col sm:flex-row gap-3">
-          <input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Search full text — title, abstract, author, tags…" className="flex-1 rounded-[8px] border border-[var(--border)] bg-[var(--off-white)] dark:bg-white/5 px-4 py-3 text-[14px] outline-none focus:border-[#4a8c3f] focus:ring-4 focus:ring-[#4a8c3f]/10" />
+          <input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Search full text - title, abstract, author, tags…" className="flex-1 rounded-[8px] border border-[var(--border)] bg-[var(--off-white)] dark:bg-white/5 px-4 py-3 text-[14px] outline-none focus:border-[#4a8c3f] focus:ring-4 focus:ring-[#4a8c3f]/10" />
           <select value={tag} onChange={(e) => setTag(e.target.value)} className="w-full sm:w-56 rounded-[8px] border border-[var(--border)] bg-white dark:bg-[#1a221a] px-3 py-3 text-[14px]">
             {tags.map((t) => (
               <option key={t} value={t}>{t === "all" ? "All tags" : t}</option>
@@ -79,7 +79,7 @@ export default function CollectionClient({ resources, collectionTitle }: { resou
       </div>
 
       {filtered.length === 0 ? (
-        <p className="mt-8 text-center text-[14px] text-[var(--text-light)]">No matches — try a different tag or search.</p>
+        <p className="mt-8 text-center text-[14px] text-[var(--text-light)]">No matches - try a different tag or search.</p>
       ) : (
         <>
           <div className="mt-8 grid gap-6 md:grid-cols-2">
@@ -90,8 +90,8 @@ export default function CollectionClient({ resources, collectionTitle }: { resou
                   {r.cluster && <span className="rounded-full bg-[#f7f6f4] dark:bg-white/5 border border-[var(--border)] px-2.5 py-1 text-[11px] font-bold uppercase tracking-widest text-[var(--text-light)]">{r.cluster}</span>}
                   {r.is_featured && <span className="rounded-full bg-amber-100 text-amber-800 border border-amber-200 px-2.5 py-1 text-[11px] font-bold uppercase">Featured</span>}
                 </div>
-                <h3 className="mt-3 text-[18px] font-bold leading-tight text-[var(--text-dark)] line-clamp-2">{r.title}</h3>
-                <p className="mt-2 text-[14px] leading-6 text-[var(--text-mid)] line-clamp-3">{r.summary || r.abstract || ""}</p>
+                <h3 className="mt-3 text-[18px] font-medium leading-tight text-[#1a3a1a] dark:text-[#d6e8d6] line-clamp-2" style={{ fontWeight: 500 }}>{r.title.replaceAll("—", "-")}</h3>
+                <p className="mt-2 text-[14px] leading-6 text-[var(--text-mid)] line-clamp-3">{(r.summary || r.abstract || "").replaceAll("—", "-")}</p>
                 <div className="mt-3 flex flex-wrap gap-1.5">
                   {r.geography && r.geography.split(",").map((g) => <span key={g} className="rounded-full border border-[var(--border)] bg-[var(--off-white)] dark:bg-white/5 px-2 py-1 text-[11px]">{g.trim()}</span>)}
                   {r.themes && r.themes.split(",").map((t) => <span key={t} className="rounded-full border border-[var(--border)] bg-[var(--off-white)] dark:bg-white/5 px-2 py-1 text-[11px]">{t.trim()}</span>)}
@@ -104,7 +104,7 @@ export default function CollectionClient({ resources, collectionTitle }: { resou
           </div>
           {filtered.length > visible && (
             <div className="mt-8 text-center">
-              <button onClick={() => setVisible((v) => v + 10)} className="rounded-[8px] border border-[var(--border)] bg-white dark:bg-[#1a221a] px-6 py-3 text-[14px] font-bold hover:border-[#4a8c3f] hover:text-[#4a8c3f] transition-colors">Load more — {filtered.length - visible} remaining</button>
+              <button onClick={() => setVisible((v) => v + 10)} className="rounded-[8px] border border-[var(--border)] bg-white dark:bg-[#1a221a] px-6 py-3 text-[14px] font-bold hover:border-[#4a8c3f] hover:text-[#4a8c3f] transition-colors">Load more - {filtered.length - visible} remaining</button>
             </div>
           )}
           {filtered.length > 10 && filtered.length <= visible && (

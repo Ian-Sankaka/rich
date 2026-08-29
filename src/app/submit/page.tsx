@@ -7,7 +7,7 @@ const TYPES = ["Research Paper", "Case Study", "Policy Brief", "Working Paper", 
 const COLLECTIONS = [
   { v: "research_outputs", l: "Research Outputs" },
   { v: "innovation_case_studies", l: "Innovation Case Studies" },
-  { v: "ecosystem_insights", l: "Ecosystem Insights — Phase 2" },
+  { v: "ecosystem_insights", l: "Ecosystem Insights - Phase 2" },
   { v: "policy_resources", l: "Policy Resources" },
 ];
 const GEOGRAPHIES = ["Pan-African", "East Africa", "West Africa", "Southern Africa", "Central Africa", "North Africa", "Kenya", "Rwanda", "Nigeria", "South Africa", "Ethiopia"];
@@ -176,7 +176,7 @@ export default function SubmitPage() {
 
                  <div>
                   <label className="text-[13px] font-bold tracking-[0.1em] uppercase text-[#5a5e5a] dark:text-white/60">Title <span className="text-red-500">*</span></label>
-                  <input value={title} onChange={(e) => setTitle(e.target.value)} placeholder="e.g. Early warning for smallholder farmers in Turkana — a deployment case study" className="mt-2 w-full rounded-[4px] border border-[#d6d9d6] dark:border-white/10 bg-white dark:bg-white/5 px-4 py-3.5 text-[15px] outline-none focus:border-[#4a8c3f] focus:ring-4 focus:ring-[#4a8c3f]/15 transition-all" />
+                  <input value={title} onChange={(e) => setTitle(e.target.value)} placeholder="e.g. Early warning for smallholder farmers in Turkana - a deployment case study" className="mt-2 w-full rounded-[4px] border border-[#d6d9d6] dark:border-white/10 bg-white dark:bg-white/5 px-4 py-3.5 text-[15px] outline-none focus:border-[#4a8c3f] focus:ring-4 focus:ring-[#4a8c3f]/15 transition-all" />
                   <p className="mt-1.5 text-[14px] text-[#9aa09a]">{title.length}/120 recommended</p>
                 </div>
 

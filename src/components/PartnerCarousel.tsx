@@ -7,11 +7,11 @@ type Partner = {
   src?: string;
 };
 
-/* Real logos fetched from public CDNs — all normalized into uniform 168×64 white cards */
+/* Real logos fetched from public CDNs - all normalized into uniform 168×64 white cards */
 const partners: Partner[] = [
-  { name: "LDRI", src: "https://www.developlocal.org/wp-content/uploads/2015/01/LDRI-logo-web-02.png" },
-  { name: "AfriClimate AI", short: "AfriClimate AI" },
-  { name: "AI4D Africa", short: "AI4D Africa" },
+  { name: "LDRI", src: "https://www.developlocal.org/wp-content/uploads/2023/07/LDRI-new-logo-2021-RETINA.png" },
+  { name: "AfriClimate AI", src: "https://africlimate.ai/lovable-uploads/52cbd433-d762-4492-94e6-45e816d18bc9.png" },
+  { name: "AI4D", src: "https://www.ai4d.ai/logo.svg" },
   { name: "IDRC", src: "https://upload.wikimedia.org/wikipedia/commons/0/0a/International_Development_Research_Centre_logo.svg" },
   { name: "FCDO", src: "https://cdn.worldvectorlogo.com/logos/foreign-commonwealth-office.svg" },
 ];
@@ -21,13 +21,13 @@ function Card({ p }: { p: Partner }) {
   const showImg = !!p.src && !failed;
 
   return (
-    <div className="flex h-[68px] w-[176px] shrink-0 items-center justify-center rounded-[4px] border border-[var(--border)] bg-white px-4 shadow-[0_1px_2px_rgba(0,0,0,0.04)] transition-all duration-300 hover:shadow-md hover:border-[#4a8c3f]/20 hover:-translate-y-0.5">
+    <div className="flex h-[123px] w-[318px] shrink-0 items-center justify-center px-3 bg-transparent transition-opacity duration-300 hover:opacity-80">
       {showImg ? (
         // eslint-disable-next-line @next/next/no-img-element
         <img
           src={p.src!}
           alt={p.name}
-          className="max-h-[32px] max-w-[150px] w-auto object-contain"
+          className="max-h-[57px] max-w-[270px] w-auto object-contain"
           loading="lazy"
           onError={() => setFailed(true)}
         />

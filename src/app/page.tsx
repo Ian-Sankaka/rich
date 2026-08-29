@@ -2,14 +2,26 @@ import Link from "next/link";
 import { articles } from "@/lib/articles";
 import PartnerCarousel from "@/components/PartnerCarousel";
 import StatsAnimated from "@/components/StatsAnimated";
-import { Users, Search, Unlock, Globe, RefreshCw, Layers } from "lucide-react";
+import { Users, Search, Unlock, Globe, RefreshCw, Layers, FileText, Globe2, ScrollText, ArrowUpRight } from "lucide-react";
 
-const collections = [
+const collections: {
+  slug: string;
+  accent: string;
+  accentSoft: string;
+  iconBg: string;
+  Icon: React.ComponentType<{ className?: string }>;
+  title: string;
+  badge: string;
+  live: boolean;
+  desc: string;
+  count: string;
+}[] = [
   {
     slug: "research_outputs",
     accent: "#4a8c3f",
-    iconBg: "#e8f3e5",
-    icon: "🔎",
+    accentSoft: "#e8f3e5",
+    iconBg: "#dbeed6",
+    Icon: Search,
     title: "Research Outputs",
     badge: "Phase 1",
     live: true,
@@ -19,8 +31,9 @@ const collections = [
   {
     slug: "innovation_case_studies",
     accent: "#2d6a8f",
-    iconBg: "#e5eff5",
-    icon: "📄",
+    accentSoft: "#e5eff5",
+    Icon: FileText,
+    iconBg: "#d9e9f5",
     title: "Innovation Case Studies",
     badge: "Phase 1",
     live: true,
@@ -30,8 +43,9 @@ const collections = [
   {
     slug: "ecosystem_insights",
     accent: "#8a5a2a",
-    iconBg: "#f5ede5",
-    icon: "🌍",
+    accentSoft: "#f5ede5",
+    Icon: Globe2,
+    iconBg: "#f2e2cc",
     title: "Ecosystem Insights",
     badge: "Phase 2",
     live: false,
@@ -41,8 +55,9 @@ const collections = [
   {
     slug: "policy_resources",
     accent: "#6a2d6a",
-    iconBg: "#f0e5f5",
-    icon: "📜",
+    accentSoft: "#f0e5f5",
+    Icon: ScrollText,
+    iconBg: "#e8d5f4",
     title: "Policy Resources",
     badge: "Phase 1",
     live: true,
@@ -54,9 +69,9 @@ const collections = [
 export default function Home() {
   return (
     <>
-      {/* HERO + STATS as full viewport block - fills viewport to stats */}
-      <div className="flex flex-col min-h-[calc(100dvh-96px)]">
-        <section className="relative flex flex-1 min-h-[480px] sm:min-h-[520px] items-center overflow-hidden">
+      {/* HERO + STATS as full viewport block - fills viewport to stats (header 93px + topbar ~34px ≈ 127px) */}
+      <div className="flex flex-col min-h-[calc(100dvh-127px)]">
+        <section className="relative flex flex-1 min-h-[300px] sm:min-h-[360px] lg:min-h-[400px] items-center overflow-hidden">
           <div className="absolute inset-0 bg-cover bg-center" style={{ backgroundImage: "url('https://images.unsplash.com/photo-1500382017468-9049fed747ef?w=1400&q=80')", animation: "hero-zoom 1.4s ease-out both" }} />
           <div className="absolute inset-0" style={{ background: "linear-gradient(135deg, rgba(18,50,18,0.82) 0%, rgba(30,70,20,0.55) 60%, rgba(10,30,10,0.4) 100%)" }} />
           <div className="relative z-10 mx-auto w-full max-w-[1140px] px-4 sm:px-6 lg:px-10 py-12 sm:py-16" style={{ animation: "hero-fade 0.9s ease-out 0.3s both" }}>
@@ -68,7 +83,7 @@ export default function Home() {
               Africa&apos;s Central Platform for Climate AI Knowledge
             </h1>
             <p className="mt-4 sm:mt-[22px] max-w-[520px] text-[15px] font-light leading-7 text-white/85">
-              Research outputs, innovation case studies, ecosystem insights, and policy resources — practical knowledge built for innovators, policymakers, and partners working on climate AI in Africa.
+              Research outputs, innovation case studies, ecosystem insights, and policy resources - practical knowledge built for innovators, policymakers, and partners working on climate AI in Africa.
             </p>
             <div className="mt-7 sm:mt-9 flex flex-col sm:flex-row flex-wrap gap-3">
               <Link href="/collections" className="inline-flex items-center justify-center rounded-[4px] bg-[#4a8c3f] px-6 sm:px-7 py-3 sm:py-[13px] text-[14px] sm:text-[15px] font-bold tracking-[0.07em] uppercase text-white hover:bg-[#2d5a27] hover:shadow-lg hover:-translate-y-0.5 active:translate-y-0 transition-all duration-300 ease-out touch-manipulation">
@@ -108,22 +123,72 @@ export default function Home() {
           <p className="text-[13px] font-bold tracking-[0.18em] uppercase text-[#4a8c3f]">The Four Collections</p>
           <h2 className="mt-3.5 text-[28px] sm:text-[35px] font-medium leading-none text-[var(--text-dark)] text-balance" style={{ fontFamily: "Playfair Display, serif" }}>What the Repository Hosts</h2>
           <p className="mt-4 max-w-[640px] text-[15px] font-light leading-7 text-[var(--text-mid)]">Four collections, each with a distinct purpose, audience, and content standard. Every resource belongs to one collection and carries a standardised set of tags to enable filtering across all of them.</p>
-          <div className="mt-12 grid gap-6 lg:grid-cols-2">
-            {collections.map((c) => (
-              <Link key={c.slug} href={`/collections/${c.slug}`} className="group relative overflow-hidden rounded-[4px] bg-white dark:bg-[#1a221a] border border-[var(--border)] p-8 hover:border-[#4a8c3f] hover:shadow-lg hover:-translate-y-1 transition-all duration-300 ease-out">
-                <span className="absolute left-0 top-0 h-full w-1 transition-all duration-300 group-hover:w-1.5" style={{ background: c.accent }} />
-                <div className="flex h-11 w-11 items-center justify-center rounded-[4px] text-[22px] transition-transform duration-300 group-hover:scale-105 group-hover:rotate-1" style={{ background: c.iconBg }}>{c.icon}</div>
-                <div className="mt-5 flex items-center gap-2.5">
-                  <h3 className="text-[22px] font-medium text-[var(--text-dark)]" style={{ fontFamily: "Playfair Display, serif" }}>{c.title}</h3>
-                  <span className={`rounded-[2px] px-2 py-0.5 text-[12px] font-bold tracking-[0.1em] uppercase ${c.live ? "bg-[#e8f3e5] text-[#4a8c3f] dark:bg-[#1a3a1a] dark:text-[#6db862]" : "bg-[#fdf3e5] text-[#b07a20]"}`}>{c.badge}</span>
+          <div className="mt-12 grid gap-6 lg:grid-cols-2 lg:gap-7">
+            {collections.map((c) => {
+              const CIcon = c.Icon;
+              return (
+              <Link
+                key={c.slug}
+                href={`/collections/${c.slug}`}
+                className="group relative flex flex-col overflow-hidden rounded-[16px] bg-white dark:bg-[#1a221a] border border-[var(--border)] hover:border-transparent hover:shadow-[0_20px_48px_rgba(16,42,16,0.12)] hover:-translate-y-1.5 active:translate-y-0 active:shadow-[0_8px_20px_rgba(16,42,16,0.10)] transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--green-accent)] focus-visible:ring-offset-2"
+              >
+                {/* top accent bar */}
+                <span className="absolute top-0 left-0 right-0 h-[3px] transition-all duration-300 group-hover:h-[4px]" style={{ background: c.accent }} />
+                {/* soft radial glow on hover */}
+                <span
+                  aria-hidden
+                  className="pointer-events-none absolute -top-24 -right-24 h-[380px] w-[380px] rounded-full opacity-0 group-hover:opacity-[0.08] blur-3xl transition-opacity duration-500"
+                  style={{ background: `radial-gradient(closest-side, ${c.accent}, transparent)` }}
+                />
+                <span
+                  aria-hidden
+                  className="pointer-events-none absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500"
+                  style={{ background: `linear-gradient(180deg, ${c.accent}07 0%, transparent 45%)` }}
+                />
+
+                <div className="relative p-7 lg:p-8 flex flex-col flex-1">
+                  {/* header row: icon + badge + live dot */}
+                  <div className="flex items-start justify-between gap-4">
+                    <div
+                      className="flex h-[52px] w-[52px] shrink-0 items-center justify-center rounded-[12px] border shadow-sm transition-all duration-300 group-hover:scale-[1.04] group-hover:rotate-[-1.5deg] group-hover:shadow-md"
+                      style={{ background: c.iconBg, borderColor: `${c.accent}18`, color: c.accent }}
+                    >
+                      <CIcon className="h-[22px] w-[22px]" />
+                    </div>
+                    <div className="flex items-center gap-2 shrink-0">
+                      <span className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-[11px] font-bold tracking-[0.08em] uppercase backdrop-blur ${c.live ? "bg-[#e8f3e5] text-[#2d5a27] dark:bg-[#1e3a1e] dark:text-[#a0d88a] border border-[#4a8c3f]/15" : "bg-[#fdf3e5] text-[#8a5a2a] border border-[#b07a20]/15"}`}>
+                        <span className={`h-1.5 w-1.5 rounded-full ${c.live ? "bg-[#4a8c3f] animate-pulse" : "bg-[#b07a20]"}`} />
+                        {c.badge}
+                      </span>
+                    </div>
+                  </div>
+
+                  <h3 className="mt-5 text-[21px] lg:text-[22px] font-medium leading-tight tracking-[-0.01em] text-[#1a3a1a] dark:text-[#eef5ee] group-hover:text-[#14331a] dark:group-hover:text-white transition-colors" style={{ fontFamily: "Playfair Display, serif" }}>
+                    {c.title}
+                  </h3>
+                  <p className="mt-2.5 text-[14.5px] font-light leading-[1.75] text-[var(--text-mid)] line-clamp-none flex-1">
+                    {c.desc}
+                  </p>
+
+                  {/* meta footer */}
+                  <div className="mt-6 flex items-center justify-between gap-4 border-t border-[var(--border)]/80 pt-5">
+                    <span className="inline-flex items-center gap-2 text-[12.5px] font-bold tracking-[0.06em] uppercase text-[var(--text-light)]">
+                      <span className="hidden sm:inline-flex h-6 items-center rounded-full bg-[var(--off-white)] dark:bg-white/[0.06] border border-[var(--border)] px-2.5 text-[11px] font-bold tracking-[0.06em] uppercase text-[var(--text-mid)]">
+                        {c.count}
+                      </span>
+                      <span className="sm:hidden">{c.count}</span>
+                    </span>
+                    <span className="inline-flex h-9 w-9 items-center justify-center rounded-full border border-[var(--border)] bg-white dark:bg-white/[0.04] text-[var(--text-light)] group-hover:border-[var(--green-accent)] group-hover:bg-[var(--green-accent)] group-hover:text-white shadow-sm group-hover:shadow-[0_8px_16px_rgba(74,140,63,0.25)] transition-all duration-300 group-hover:translate-x-0.5">
+                      <ArrowUpRight className="h-4 w-4 transition-transform duration-300 group-hover:rotate-12 group-hover:scale-110" />
+                    </span>
+                  </div>
                 </div>
-                <p className="mt-2.5 text-[15px] font-light leading-7 text-[var(--text-mid)]">{c.desc}</p>
-                <div className="mt-5 flex items-center justify-between border-t border-[var(--border)] pt-4">
-                  <span className="text-[14px] font-bold tracking-[0.06em] uppercase text-[var(--text-light)]">{c.count}</span>
-                  <span className="text-[20px] font-light text-[#4a8c3f] group-hover:translate-x-1 transition-transform">→</span>
-                </div>
+
+                {/* bottom subtle line that fills on hover */}
+                <span className="pointer-events-none absolute bottom-0 left-0 h-[2px] w-0 group-hover:w-full transition-all duration-700 ease-out" style={{ background: c.accent }} />
               </Link>
-            ))}
+              );
+            })}
           </div>
         </div>
       </section>
@@ -136,23 +201,23 @@ export default function Home() {
           <p className="mt-4 max-w-[640px] text-[15px] font-light leading-7 text-[var(--text-mid)]">Seven principles govern every decision about the repository, from content standards to navigation to governance. They are drawn from best practice in knowledge management and comparable repositories in the climate and development sector.</p>
           <div className="mt-12 grid gap-5 lg:grid-cols-3">
             {[
-              [Users, "Practitioner First", "Every design decision starts with the innovator, policymaker, or funder trying to use the knowledge. Academic rigour matters, but not at the cost of usability."],
-              [Search, "Findable Before Comprehensive", "50 well-organised resources outperform 500 that cannot be navigated. Structure and quality come before volume. Effective taxonomy reduces search time by up to 60 percent."],
-              [Unlock, "Open by Default", "Content is freely accessible without registration wherever possible. Paywalled content is not hosted or linked as a primary resource."],
-              [Globe, "Africa-Centred", "The repository serves the African climate AI ecosystem. Global resources are relevant only insofar as they apply to African innovators in African conditions."],
-              [RefreshCw, "Living, Not Archived", "Content is reviewed, updated, and retired on a defined cycle. Every item has an owner, a review date, and a clear process for updating or archiving."],
-              [Layers, "Multiple Entry Points", "Different users arrive with different questions. The repository provides at minimum three ways to find any piece of content: by collection, by tag, and by search."],
-            ].map(([Icon, title, desc]) => (
-              <div key={title as string} className="group relative flex flex-col rounded-[4px] border border-[var(--border)] bg-white dark:bg-[#1a221a] p-7 lg:p-8 overflow-hidden hover:border-[#4a8c3f]/30 hover:shadow-[0_16px_40px_rgba(26,58,26,0.08)] hover:-translate-y-1 transition-all duration-300">
-                <span className="pointer-events-none absolute left-0 top-0 h-1 w-full bg-[#1a3a1a] opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+              { Icon: Users, title: "Practitioner First", desc: "Every design decision starts with the innovator, policymaker, or funder trying to use the knowledge. Academic rigour matters, but not at the cost of usability.", bg: "#dbeed6", accent: "#4a8c3f" },
+              { Icon: Search, title: "Findable", desc: "50 well-organised resources outperform 500 that cannot be navigated. Structure and quality come before volume. Effective taxonomy reduces search time by up to 60 percent.", bg: "#d9e9f5", accent: "#2d6a8f" },
+              { Icon: Unlock, title: "Open by Default", desc: "Content is freely accessible without registration wherever possible. Paywalled content is not hosted or linked as a primary resource.", bg: "#fef3c7", accent: "#b45309" },
+              { Icon: Globe, title: "Africa-Centred", desc: "The repository serves the African climate AI ecosystem. Global resources are relevant only insofar as they apply to African innovators in African conditions.", bg: "#f2e2cc", accent: "#8a5a2a" },
+              { Icon: RefreshCw, title: "Living, Not Archived", desc: "Content is reviewed, updated, and retired on a defined cycle. Every item has an owner, a review date, and a clear process for updating or archiving.", bg: "#d1fae5", accent: "#0f7a4a" },
+              { Icon: Layers, title: "Multiple Entry Points", desc: "Different users arrive with different questions. The repository provides at minimum three ways to find any piece of content: by collection, by tag, and by search.", bg: "#e8d5f4", accent: "#6a2d6a" },
+            ].map(({ Icon, title, desc, bg, accent }) => (
+              <div key={title} className="group relative flex flex-col rounded-[12px] border border-[var(--border)] bg-white dark:bg-[#1a221a] p-7 lg:p-8 overflow-hidden hover:border-transparent hover:shadow-[0_16px_40px_rgba(26,58,26,0.08)] hover:-translate-y-1 transition-all duration-300">
+                <span className="pointer-events-none absolute left-0 top-0 h-1 w-full opacity-0 group-hover:opacity-100 transition-opacity duration-300" style={{ background: accent }} />
                 <div className="flex items-center gap-3">
-                  <span className="flex h-10 w-10 items-center justify-center rounded-[4px] bg-[#1a3a1a] text-white group-hover:bg-[#4a8c3f] transition-colors duration-300">
-                    {(Icon as any) && <Icon className="h-5 w-5" />}
+                  <span className="flex h-10 w-10 items-center justify-center rounded-[10px] border shadow-sm transition-all duration-300 group-hover:scale-[1.03] group-hover:shadow-md" style={{ background: bg, borderColor: `${accent}1a`, color: accent }}>
+                    <Icon className="h-5 w-5" />
                   </span>
-                  <span className="h-px flex-1 bg-[var(--border)] group-hover:bg-[#4a8c3f]/15 transition-colors duration-300" />
+                  <span className="h-px flex-1 bg-[var(--border)] group-hover:bg-black/5 dark:group-hover:bg-white/10 transition-colors duration-300" />
                 </div>
-                <h4 className="mt-5 text-[15px] font-bold tracking-[0.06em] uppercase leading-tight text-[#1a3a1a] dark:text-white">{title as string}</h4>
-                <p className="mt-3 text-[15px] font-light leading-7 text-[var(--text-mid)] flex-1">{desc as string}</p>
+                <h4 className="mt-5 text-[15px] font-bold tracking-[0.06em] uppercase leading-tight text-[#1a3a1a] dark:text-white">{title}</h4>
+                <p className="mt-3 text-[15px] font-light leading-7 text-[var(--text-mid)] flex-1">{desc}</p>
               </div>
             ))}
           </div>

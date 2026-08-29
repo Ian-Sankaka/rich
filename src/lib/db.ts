@@ -10,7 +10,7 @@ function getPool() {
   const url = process.env.DATABASE_URL;
   if (!url) throw new Error("DATABASE_URL not set");
   // Supabase pooler (pgbouncer) uses a certificate chain that Node can't verify by default
-  // — Supabase docs use sslmode=require which maps to rejectUnauthorized:false.
+  // - Supabase docs use sslmode=require which maps to rejectUnauthorized:false.
   // For non-Supabase hosts we enforce verification.
   const isLocal = url.includes("localhost") || url.includes("127.0.0.1");
   const isSupabasePooler = url.includes("supabase.com") || url.includes("pooler.supabase");

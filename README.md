@@ -1,4 +1,4 @@
-# RICH Knowledge Repository — Next.js + Postgres (Supabase-ready)
+# RICH Knowledge Repository - Next.js + Postgres (Supabase-ready)
 
 Africa's central platform for climate AI knowledge. Frontend matches `RICH_repository_homepage.html` with Next.js components, light/dark mode, and Postgres backend via Supabase.
 
@@ -28,15 +28,15 @@ npx prisma generate
 npx prisma db push        # or npx prisma migrate dev --name init
 npx prisma studio
 ```
-Schema (`prisma/schema.prisma`): `User`, `Resource`, `Tag`, `Requirement` — uses `postgresql` provider. Tables map to `users`, `resources`, `tags`, `requirements` with `_ResourceTags` join.
+Schema (`prisma/schema.prisma`): `User`, `Resource`, `Tag`, `Requirement` - uses `postgresql` provider. Tables map to `users`, `resources`, `tags`, `requirements` with `_ResourceTags` join.
 
 ## Routes
-- `/` — homepage (Hero, Stats, About, Collections, Principles, Phases, Articles, CTA, Partners)
-- `/collections` + `/collections/[slug]` — four collections
-- `/submit` — intake form (wiring to `/api/resources`)
-- `/articles` — insights listing
-- `/login`, `/register` — auth (POST to `/api/login`, `/api/register`)
-- `/dashboard` — stats & recent resources (swap to Prisma query)
+- `/` - homepage (Hero, Stats, About, Collections, Principles, Phases, Articles, CTA, Partners)
+- `/collections` + `/collections/[slug]` - four collections
+- `/submit` - intake form (wiring to `/api/resources`)
+- `/articles` - insights listing
+- `/login`, `/register` - auth (POST to `/api/login`, `/api/register`)
+- `/dashboard` - stats & recent resources (swap to Prisma query)
 
 ## Auth API
 - `POST /api/register` { name, email, password } → hashes with bcrypt, inserts into `users` (409 if exists)
@@ -45,7 +45,7 @@ Schema (`prisma/schema.prisma`): `User`, `Resource`, `Tag`, `Requirement` — us
 Both use `src/lib/db.ts` singleton `Pool` with `ssl: { rejectUnauthorized: false }` for Supabase pooler.
 
 ## Light / Dark mode
-- `src/components/ThemeProvider` + `ThemeToggle` — class-based `.dark` on `<html>`, persisted in `localStorage`, respects `prefers-color-scheme`. Toggle in header.
+- `src/components/ThemeProvider` + `ThemeToggle` - class-based `.dark` on `<html>`, persisted in `localStorage`, respects `prefers-color-scheme`. Toggle in header.
 - Tailwind v4: `@custom-variant dark (&:where(.dark, .dark *));` in `globals.css`. Section backgrounds use CSS vars (`--background`, `--off-white`, etc.) with `.dark` overrides.
 
 ## Supabase deploy

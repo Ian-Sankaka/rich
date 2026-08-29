@@ -9,7 +9,7 @@ export default function ArticlesPage() {
         Articles and Insights
       </h1>
       <p className="mt-3 max-w-2xl text-[17px] font-light leading-7 text-[var(--text-mid)]">
-        Practical analysis from the RICH community — innovation scaling, failure analysis, and policy guidance for African climate AI.
+        Practical analysis from the RICH community - innovation scaling, failure analysis, and policy guidance for African climate AI.
       </p>
 
       <div className="mt-10 grid gap-7 md:grid-cols-2 lg:grid-cols-3">

@@ -5,7 +5,7 @@ const MAX_AGE = 60 * 60 * 8; // 8h
 
 function getSecret(): Uint8Array {
   const s = process.env.JWT_SECRET;
-  if (!s) throw new Error("JWT_SECRET not set — add to .env");
+  if (!s) throw new Error("JWT_SECRET not set - add to .env");
   return new TextEncoder().encode(s);
 }
 

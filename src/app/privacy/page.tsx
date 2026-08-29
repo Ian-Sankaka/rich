@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Privacy Policy — RICH",
+  title: "Privacy Policy - RICH",
   description: "Privacy Policy for the Regional Innovation and Climate Hub (RICH) Knowledge Repository.",
 };
 
@@ -13,7 +13,7 @@ export default function PrivacyPage() {
         <h1 className="mt-3 text-[36px] font-medium leading-tight text-[var(--text-dark)]" style={{ fontFamily: "Playfair Display, serif" }}>
           Privacy Policy
         </h1>
-        <p className="mt-3 text-[14px] text-[var(--text-light)]">Last updated: 29 August 2026 — Regional Innovation and Climate Hub (RICH), hosted by Local Development Research Institute</p>
+        <p className="mt-3 text-[14px] text-[var(--text-light)]">Last updated: 29 August 2026 - Regional Innovation and Climate Hub (RICH), hosted by Local Development Research Institute</p>
 
         <div className="mt-10 space-y-10 text-[15px] font-light leading-7 text-[var(--text-mid)]">
           <section>
@@ -21,7 +21,7 @@ export default function PrivacyPage() {
             <p className="mt-3">
               The RICH Knowledge Repository (<strong>richafrica.vercel.app</strong>) is operated by the Regional Innovation and Climate
               Hub (RICH), hosted by the Local Development Research Institute (LDRI), Nairobi, Kenya. Contact:{" "}
-              <a href="mailto:thinking@developlocal.org" className="text-[#4a8c3f] underline">thinking@developlocal.org</a> — Tel:{" "}
+              <a href="mailto:thinking@developlocal.org" className="text-[#4a8c3f] underline">thinking@developlocal.org</a> - Tel:{" "}
               <a href="tel:+254718610298" className="text-[#4a8c3f] underline">+254 718 610298</a>.
             </p>
           </section>
@@ -55,7 +55,7 @@ export default function PrivacyPage() {
             </p>
             <ul className="mt-2 list-disc pl-6 space-y-1">
               <li><strong>Secure hosting and database providers</strong> who store and process data on our behalf</li>
-              <li><strong>Google</strong> (only if you choose Sign in with Google — Google&apos;s Privacy Policy applies)</li>
+              <li><strong>Google</strong> (only if you choose Sign in with Google - Google&apos;s Privacy Policy applies)</li>
             </ul>
             <p className="mt-3">All providers are contractually bound to protect your data. We do not transfer data outside Kenya/EU except as needed to provide the service.</p>
           </section>
@@ -63,7 +63,7 @@ export default function PrivacyPage() {
           <section>
             <h2 className="text-[18px] font-bold text-[var(--text-dark)]">5. Retention</h2>
             <p className="mt-3">
-              Account data is kept while your account is active. You may request deletion at any time — we will delete or anonymise your
+              Account data is kept while your account is active. You may request deletion at any time - we will delete or anonymise your
               account within 30 days, except where retention is required by law or to resolve disputes. Published resources remain
               attributed unless you request removal.
             </p>
@@ -82,7 +82,7 @@ export default function PrivacyPage() {
           <section>
             <h2 className="text-[18px] font-bold text-[var(--text-dark)]">7. Security</h2>
             <p className="mt-3">
-              We use HTTPS, encrypted passwords, secure httpOnly cookies and role-based access controls. No system is 100% secure —
+              We use HTTPS, encrypted passwords, secure httpOnly cookies and role-based access controls. No system is 100% secure -
               please use a strong, unique password and notify us of any suspected breach.
             </p>
           </section>
@@ -103,7 +103,7 @@ export default function PrivacyPage() {
           <section className="rounded-[8px] border border-[var(--border)] bg-[var(--off-white)] dark:bg-[#1a221a] p-6">
             <h2 className="text-[16px] font-bold text-[var(--text-dark)]">Contact</h2>
             <p className="mt-2 text-[14px] leading-6">
-              Regional Innovation and Climate Hub (RICH) — Local Development Research Institute<br />
+              Regional Innovation and Climate Hub (RICH) - Local Development Research Institute<br />
               Email: <a href="mailto:thinking@developlocal.org" className="text-[#4a8c3f] underline">thinking@developlocal.org</a>
               <br />
               Phone: <a href="tel:+254718610298" className="text-[#4a8c3f] underline">+254 718 610298</a>
