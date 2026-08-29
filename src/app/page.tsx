@@ -54,33 +54,35 @@ const collections = [
 export default function Home() {
   return (
     <>
-      {/* HERO */}
-      <section className="relative flex h-[680px] items-center overflow-hidden">
-        <div className="absolute inset-0 bg-cover bg-center" style={{ backgroundImage: "url('https://images.unsplash.com/photo-1500382017468-9049fed747ef?w=1400&q=80')" }} />
-        <div className="absolute inset-0" style={{ background: "linear-gradient(135deg, rgba(18,50,18,0.82) 0%, rgba(30,70,20,0.55) 60%, rgba(10,30,10,0.4) 100%)" }} />
-        <div className="relative z-10 mx-auto w-full max-w-[1140px] px-6 lg:px-10">
-          <div className="flex items-center gap-2.5 text-[13px] font-bold tracking-[0.18em] uppercase text-[#6db862] mb-[18px]">
-            <span className="h-0.5 w-7 bg-[#6db862]" />
-            Knowledge Repository
+      {/* HERO + STATS as full viewport block - fills viewport to stats */}
+      <div className="flex flex-col min-h-[calc(100dvh-96px)]">
+        <section className="relative flex flex-1 min-h-[520px] items-center overflow-hidden">
+          <div className="absolute inset-0 bg-cover bg-center" style={{ backgroundImage: "url('https://images.unsplash.com/photo-1500382017468-9049fed747ef?w=1400&q=80')", animation: "hero-zoom 1.4s ease-out both" }} />
+          <div className="absolute inset-0" style={{ background: "linear-gradient(135deg, rgba(18,50,18,0.82) 0%, rgba(30,70,20,0.55) 60%, rgba(10,30,10,0.4) 100%)" }} />
+          <div className="relative z-10 mx-auto w-full max-w-[1140px] px-6 lg:px-10 py-16" style={{ animation: "hero-fade 0.9s ease-out 0.3s both" }}>
+            <div className="flex items-center gap-2.5 text-[13px] font-bold tracking-[0.18em] uppercase text-[#6db862] mb-[18px]">
+              <span className="h-0.5 w-7 bg-[#6db862]" />
+              Knowledge Repository
+            </div>
+            <h1 className="max-w-[640px] text-[42px] lg:text-[52px] font-medium leading-[1.15] text-white" style={{ fontFamily: "Playfair Display, serif" }}>
+              Africa&apos;s Central Platform for Climate AI Knowledge
+            </h1>
+            <p className="mt-[22px] max-w-[520px] text-[15px] font-light leading-7 text-white/80">
+              Research outputs, innovation case studies, ecosystem insights, and policy resources — practical knowledge built for innovators, policymakers, and partners working on climate AI in Africa.
+            </p>
+            <div className="mt-9 flex flex-wrap gap-3.5">
+              <Link href="/collections" className="inline-flex items-center rounded-[4px] bg-[#4a8c3f] px-7 py-[13px] text-[15px] font-bold tracking-[0.07em] uppercase text-white hover:bg-[#2d5a27] hover:shadow-lg hover:-translate-y-0.5 transition-all duration-300 ease-out">
+                Browse the Repository
+              </Link>
+              <Link href="/submit" className="inline-flex items-center rounded-[4px] border border-white/40 px-7 py-[13px] text-[15px] font-bold tracking-[0.07em] uppercase text-white/90 hover:border-white hover:text-white hover:bg-white/10 transition-all duration-300 ease-out">
+                Submit a Resource
+              </Link>
+            </div>
           </div>
-          <h1 className="max-w-[640px] text-[42px] lg:text-[52px] font-medium leading-[1.15] text-white" style={{ fontFamily: "Playfair Display, serif" }}>
-            Africa&apos;s Central Platform for Climate AI Knowledge
-          </h1>
-          <p className="mt-[22px] max-w-[520px] text-[15px] font-light leading-7 text-white/80">
-            Research outputs, innovation case studies, ecosystem insights, and policy resources — practical knowledge built for innovators, policymakers, and partners working on climate AI in Africa.
-          </p>
-          <div className="mt-9 flex flex-wrap gap-3.5">
-            <Link href="/collections" className="inline-flex items-center rounded-[4px] bg-[#4a8c3f] px-7 py-[13px] text-[15px] font-bold tracking-[0.07em] uppercase text-white hover:bg-[#2d5a27] hover:shadow-lg hover:-translate-y-0.5 transition-all duration-300 ease-out">
-              Browse the Repository
-            </Link>
-            <Link href="/submit" className="inline-flex items-center rounded-[4px] border border-white/40 px-7 py-[13px] text-[15px] font-bold tracking-[0.07em] uppercase text-white/90 hover:border-white hover:text-white hover:bg-white/10 transition-all duration-300 ease-out">
-              Submit a Resource
-            </Link>
-          </div>
-        </div>
-      </section>
+        </section>
 
-      <StatsAnimated />
+        <StatsAnimated />
+      </div>
 
       {/* ABOUT */}
       <section className="py-[72px] bg-[var(--background)] dark:bg-[var(--background)]">

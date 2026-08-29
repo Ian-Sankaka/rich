@@ -68,3 +68,12 @@ body {
   to { opacity: 1; transform: translateX(0) translateY(0) scale(1); }
 }
 .animate-toast-in { animation: toast-in 0.34s cubic-bezier(0.16,1,0.3,1); }
+
+@keyframes hero-zoom {
+  0% { transform: scale(1.08); opacity: 0; }
+  100% { transform: scale(1); opacity: 1; }
+}
+@keyframes hero-fade {
+  0% { opacity: 0; transform: translateY(12px); }
+  100% { opacity: 1; transform: translateY(0); }
+}
