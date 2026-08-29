@@ -2,8 +2,22 @@ import { NextResponse } from "next/server";
 import { createServerClient } from "@supabase/ssr";
 import { cookies } from "next/headers";
 
+function getOrigin(req: Request): string {
+  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://richafrica.vercel.app";
+  if (process.env.NODE_ENV === "production") {
+    try { return new URL(siteUrl).origin; } catch {}
+  }
+  const fwdHost = req.headers.get("x-forwarded-host");
+  const fwdProto = req.headers.get("x-forwarded-proto") || "https";
+  if (fwdHost) return `${fwdProto}://${fwdHost}`;
+  const host = req.headers.get("host");
+  if (host && !host.includes("localhost")) return `https://${host}`;
+  try { return new URL(req.url).origin; } catch { return siteUrl; }
+}
+
 export async function GET(req: Request) {
-  const { searchParams, origin } = new URL(req.url);
+  const { searchParams } = new URL(req.url);
+  const origin = getOrigin(req);
   const code = searchParams.get("code");
   const next = searchParams.get("next") || "/user/dashboard";
 
