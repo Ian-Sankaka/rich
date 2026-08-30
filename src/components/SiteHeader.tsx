@@ -35,7 +35,7 @@ export default function SiteHeader() {
           <Link href="/#principles" className="h-[93px] flex items-center px-[14px] text-[13.5px] font-bold tracking-[0.1em] uppercase text-[#5a5e5a] dark:text-white/75 hover:text-[#1a221a] dark:hover:text-white border-b-2 border-transparent">About AI4D</Link>
           <Link href="/#phases" className="h-[93px] flex items-center px-[14px] text-[13.5px] font-bold tracking-[0.1em] uppercase text-[#5a5e5a] dark:text-white/75 hover:text-[#1a221a] dark:hover:text-white border-b-2 border-transparent">Our Approach</Link>
           <Link href="/collections" className="h-[93px] flex items-center px-[14px] text-[13.5px] font-bold tracking-[0.1em] uppercase text-[#5a5e5a] dark:text-white/75 hover:text-[#1a221a] dark:hover:text-white border-b-2 border-transparent">Repository</Link>
-          <Link href="#contact" className="h-[93px] flex items-center px-[14px] text-[13.5px] font-bold tracking-[0.1em] uppercase text-[#5a5e5a] dark:text-white/75 hover:text-[#1a221a] dark:hover:text-white border-b-2 border-transparent">Contact</Link>
+          <Link href="/contact" className="h-[93px] flex items-center px-[14px] text-[13.5px] font-bold tracking-[0.1em] uppercase text-[#5a5e5a] dark:text-white/75 hover:text-[#1a221a] dark:hover:text-white border-b-2 border-transparent">Contact</Link>
         </nav>
 
         <div className="flex items-center gap-2">
@@ -72,7 +72,7 @@ export default function SiteHeader() {
               <Link href="/#principles" onClick={() => setMobileOpen(false)} className="flex h-11 items-center px-3 text-[16px] font-medium text-[#5a5e5a] dark:text-white/80 hover:bg-[#f7f6f4] dark:hover:bg-white/10 rounded-md transition-colors">About AI4D</Link>
               <Link href="/#phases" onClick={() => setMobileOpen(false)} className="flex h-11 items-center px-3 text-[16px] font-medium text-[#5a5e5a] dark:text-white/80 hover:bg-[#f7f6f4] dark:hover:bg-white/10 rounded-md transition-colors">Our Approach</Link>
               <Link href="/collections" onClick={() => setMobileOpen(false)} className="flex h-11 items-center px-3 text-[16px] font-medium text-[#5a5e5a] dark:text-white/80 hover:bg-[#f7f6f4] dark:hover:bg-white/10 rounded-md transition-colors">Repository</Link>
-              <Link href="#contact" onClick={() => setMobileOpen(false)} className="flex h-11 items-center px-3 text-[16px] font-medium text-[#5a5e5a] dark:text-white/80 hover:bg-[#f7f6f4] dark:hover:bg-white/10 rounded-md transition-colors">Contact</Link>
+              <Link href="/contact" onClick={() => setMobileOpen(false)} className="flex h-11 items-center px-3 text-[16px] font-medium text-[#5a5e5a] dark:text-white/80 hover:bg-[#f7f6f4] dark:hover:bg-white/10 rounded-md transition-colors">Contact</Link>
               <div className="mt-3 pt-4 border-t border-[#e8ece8] dark:border-white/10 flex flex-col gap-3">
                 {!loading && user ? (
                   <Link href={dashboardHref} onClick={() => setMobileOpen(false)} className="flex h-11 items-center justify-center rounded-[4px] bg-[var(--green-accent)] px-6 text-[15px] font-bold tracking-wide text-white uppercase">Dashboard</Link>

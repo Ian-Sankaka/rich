@@ -13,7 +13,7 @@ const partners: Partner[] = [
   { name: "AfriClimate AI", src: "https://africlimate.ai/lovable-uploads/52cbd433-d762-4492-94e6-45e816d18bc9.png" },
   { name: "AI4D", src: "https://www.ai4d.ai/logo.svg" },
   { name: "IDRC", src: "https://upload.wikimedia.org/wikipedia/commons/0/0a/International_Development_Research_Centre_logo.svg" },
-  { name: "FCDO", src: "https://cdn.worldvectorlogo.com/logos/foreign-commonwealth-office.svg" },
+  { name: "FCDO", src: "https://graph.facebook.com/ForeignCommonwealthAndDevelopmentOffice/picture?type=large" },
 ];
 
 function Card({ p }: { p: Partner }) {

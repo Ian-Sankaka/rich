@@ -21,6 +21,8 @@ const nextConfig: NextConfig = {
               "font-src 'self' https://fonts.gstatic.com",
               "img-src 'self' data: https: blob:",
               "connect-src 'self'",
+              "frame-src 'self' https://www.openstreetmap.org https://maps.google.com https://www.google.com https://maps.gstatic.com",
+              "child-src 'self' https://www.openstreetmap.org https://maps.google.com https://www.google.com",
               "frame-ancestors 'none'",
             ].join("; "),
           },
