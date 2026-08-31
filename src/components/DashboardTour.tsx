@@ -45,7 +45,7 @@ const STEPS: Step[] = [
     desc: "Four counters: Submissions (all time), Pending, In review, Published. Bars fill by share — gives you instant progress across the pipeline.",
     Icon: BarChart3,
     accent: "#4a8c3f",
-    pad: 2,
+    pad: 0,
     radius: "12px",
   },
   {
@@ -137,6 +137,16 @@ function isVisible(el: HTMLElement) {
   return r.width > 0 && r.height > 0;
 }
 
+function toHighlightRadius(elementRadius: string, pad: number) {
+  // element radius like "16px" or "16px 16px ..." -> take first numeric, add pad for concentric outer highlight
+  const m = elementRadius.match(/(\d+(\.\d+)?)/);
+  const base = m ? parseFloat(m[1]) : 0;
+  const hl = base + pad;
+  // keep unit as px; if original was 0, use pad + 8 as soft fallback for grids with no radius
+  if (base === 0) return `${Math.max(8, pad + 8)}px`;
+  return `${hl}px`;
+}
+
 export default function DashboardTour() {
   const [open, setOpen] = useState(false);
   const [step, setStep] = useState(0);
@@ -154,6 +164,13 @@ export default function DashboardTour() {
       const t = setTimeout(() => setOpen(true), 900);
       return () => clearTimeout(t);
     } else setShowTrigger(true);
+  }, []);
+
+  // allow header button to open tour
+  useEffect(() => {
+    const openFromHeader = () => { setStep(0); setOpen(true); setShowTrigger(false); };
+    window.addEventListener("rich-open-tour" as any, openFromHeader);
+    return () => window.removeEventListener("rich-open-tour" as any, openFromHeader);
   }, []);
 
   const close = useCallback((mode: "completed" | "dismissed" | "none" = "dismissed") => {
@@ -195,7 +212,6 @@ export default function DashboardTour() {
     const sel = data.target!;
     let el = document.querySelector(sel) as HTMLElement | null;
     if (el && !isVisible(el)) {
-      // auto-skip hidden left-nav items on mobile
       if (sel.startsWith("#dash-nav-") && isMobile()) {
         setRect(null);
         return;
@@ -203,18 +219,18 @@ export default function DashboardTour() {
       el = null;
     }
     if (!el) { setRect(null); return; }
-    // compute radius: explicit step.radius or element's computed border-radius
-    let radius = data.radius;
-    if (!radius) {
+    // compute radius: explicit step.radius or element's computed border-radius, then expand by pad for concentric highlight
+    let rawRadius = data.radius;
+    if (!rawRadius) {
       try {
         const cs = getComputedStyle(el);
         const br = cs.borderRadius;
-        // borderRadius may be "12px" or "12px 12px ..." — take first token, fallback to 12px if 0
         const first = br.split(" ")[0];
-        radius = first && first !== "0px" ? first : "12px";
-      } catch { radius = "12px"; }
+        rawRadius = first && first !== "0px" ? first : "12px";
+      } catch { rawRadius = "12px"; }
     }
     const pad = data.pad !== undefined ? data.pad : (isMobile() ? 4 : 6);
+    const highlightRadius = toHighlightRadius(rawRadius, pad);
     const headerOffset = 70;
     const r = el.getBoundingClientRect();
     const absTop = r.top + window.scrollY;
@@ -223,10 +239,10 @@ export default function DashboardTour() {
       window.scrollTo({ top: Math.max(0, targetY), behavior: "smooth" });
       setTimeout(() => {
         const rr = el!.getBoundingClientRect();
-        setRect({ top: rr.top - pad, left: rr.left - pad, width: rr.width + pad*2, height: rr.height + pad*2, radius });
+        setRect({ top: rr.top - pad, left: rr.left - pad, width: rr.width + pad*2, height: rr.height + pad*2, radius: highlightRadius });
       }, 460);
     } else {
-      setRect({ top: r.top - pad, left: r.left - pad, width: r.width + pad*2, height: r.height + pad*2, radius });
+      setRect({ top: r.top - pad, left: r.left - pad, width: r.width + pad*2, height: r.height + pad*2, radius: highlightRadius });
     }
   }, [open, centered, data]);
 
@@ -280,17 +296,20 @@ export default function DashboardTour() {
 
   if (!open && !showTrigger) return null;
   const total = STEPS.length;
+  // pct kept for potential future use
   const pct = ((step + 1) / total) * 100;
 
   return (
     <>
+      {/* header handles Take Tour; keep minimal fallback pill only if header button not present - hidden by default */}
       {showTrigger && !open && (
         <button
           onClick={() => { setStep(0); setOpen(true); setShowTrigger(false); }}
-          className="fixed bottom-5 right-5 z-40 flex items-center gap-2 rounded-full bg-[#1a3a1a] px-4 py-3 text-[13px] font-bold tracking-wide text-white shadow-[0_12px_30px_rgba(0,0,0,0.22)] hover:bg-[#14331a] hover:-translate-y-0.5 active:translate-y-0 transition-all border border-white/10"
+          className="hidden fixed bottom-5 right-5 z-40 flex items-center gap-2 rounded-full bg-[#1a3a1a] px-4 py-3 text-[13px] font-bold tracking-wide text-white shadow-[0_12px_30px_rgba(0,0,0,0.22)] hover:bg-[#14331a] hover:-translate-y-0.5 active:translate-y-0 transition-all border border-white/10"
+          aria-hidden
         >
           <span className="flex h-7 w-7 items-center justify-center rounded-full bg-white/15"><Sparkles className="h-4 w-4" /></span>
-          <span className="hidden sm:inline">Take tour</span><span className="sm:hidden">Tour</span>
+          <span className="hidden sm:inline">Take Tour</span><span className="sm:hidden">Tour</span>
         </button>
       )}
       {open && (
@@ -324,7 +343,6 @@ export default function DashboardTour() {
           {centered ? (
             <div className="fixed inset-0 z-[52] flex items-center justify-center p-4">
               <div className="w-full max-w-[520px] max-h-[90vh] overflow-auto rounded-[18px] bg-white dark:bg-[#1a221a] border border-black/10 dark:border-white/10 shadow-[0_24px_64px_rgba(0,0,0,0.28)] animate-[tourPop_0.36s_cubic-bezier(0.16,1,0.3,1)] flex flex-col">
-                <div className="h-1 w-full bg-black/5 dark:bg-white/10"><div className="h-full bg-[#4a8c3f] transition-all duration-300" style={{ width: `${pct}%` }} /></div>
                 <div className="p-7 sm:p-8">
                   <div className="flex items-start justify-between gap-4">
                     <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-[12px] border shadow-sm" style={{ background: `${data.accent}14`, borderColor: `${data.accent}20`, color: data.accent }}>{data.Icon ? <data.Icon className="h-6 w-6" /> : <Sparkles className="h-6 w-6" />}</div>
@@ -333,7 +351,7 @@ export default function DashboardTour() {
                   <p className="mt-4 text-[12px] font-bold tracking-[0.14em] uppercase" style={{ color: data.accent }}>{step===0 ? "Quick tour" : step===total-1 ? "Ready?" : `Step ${step} of ${total-2}`} • {step+1}/{total}</p>
                   <h3 className={`mt-2 text-[22px] font-bold leading-tight text-[#1a3a1a] dark:text-white ${manrope.className}`} style={{ letterSpacing: "-0.01em" }}>{data.title}</h3>
                   <p className="mt-3 text-[15px] font-light leading-7 text-[var(--text-mid)]">{data.desc}</p>
-                  <div className="mt-6 flex items-center gap-1.5">{STEPS.map((_, i) => <span key={i} className={`h-1.5 rounded-full transition-all duration-300 ${i===step ? "w-8 bg-[#4a8c3f]" : i<step ? "w-4 bg-[#4a8c3f]/40" : "w-1.5 bg-black/15 dark:bg-white/15"}`} />)}</div>
+                  <div className="mt-6 flex items-center gap-1.5">{STEPS.map((_, i) => <span key={i} className={`h-2 w-2 rounded-full transition-all duration-300 ${i===step ? "bg-[#4a8c3f] scale-110" : i<step ? "bg-[#4a8c3f]/45" : "bg-black/15 dark:bg-white/18"}`} />)}</div>
                   <div className="mt-6 flex items-center justify-between gap-3">
                     <button onClick={() => close("dismissed")} className="text-[14px] font-semibold text-[var(--text-light)] hover:text-[#4a8c3f]">Skip</button>
                     <div className="flex gap-2">
@@ -346,7 +364,6 @@ export default function DashboardTour() {
             </div>
           ) : rect && tipPos ? (
             <div ref={tipRef} className="fixed z-[52] rounded-[16px] bg-white dark:bg-[#1a221a] border border-black/10 dark:border-white/10 shadow-[0_20px_60px_rgba(0,0,0,0.30)] overflow-hidden animate-[tourPop_0.32s_cubic-bezier(0.16,1,0.3,1)] flex flex-col" style={{ top: tipPos.top, left: tipPos.left, width: tipPos.width }} role="dialog">
-              <div className="h-1 w-full bg-black/5 dark:bg-white/10"><div className="h-full bg-[#4a8c3f] transition-all duration-300" style={{ width: `${pct}%` }} /></div>
               <div className="p-5 sm:p-6">
                 <div className="flex items-start justify-between gap-3">
                   <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-[10px] border shadow-sm" style={{ background: `${data.accent}12`, borderColor: `${data.accent}18`, color: data.accent }}>{data.Icon ? <data.Icon className="h-5 w-5" /> : <Sparkles className="h-5 w-5" />}</div>
@@ -355,7 +372,7 @@ export default function DashboardTour() {
                 <p className="mt-3 text-[11px] font-bold tracking-[0.14em] uppercase" style={{ color: data.accent }}>Step {step} of {total-1} • {step+1}/{total}</p>
                 <h3 className={`mt-1 text-[18px] font-bold leading-tight text-[#1a3a1a] dark:text-white ${manrope.className}`} style={{ letterSpacing: "-0.01em" }}>{data.title}</h3>
                 <p className="mt-2 text-[14px] font-light leading-6 text-[var(--text-mid)]">{data.desc}</p>
-                <div className="mt-4 flex items-center gap-1">{STEPS.map((_, i) => <span key={i} className={`h-1.5 rounded-full transition-all duration-300 ${i===step ? "w-6 bg-[#4a8c3f]" : i<step ? "w-3 bg-[#4a8c3f]/40" : "w-1.5 bg-black/12 dark:bg-white/12"}`} />)}</div>
+                <div className="mt-4 flex items-center gap-1">{STEPS.map((_, i) => <span key={i} className={`h-2 w-2 rounded-full transition-all duration-300 ${i===step ? "bg-[#4a8c3f] scale-110" : i<step ? "bg-[#4a8c3f]/45" : "bg-black/14 dark:bg-white/18"}`} />)}</div>
                 <div className="mt-5 flex items-center justify-between gap-2">
                   <button onClick={() => close("dismissed")} className="text-[13px] font-semibold text-[var(--text-light)] hover:text-[var(--text-dark)]">Skip tour</button>
                   <div className="flex items-center gap-2">

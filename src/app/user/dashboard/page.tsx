@@ -3,7 +3,7 @@ import Link from "next/link";
 import * as React from "react";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { motion, useMotionValue, useTransform, animate } from "framer-motion";
-import { Clock, FileText, CheckCircle, Settings, LayoutDashboard, LogOut, Plus } from "lucide-react";
+import { Clock, FileText, CheckCircle, Settings, LayoutDashboard, LogOut, Plus, Sparkles } from "lucide-react";
 import { useToast } from "@/components/ToastProvider";
 import ThemeToggle from "@/components/ThemeToggle";
 import DashboardTour from "@/components/DashboardTour";
@@ -462,6 +462,7 @@ export default function UserDashboardPage() {
           <div className="flex items-center gap-2">
             <div className="transition-transform duration-300 hover:scale-105 hover:-translate-y-0.5"><ThemeToggle /></div>
             <button onClick={signOut} className="group inline-flex cursor-pointer items-center gap-2 rounded-[4px] border border-[var(--border)] bg-white dark:bg-white/5 px-4 py-2.5 text-[14px] font-bold text-[var(--text-dark)] hover:border-[#4a8c3f] hover:text-[#4a8c3f] hover:shadow-md hover:-translate-y-0.5 active:translate-y-0 transition-all duration-300"><LogOut className="h-4 w-4 transition-transform duration-300 group-hover:translate-x-0.5" /> Sign out</button>
+            <button onClick={() => window.dispatchEvent(new CustomEvent("rich-open-tour"))} className="inline-flex items-center gap-2 rounded-[4px] bg-[#1a3a1a] px-3 sm:px-4 py-2.5 text-[13px] sm:text-[14px] font-bold text-white hover:bg-black shadow-sm hover:shadow-md hover:-translate-y-0.5 active:translate-y-0 transition-all duration-300"><Sparkles className="h-4 w-4" /><span className="hidden sm:inline">Take Tour</span><span className="sm:hidden">Tour</span></button>
           </div>
         </div>
 
