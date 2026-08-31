@@ -1,6 +1,6 @@
 "use client";
 import { useEffect, useState, useCallback, useRef, useLayoutEffect } from "react";
-import { X, ArrowRight, ArrowLeft, Sparkles, LayoutDashboard, BarChart3, Filter, ListChecks, Plus, UserCog, CheckCircle } from "lucide-react";
+import { X, ArrowRight, ArrowLeft, Sparkles, LayoutDashboard, BarChart3, Filter, ListChecks, Plus, UserCog, CheckCircle, Clock } from "lucide-react";
 import { Manrope } from "next/font/google";
 
 const manrope = Manrope({ subsets: ["latin"], display: "swap", weight: ["400","500","600","700","800"] });
@@ -15,6 +15,8 @@ type Step = {
   desc: string;
   Icon?: React.ComponentType<{ className?: string }>;
   accent?: string;
+  pad?: number; // extra outer offset; 0 = hug element, 2 = breathing room
+  radius?: string; // explicit border-radius for highlight; if omitted, auto from element's computed style
 };
 
 const STEPS: Step[] = [
@@ -33,6 +35,8 @@ const STEPS: Step[] = [
     desc: "Welcome card shows your name and quick actions. Contribute Resource opens the 4-step intake — Browse jumps to published collections.",
     Icon: LayoutDashboard,
     accent: "#1a3a1a",
+    pad: 0,
+    radius: "16px",
   },
   {
     id: "stats",
@@ -41,6 +45,8 @@ const STEPS: Step[] = [
     desc: "Four counters: Submissions (all time), Pending, In review, Published. Bars fill by share — gives you instant progress across the pipeline.",
     Icon: BarChart3,
     accent: "#4a8c3f",
+    pad: 2,
+    radius: "12px",
   },
   {
     id: "filters",
@@ -49,6 +55,8 @@ const STEPS: Step[] = [
     desc: "Filter chips (All / Pending / In review / Published) plus search by title. Combine them to surface exactly what needs attention.",
     Icon: Filter,
     accent: "#2d6a8f",
+    pad: 0,
+    radius: "16px",
   },
   {
     id: "list",
@@ -57,6 +65,8 @@ const STEPS: Step[] = [
     desc: "Each card shows title, collection, type, date, and status badge. View opens details — declined items show Edit & resubmit. Empty state invites your first contribution.",
     Icon: ListChecks,
     accent: "#4a8c3f",
+    pad: 0,
+    radius: "16px",
   },
   {
     id: "contribute",
@@ -65,22 +75,48 @@ const STEPS: Step[] = [
     desc: "Tap Contribute Resource for the guided 4-step form: Basics → Taxonomy → Authorship → Review. Submit → Pending → Editorial review within 4 weeks.",
     Icon: Plus,
     accent: "#2d5a27",
+    pad: 1,
+    radius: "4px",
   },
   {
-    id: "sidebar",
-    target: "#dash-sidebar",
-    title: "Navigate",
-    desc: "Left rail (desktop) filters the list by status with live counts. Stays in sync with the filter bar — use either.",
+    id: "nav-my",
+    target: "#dash-nav-my",
+    title: "My Submissions",
+    desc: "All your submissions in one place — live count. Active state matches hover: soft off-white, rounded 4, same as item hover.",
     Icon: LayoutDashboard,
     accent: "#4a8c3f",
+    pad: 0,
+    radius: "4px",
+  },
+  {
+    id: "nav-published",
+    target: "#dash-nav-published",
+    title: "Published",
+    desc: "Only live resources — discoverable in collections and search. Rounded 4 pill count turns green when active.",
+    Icon: CheckCircle,
+    accent: "#4a8c3f",
+    pad: 0,
+    radius: "4px",
+  },
+  {
+    id: "nav-review",
+    target: "#dash-nav-review",
+    title: "In Review",
+    desc: "Pending + In Review combined — your editorial queue. Same hover shape: rounded 4, px-3 py-3, hugging the row.",
+    Icon: Clock,
+    accent: "#4a8c3f",
+    pad: 0,
+    radius: "4px",
   },
   {
     id: "profile",
     target: "#dash-profile",
     title: "Your profile",
-    desc: "Avatar, name, email — tap to open Profile settings. Change photo (≤2MB), name, email, or reset password. Saved to your account and local profile.",
+    desc: "Avatar, name, email — tap to open Profile settings. Change photo (≤2MB), name, email, or reset password. Same rounded 4 card shape.",
     Icon: UserCog,
     accent: "#4a8c3f",
+    pad: 0,
+    radius: "4px",
   },
   {
     id: "done",
@@ -104,7 +140,7 @@ function isVisible(el: HTMLElement) {
 export default function DashboardTour() {
   const [open, setOpen] = useState(false);
   const [step, setStep] = useState(0);
-  const [rect, setRect] = useState<{ top: number; left: number; width: number; height: number } | null>(null);
+  const [rect, setRect] = useState<{ top: number; left: number; width: number; height: number; radius: string } | null>(null);
   const [tipPos, setTipPos] = useState<{ top: number; left: number; width: number } | null>(null);
   const [showTrigger, setShowTrigger] = useState(false);
   const tipRef = useRef<HTMLDivElement>(null);
@@ -158,36 +194,39 @@ export default function DashboardTour() {
     if (!open || centered) { setRect(null); setTipPos(null); return; }
     const sel = data.target!;
     let el = document.querySelector(sel) as HTMLElement | null;
-    // if hidden (e.g. sidebar on mobile), try fallback or skip
     if (el && !isVisible(el)) {
-      // for sidebar on mobile, skip to next (or treat as centered fallback)
-      // just hide highlight and show tooltip centered below
-      const idx = STEPS.findIndex(s => s.target === sel);
-      // if sidebar hidden, auto advance once
-      if (sel === "#dash-sidebar" && isMobile()) {
-        // skip sidebar on mobile
+      // auto-skip hidden left-nav items on mobile
+      if (sel.startsWith("#dash-nav-") && isMobile()) {
         setRect(null);
         return;
       }
       el = null;
     }
     if (!el) { setRect(null); return; }
+    // compute radius: explicit step.radius or element's computed border-radius
+    let radius = data.radius;
+    if (!radius) {
+      try {
+        const cs = getComputedStyle(el);
+        const br = cs.borderRadius;
+        // borderRadius may be "12px" or "12px 12px ..." — take first token, fallback to 12px if 0
+        const first = br.split(" ")[0];
+        radius = first && first !== "0px" ? first : "12px";
+      } catch { radius = "12px"; }
+    }
+    const pad = data.pad !== undefined ? data.pad : (isMobile() ? 4 : 6);
     const headerOffset = 70;
     const r = el.getBoundingClientRect();
     const absTop = r.top + window.scrollY;
     const targetY = absTop - headerOffset - 12;
-    const vTop = window.scrollY + headerOffset;
-    const vBottom = window.scrollY + window.innerHeight - 80;
     if (r.top < headerOffset + 8 || r.bottom > window.innerHeight - 80) {
       window.scrollTo({ top: Math.max(0, targetY), behavior: "smooth" });
       setTimeout(() => {
         const rr = el!.getBoundingClientRect();
-        const pad = isMobile() ? 8 : 10;
-        setRect({ top: rr.top - pad, left: rr.left - pad, width: rr.width + pad*2, height: rr.height + pad*2 });
+        setRect({ top: rr.top - pad, left: rr.left - pad, width: rr.width + pad*2, height: rr.height + pad*2, radius });
       }, 460);
     } else {
-      const pad = isMobile() ? 8 : 10;
-      setRect({ top: r.top - pad, left: r.left - pad, width: r.width + pad*2, height: r.height + pad*2 });
+      setRect({ top: r.top - pad, left: r.left - pad, width: r.width + pad*2, height: r.height + pad*2, radius });
     }
   }, [open, centered, data]);
 
@@ -203,15 +242,14 @@ export default function DashboardTour() {
     return () => { window.removeEventListener("resize", onWin); window.removeEventListener("scroll", onWin); clearInterval(id); cancelAnimationFrame(raf); };
   }, [open, centered, measure]);
 
-  // handle mobile sidebar hidden -> auto skip
+  // auto-skip hidden nav items on mobile
   useEffect(() => {
     if (!open || centered) return;
-    if (data.target === "#dash-sidebar" && isMobile() && rect === null) {
-      // if we failed to measure sidebar because hidden, jump past it after short delay
-      // but only if step is sidebar
+    if (data.target?.startsWith("#dash-nav-") && isMobile() && rect === null) {
       const t = setTimeout(() => {
-        if (step === STEPS.findIndex(s => s.id === "sidebar")) next();
-      }, 600);
+        const idx = STEPS.findIndex(s => s.id === data.id);
+        if (step === idx) next();
+      }, 500);
       return () => clearTimeout(t);
     }
   }, [open, centered, data, rect, step, next]);
@@ -266,14 +304,15 @@ export default function DashboardTour() {
               <div className="fixed z-50 bg-black/55 backdrop-blur-[2.5px] transition-all duration-300" style={{ top: rect.top, left: 0, width: rect.left, height: rect.height }} onClick={() => close("dismissed")} />
               <div className="fixed z-50 bg-black/55 backdrop-blur-[2.5px] transition-all duration-300" style={{ top: rect.top, left: rect.left + rect.width, right: 0, height: rect.height }} onClick={() => close("dismissed")} />
               <div
-                className="fixed z-[51] rounded-[16px] pointer-events-none transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)]"
+                className="fixed z-[51] pointer-events-none transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)]"
                 style={{
                   top: rect.top,
                   left: rect.left,
                   width: rect.width,
                   height: rect.height,
                   background: "transparent",
-                  border: "1.5px solid rgba(255,255,255,0.92)",
+                  borderRadius: rect.radius,
+                  border: "1.5px solid rgba(255,255,255,0.94)",
                   boxShadow: "0 0 0 1px rgba(74,140,63,0.14), 0 10px 36px rgba(0,0,0,0.16), 0 0 0 6px rgba(74,140,63,0.09), inset 0 1px 0 rgba(255,255,255,0.65)",
                 }}
               />

@@ -422,16 +422,16 @@ export default function UserDashboardPage() {
           <span className="ml-auto text-[11px] font-bold tracking-widest text-[var(--text-light)] uppercase">My Dashboard</span>
         </div>
         <nav className="flex-1 overflow-auto p-4 space-y-6">
-          <div className="space-y-2">
+          <div id="dash-sidebar-nav" className="space-y-2">
             {[
-              { label: "My Submissions", count: stats.total, filter: "all" as const, icon: LayoutDashboard },
-              { label: "Published", count: stats.published, filter: "published" as const, icon: CheckCircle },
-              { label: "In Review", count: stats.pending + stats.review, filter: "pending" as const, icon: Clock },
+              { id: "dash-nav-my", label: "My Submissions", count: stats.total, filter: "all" as const, icon: LayoutDashboard },
+              { id: "dash-nav-published", label: "Published", count: stats.published, filter: "published" as const, icon: CheckCircle },
+              { id: "dash-nav-review", label: "In Review", count: stats.pending + stats.review, filter: "pending" as const, icon: Clock },
             ].map((item) => {
               const Icon = item.icon as unknown as React.ComponentType<{ className?: string }>;
               const active = filter === item.filter || (item.filter === "pending" && (filter === "pending" || filter === "in_review"));
               return (
-                <button key={item.label} onClick={() => setFilter(item.filter as Status | "all")} className={`flex w-full items-center gap-3 rounded-[4px] px-3 py-3 text-left text-[16px] transition-colors ${active ? "bg-[var(--off-white)] dark:bg-white/5 font-semibold text-[var(--text-dark)]" : "text-[var(--text-mid)] hover:bg-[var(--off-white)] dark:hover:bg-white/5"}`}>
+                <button id={item.id} key={item.label} onClick={() => setFilter(item.filter as Status | "all")} className={`flex w-full items-center gap-3 rounded-[4px] px-3 py-3 text-left text-[16px] transition-colors ${active ? "bg-[var(--off-white)] dark:bg-white/5 font-semibold text-[var(--text-dark)]" : "text-[var(--text-mid)] hover:bg-[var(--off-white)] dark:hover:bg-white/5"}`}>
                   <Icon className="h-4 w-4 shrink-0" />
                   <span className="flex-1">{item.label}</span>
                   <span className={`rounded-full px-2 py-0.5 text-[14px] font-bold ${active ? "bg-[#4a8c3f] text-white" : "bg-[var(--off-white)] dark:bg-white/10 text-[var(--text-light)]"}`}>{item.count}</span>
