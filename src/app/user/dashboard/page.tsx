@@ -6,6 +6,7 @@ import { motion, useMotionValue, useTransform, animate } from "framer-motion";
 import { Clock, FileText, CheckCircle, Settings, LayoutDashboard, LogOut, Plus } from "lucide-react";
 import { useToast } from "@/components/ToastProvider";
 import ThemeToggle from "@/components/ThemeToggle";
+import DashboardTour from "@/components/DashboardTour";
 
 type Status = "pending" | "in_review" | "published" | "declined";
 type Submission = {
@@ -413,7 +414,8 @@ export default function UserDashboardPage() {
 
   return (
     <div className="flex min-h-screen w-full bg-[#f8f8f5] dark:bg-[#070d07]">
-      <aside className="hidden lg:flex w-[300px] shrink-0 flex-col border-r border-[var(--border)] bg-white dark:bg-[#0f1410] sticky top-0 h-screen">
+      <DashboardTour />
+      <aside id="dash-sidebar" className="hidden lg:flex w-[300px] shrink-0 flex-col border-r border-[var(--border)] bg-white dark:bg-[#0f1410] sticky top-0 h-screen">
         <div className="flex h-[64px] items-center gap-2 px-6 border-b border-[var(--border)] shrink-0">
           <span className="flex h-8 w-8 items-center justify-center rounded-[4px] bg-[#4a8c3f] text-white font-black text-[16px]" style={{ fontFamily: "Roboto, sans-serif" }}>R</span>
           <span className="text-[16px] font-bold tracking-[0.08em] text-[#1a221a] dark:text-white">RICH</span>
@@ -440,7 +442,7 @@ export default function UserDashboardPage() {
 
         </nav>
         <div className="p-4 border-t border-[var(--border)] shrink-0">
-          <button onClick={() => setProfileModalOpen(true)} className="flex w-full items-center gap-3 rounded-[4px] px-2 py-2.5 hover:bg-[var(--off-white)] dark:hover:bg-white/5 transition-colors text-left cursor-pointer">
+          <button id="dash-profile" onClick={() => setProfileModalOpen(true)} className="flex w-full items-center gap-3 rounded-[4px] px-2 py-2.5 hover:bg-[var(--off-white)] dark:hover:bg-white/5 transition-colors text-left cursor-pointer">
             <div className="flex h-10 w-10 shrink-0 items-center justify-center overflow-hidden rounded-full bg-gradient-to-br from-[#1a3a1a] to-[#4a8c3f] text-white font-bold text-[18px]">{avatar ? <img src={avatar} alt="" className="h-full w-full object-cover" /> : (userName[0]?.toUpperCase() || "U")}</div>
             <div className="flex-1 min-w-0">
               <p className="text-[16px] font-bold leading-none text-[var(--text-dark)]" style={{ fontFamily: "Roboto, sans-serif" }}>{userName !== "there" ? userName : (displayName.split(" ")[0] || "User")}</p>
@@ -464,7 +466,7 @@ export default function UserDashboardPage() {
         </div>
 
         <div className="flex-1 p-6 lg:p-8 space-y-6 bg-[#f8f8f5] dark:bg-[#070d07] overflow-auto">
-          <div className="rounded-[16px] border border-[var(--border)] bg-gradient-to-br from-[#1a3a1a] via-[#2d5a27] to-[#4a8c3f] p-7 lg:p-8 text-white shadow-lg">
+          <div id="dash-hero" className="rounded-[16px] border border-[var(--border)] bg-gradient-to-br from-[#1a3a1a] via-[#2d5a27] to-[#4a8c3f] p-7 lg:p-8 text-white shadow-lg">
             <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6">
               <div className="flex-1">
                 <p className="text-[13px] font-bold tracking-[0.14em] uppercase text-white/60">Contributor Hub</p>
@@ -472,13 +474,13 @@ export default function UserDashboardPage() {
                 <p className="mt-2 max-w-2xl text-[15px] font-light leading-6 text-white/80">Submit resources, track review status, and see your published work live in the repository.</p>
               </div>
               <div className="flex shrink-0 gap-3">
-                <button onClick={openNew} className="inline-flex items-center justify-center gap-2 rounded-[4px] bg-white px-6 py-3 text-[15px] font-bold text-[#1a3a1a] hover:bg-white/90 transition-all cursor-pointer"><Plus className="h-4 w-4" /> Contribute Resource</button>
+                <button id="dash-contribute-btn" onClick={openNew} className="inline-flex items-center justify-center gap-2 rounded-[4px] bg-white px-6 py-3 text-[15px] font-bold text-[#1a3a1a] hover:bg-white/90 transition-all cursor-pointer"><Plus className="h-4 w-4" /> Contribute Resource</button>
                 <Link href="/collections" className="hidden sm:inline-flex items-center justify-center rounded-[4px] border border-white/20 px-6 py-3 text-[15px] font-bold text-white hover:bg-white/10 transition-colors">Browse</Link>
               </div>
             </div>
           </div>
 
-          <motion.div className="grid gap-5 sm:grid-cols-2 xl:grid-cols-4" variants={{ hidden: { opacity: 0, y: 20 }, visible: { opacity: 1, y: 0, transition: { staggerChildren: 0.1 } } }} initial="hidden" animate="visible">
+          <motion.div id="dash-stats" className="grid gap-5 sm:grid-cols-2 xl:grid-cols-4" variants={{ hidden: { opacity: 0, y: 20 }, visible: { opacity: 1, y: 0, transition: { staggerChildren: 0.1 } } }} initial="hidden" animate="visible">
             {[
               { label: "Submissions", value: stats.total, hint: "All time", sub: "Total intake", icon: FileText, color: "bg-[#1a3a1a]", pct: 100 },
               { label: "Pending", value: stats.pending, hint: "Needs review", sub: "Awaiting review", icon: Clock, color: "bg-orange-500", pct: stats.total ? (stats.pending / stats.total) * 100 : 0 },
@@ -510,7 +512,7 @@ export default function UserDashboardPage() {
             })}
           </motion.div>
 
-          <div className="flex flex-col sm:flex-row gap-4 items-stretch sm:items-center justify-between rounded-[16px] border border-[var(--border)] bg-white dark:bg-[#1a221a] p-4 shadow-sm">
+          <div id="dash-filters" className="flex flex-col sm:flex-row gap-4 items-stretch sm:items-center justify-between rounded-[16px] border border-[var(--border)] bg-white dark:bg-[#1a221a] p-4 shadow-sm">
             <div className="flex flex-wrap gap-2">
               {(["all", "pending", "in_review", "published"] as const).map((f) => (
                 <button key={f} onClick={() => setFilter(f)} className={`rounded-[4px] px-5 py-2.5 text-[14px] font-bold uppercase tracking-wide transition-all ${filter === f ? "bg-[#1a3a1a] text-white shadow" : "bg-[var(--off-white)] dark:bg-white/5 text-[var(--text-mid)] hover:bg-[var(--border)]"}`}>{f.replace("_", " ")}</button>
@@ -519,7 +521,7 @@ export default function UserDashboardPage() {
             <input value={query} onChange={(e) => setQuery(e.target.value)} placeholder="Search your submissions…" className="w-full sm:w-72 rounded-[4px] border border-[var(--border)] bg-[var(--off-white)] dark:bg-white/5 px-5 py-3 text-[16px] outline-none focus:border-[#4a8c3f] focus:ring-4 focus:ring-[#4a8c3f]/10 transition-all" />
           </div>
 
-          <div className="rounded-[16px] border border-[var(--border)] bg-white dark:bg-[#1a221a] overflow-hidden shadow-sm">
+          <div id="dash-list" className="rounded-[16px] border border-[var(--border)] bg-white dark:bg-[#1a221a] overflow-hidden shadow-sm">
             <div className="flex items-center justify-between border-b border-[var(--border)] px-6 py-5">
               <h3 className="text-[17px] font-bold text-[var(--text-dark)]">My Submissions</h3>
               <span className="text-[14px] font-medium text-[var(--text-light)]">{filtered.length} items</span>

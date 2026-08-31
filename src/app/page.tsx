@@ -96,7 +96,7 @@ export default function Home() {
           </div>
         </section>
 
-        <StatsAnimated />
+        <div><StatsAnimated /></div>
       </div>
 
       {/* ABOUT */}
