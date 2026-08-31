@@ -1,6 +1,9 @@
 "use client";
 import { useEffect, useState, useCallback, useRef, useLayoutEffect } from "react";
 import { X, ArrowRight, ArrowLeft, Sparkles, LayoutDashboard, BarChart3, Filter, ListChecks, Plus, UserCog, CheckCircle } from "lucide-react";
+import { Manrope } from "next/font/google";
+
+const manrope = Manrope({ subsets: ["latin"], display: "swap", weight: ["400","500","600","700","800"] });
 
 const LS_COMPLETED = "rich_dash_tour_v1_completed";
 const SS_DISMISSED = "rich_dash_tour_v1_dismissed";
@@ -69,7 +72,7 @@ const STEPS: Step[] = [
     title: "Navigate",
     desc: "Left rail (desktop) filters the list by status with live counts. Stays in sync with the filter bar — use either.",
     Icon: LayoutDashboard,
-    accent: "#b45309",
+    accent: "#4a8c3f",
   },
   {
     id: "profile",
@@ -77,7 +80,7 @@ const STEPS: Step[] = [
     title: "Your profile",
     desc: "Avatar, name, email — tap to open Profile settings. Change photo (≤2MB), name, email, or reset password. Saved to your account and local profile.",
     Icon: UserCog,
-    accent: "#6a2d6a",
+    accent: "#4a8c3f",
   },
   {
     id: "done",
@@ -262,12 +265,18 @@ export default function DashboardTour() {
               <div className="fixed z-50 bg-black/55 backdrop-blur-[2.5px] transition-all duration-300" style={{ top: rect.top + rect.height, left: 0, right: 0, bottom: 0 }} onClick={() => close("dismissed")} />
               <div className="fixed z-50 bg-black/55 backdrop-blur-[2.5px] transition-all duration-300" style={{ top: rect.top, left: 0, width: rect.left, height: rect.height }} onClick={() => close("dismissed")} />
               <div className="fixed z-50 bg-black/55 backdrop-blur-[2.5px] transition-all duration-300" style={{ top: rect.top, left: rect.left + rect.width, right: 0, height: rect.height }} onClick={() => close("dismissed")} />
-              <div className="fixed z-[51] rounded-[12px] pointer-events-none border-[2.5px] shadow-[0_0_0_1px_rgba(255,255,255,0.35),0_12px_40px_rgba(0,0,0,0.35),0_0_28px_rgba(74,140,63,0.30)] transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)]" style={{ top: rect.top, left: rect.left, width: rect.width, height: rect.height, borderColor: data.accent || "#4a8c3f", background: "transparent" }}>
-                <span className="absolute -top-[3px] -left-[3px] h-4 w-4 rounded-tl-[12px] border-t-[3px] border-l-[3px]" style={{ borderColor: data.accent }} />
-                <span className="absolute -top-[3px] -right-[3px] h-4 w-4 rounded-tr-[12px] border-t-[3px] border-r-[3px]" style={{ borderColor: data.accent }} />
-                <span className="absolute -bottom-[3px] -left-[3px] h-4 w-4 rounded-bl-[12px] border-b-[3px] border-l-[3px]" style={{ borderColor: data.accent }} />
-                <span className="absolute -bottom-[3px] -right-[3px] h-4 w-4 rounded-br-[12px] border-b-[3px] border-r-[3px]" style={{ borderColor: data.accent }} />
-              </div>
+              <div
+                className="fixed z-[51] rounded-[16px] pointer-events-none transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)]"
+                style={{
+                  top: rect.top,
+                  left: rect.left,
+                  width: rect.width,
+                  height: rect.height,
+                  background: "transparent",
+                  border: "1.5px solid rgba(255,255,255,0.92)",
+                  boxShadow: "0 0 0 1px rgba(74,140,63,0.14), 0 10px 36px rgba(0,0,0,0.16), 0 0 0 6px rgba(74,140,63,0.09), inset 0 1px 0 rgba(255,255,255,0.65)",
+                }}
+              />
             </>
           ) : (
             <div className="fixed inset-0 z-50 bg-[#0a150a]/60 backdrop-blur-[3px]" onClick={() => close("dismissed")} />
@@ -283,7 +292,7 @@ export default function DashboardTour() {
                     <button onClick={() => close("dismissed")} className="flex h-9 w-9 items-center justify-center rounded-full border border-black/10 dark:border-white/10 hover:bg-black/5 dark:hover:bg-white/10"><X className="h-4 w-4" /></button>
                   </div>
                   <p className="mt-4 text-[12px] font-bold tracking-[0.14em] uppercase" style={{ color: data.accent }}>{step===0 ? "Quick tour" : step===total-1 ? "Ready?" : `Step ${step} of ${total-2}`} • {step+1}/{total}</p>
-                  <h3 className="mt-2 text-[24px] font-medium leading-tight text-[#1a3a1a] dark:text-white" style={{ fontFamily: "Playfair Display, serif" }}>{data.title}</h3>
+                  <h3 className={`mt-2 text-[22px] font-bold leading-tight text-[#1a3a1a] dark:text-white ${manrope.className}`} style={{ letterSpacing: "-0.01em" }}>{data.title}</h3>
                   <p className="mt-3 text-[15px] font-light leading-7 text-[var(--text-mid)]">{data.desc}</p>
                   <div className="mt-6 flex items-center gap-1.5">{STEPS.map((_, i) => <span key={i} className={`h-1.5 rounded-full transition-all duration-300 ${i===step ? "w-8 bg-[#4a8c3f]" : i<step ? "w-4 bg-[#4a8c3f]/40" : "w-1.5 bg-black/15 dark:bg-white/15"}`} />)}</div>
                   <div className="mt-6 flex items-center justify-between gap-3">
@@ -305,7 +314,7 @@ export default function DashboardTour() {
                   <button onClick={() => close("dismissed")} className="flex h-7 w-7 items-center justify-center rounded-full hover:bg-black/5 dark:hover:bg-white/10 text-[var(--text-light)]"><X className="h-4 w-4" /></button>
                 </div>
                 <p className="mt-3 text-[11px] font-bold tracking-[0.14em] uppercase" style={{ color: data.accent }}>Step {step} of {total-1} • {step+1}/{total}</p>
-                <h3 className="mt-1 text-[18px] font-bold leading-tight text-[#1a3a1a] dark:text-white" style={{ fontFamily: "Playfair Display, serif" }}>{data.title}</h3>
+                <h3 className={`mt-1 text-[18px] font-bold leading-tight text-[#1a3a1a] dark:text-white ${manrope.className}`} style={{ letterSpacing: "-0.01em" }}>{data.title}</h3>
                 <p className="mt-2 text-[14px] font-light leading-6 text-[var(--text-mid)]">{data.desc}</p>
                 <div className="mt-4 flex items-center gap-1">{STEPS.map((_, i) => <span key={i} className={`h-1.5 rounded-full transition-all duration-300 ${i===step ? "w-6 bg-[#4a8c3f]" : i<step ? "w-3 bg-[#4a8c3f]/40" : "w-1.5 bg-black/12 dark:bg-white/12"}`} />)}</div>
                 <div className="mt-5 flex items-center justify-between gap-2">
