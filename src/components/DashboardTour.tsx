@@ -138,12 +138,10 @@ function isVisible(el: HTMLElement) {
 }
 
 function toHighlightRadius(elementRadius: string, pad: number) {
-  // element radius like "16px" or "16px 16px ..." -> take first numeric, add pad for concentric outer highlight
   const m = elementRadius.match(/(\d+(\.\d+)?)/);
   const base = m ? parseFloat(m[1]) : 0;
   const hl = base + pad;
-  // keep unit as px; if original was 0, use pad + 8 as soft fallback for grids with no radius
-  if (base === 0) return `${Math.max(8, pad + 8)}px`;
+  if (base === 0) return `${Math.max(12, pad + 8)}px`;
   return `${hl}px`;
 }
 
@@ -331,8 +329,8 @@ export default function DashboardTour() {
                   height: rect.height,
                   background: "transparent",
                   borderRadius: rect.radius,
-                  border: "1.5px solid rgba(255,255,255,0.94)",
-                  boxShadow: "0 0 0 1px rgba(74,140,63,0.14), 0 10px 36px rgba(0,0,0,0.16), 0 0 0 6px rgba(74,140,63,0.09), inset 0 1px 0 rgba(255,255,255,0.65)",
+                  border: "1px solid rgba(255,255,255,0.90)",
+                  boxShadow: "0 0 0 1px rgba(74,140,63,0.10), 0 8px 28px rgba(0,0,0,0.13), 0 0 0 4px rgba(74,140,63,0.06), inset 0 1px 0 rgba(255,255,255,0.50)",
                 }}
               />
             </>
@@ -351,7 +349,12 @@ export default function DashboardTour() {
                   <p className="mt-4 text-[12px] font-bold tracking-[0.14em] uppercase" style={{ color: data.accent }}>{step===0 ? "Quick tour" : step===total-1 ? "Ready?" : `Step ${step} of ${total-2}`} • {step+1}/{total}</p>
                   <h3 className={`mt-2 text-[22px] font-bold leading-tight text-[#1a3a1a] dark:text-white ${manrope.className}`} style={{ letterSpacing: "-0.01em" }}>{data.title}</h3>
                   <p className="mt-3 text-[15px] font-light leading-7 text-[var(--text-mid)]">{data.desc}</p>
-                  <div className="mt-6 flex items-center gap-1.5">{STEPS.map((_, i) => <span key={i} className={`h-2 w-2 rounded-full transition-all duration-300 ${i===step ? "bg-[#4a8c3f] scale-110" : i<step ? "bg-[#4a8c3f]/45" : "bg-black/15 dark:bg-white/18"}`} />)}</div>
+                  <div className="mt-6 flex items-center gap-3">
+                    <div className="flex-1 h-1.5 rounded-full bg-black/10 dark:bg-white/10 overflow-hidden">
+                      <div className="h-full bg-[#4a8c3f] rounded-full transition-all duration-500" style={{ width: `${pct}%` }} />
+                    </div>
+                    <span className="text-[11px] font-bold tracking-wide text-[var(--text-light)] tabular-nums">{step+1} / {total}</span>
+                  </div>
                   <div className="mt-6 flex items-center justify-between gap-3">
                     <button onClick={() => close("dismissed")} className="text-[14px] font-semibold text-[var(--text-light)] hover:text-[#4a8c3f]">Skip</button>
                     <div className="flex gap-2">
@@ -372,7 +375,12 @@ export default function DashboardTour() {
                 <p className="mt-3 text-[11px] font-bold tracking-[0.14em] uppercase" style={{ color: data.accent }}>Step {step} of {total-1} • {step+1}/{total}</p>
                 <h3 className={`mt-1 text-[18px] font-bold leading-tight text-[#1a3a1a] dark:text-white ${manrope.className}`} style={{ letterSpacing: "-0.01em" }}>{data.title}</h3>
                 <p className="mt-2 text-[14px] font-light leading-6 text-[var(--text-mid)]">{data.desc}</p>
-                <div className="mt-4 flex items-center gap-1">{STEPS.map((_, i) => <span key={i} className={`h-2 w-2 rounded-full transition-all duration-300 ${i===step ? "bg-[#4a8c3f] scale-110" : i<step ? "bg-[#4a8c3f]/45" : "bg-black/14 dark:bg-white/18"}`} />)}</div>
+                <div className="mt-4 flex items-center gap-3">
+                  <div className="flex-1 h-1 rounded-full bg-black/10 dark:bg-white/10 overflow-hidden">
+                    <div className="h-full bg-[#4a8c3f] rounded-full transition-all duration-500" style={{ width: `${pct}%` }} />
+                  </div>
+                  <span className="text-[11px] font-bold text-[var(--text-light)] tabular-nums">{step+1} / {total}</span>
+                </div>
                 <div className="mt-5 flex items-center justify-between gap-2">
                   <button onClick={() => close("dismissed")} className="text-[13px] font-semibold text-[var(--text-light)] hover:text-[var(--text-dark)]">Skip tour</button>
                   <div className="flex items-center gap-2">
