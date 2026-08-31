@@ -35,7 +35,7 @@ const STEPS: Step[] = [
     desc: "Welcome card shows your name and quick actions. Contribute Resource opens the 4-step intake — Browse jumps to published collections.",
     Icon: LayoutDashboard,
     accent: "#1a3a1a",
-    pad: 0,
+    pad: 1,
     radius: "16px",
   },
   {
@@ -45,7 +45,7 @@ const STEPS: Step[] = [
     desc: "Four counters: Submissions (all time), Pending, In review, Published. Bars fill by share — gives you instant progress across the pipeline.",
     Icon: BarChart3,
     accent: "#4a8c3f",
-    pad: 0,
+    pad: 1,
     radius: "12px",
   },
   {
@@ -55,7 +55,7 @@ const STEPS: Step[] = [
     desc: "Filter chips (All / Pending / In review / Published) plus search by title. Combine them to surface exactly what needs attention.",
     Icon: Filter,
     accent: "#2d6a8f",
-    pad: 0,
+    pad: 1,
     radius: "16px",
   },
   {
@@ -65,7 +65,7 @@ const STEPS: Step[] = [
     desc: "Each card shows title, collection, type, date, and status badge. View opens details — declined items show Edit & resubmit. Empty state invites your first contribution.",
     Icon: ListChecks,
     accent: "#4a8c3f",
-    pad: 0,
+    pad: 1,
     radius: "16px",
   },
   {
@@ -85,7 +85,7 @@ const STEPS: Step[] = [
     desc: "All your submissions in one place — live count. Active state matches hover: soft off-white, rounded 4, same as item hover.",
     Icon: LayoutDashboard,
     accent: "#4a8c3f",
-    pad: 0,
+    pad: 1,
     radius: "4px",
   },
   {
@@ -95,7 +95,7 @@ const STEPS: Step[] = [
     desc: "Only live resources — discoverable in collections and search. Rounded 4 pill count turns green when active.",
     Icon: CheckCircle,
     accent: "#4a8c3f",
-    pad: 0,
+    pad: 1,
     radius: "4px",
   },
   {
@@ -105,7 +105,7 @@ const STEPS: Step[] = [
     desc: "Pending + In Review combined — your editorial queue. Same hover shape: rounded 4, px-3 py-3, hugging the row.",
     Icon: Clock,
     accent: "#4a8c3f",
-    pad: 0,
+    pad: 1,
     radius: "4px",
   },
   {
@@ -115,7 +115,7 @@ const STEPS: Step[] = [
     desc: "Avatar, name, email — tap to open Profile settings. Change photo (≤2MB), name, email, or reset password. Same rounded 4 card shape.",
     Icon: UserCog,
     accent: "#4a8c3f",
-    pad: 0,
+    pad: 1,
     radius: "4px",
   },
   {
@@ -137,12 +137,26 @@ function isVisible(el: HTMLElement) {
   return r.width > 0 && r.height > 0;
 }
 
-function toHighlightRadius(elementRadius: string, pad: number) {
-  const m = elementRadius.match(/(\d+(\.\d+)?)/);
-  const base = m ? parseFloat(m[1]) : 0;
-  const hl = base + pad;
-  if (base === 0) return `${Math.max(12, pad + 8)}px`;
-  return `${hl}px`;
+function getHighlightRadii(el: HTMLElement, pad: number, explicit?: string): string {
+  if (explicit) {
+    const m = explicit.match(/(\d+(\.\d+)?)/);
+    const base = m ? parseFloat(m[1]) : 0;
+    return `${base + pad}px`;
+  }
+  const cs = getComputedStyle(el);
+  const corners = [
+    cs.borderTopLeftRadius,
+    cs.borderTopRightRadius,
+    cs.borderBottomRightRadius,
+    cs.borderBottomLeftRadius,
+  ];
+  const vals = corners.map((c) => {
+    const mm = c.match(/(\d+(\.\d+)?)/);
+    const b = mm ? parseFloat(mm[1]) : 0;
+    return `${b + pad}px`;
+  });
+  if (vals.every((v) => v === vals[0])) return vals[0];
+  return vals.join(" ");
 }
 
 export default function DashboardTour() {
@@ -217,18 +231,9 @@ export default function DashboardTour() {
       el = null;
     }
     if (!el) { setRect(null); return; }
-    // compute radius: explicit step.radius or element's computed border-radius, then expand by pad for concentric highlight
-    let rawRadius = data.radius;
-    if (!rawRadius) {
-      try {
-        const cs = getComputedStyle(el);
-        const br = cs.borderRadius;
-        const first = br.split(" ")[0];
-        rawRadius = first && first !== "0px" ? first : "12px";
-      } catch { rawRadius = "12px"; }
-    }
     const pad = data.pad !== undefined ? data.pad : (isMobile() ? 4 : 6);
-    const highlightRadius = toHighlightRadius(rawRadius, pad);
+    // 4-corner radii so highlight matches every corner point exactly (green hub has 16 on all four, etc.)
+    const highlightRadius = getHighlightRadii(el, pad, data.radius);
     const headerOffset = 70;
     const r = el.getBoundingClientRect();
     const absTop = r.top + window.scrollY;
