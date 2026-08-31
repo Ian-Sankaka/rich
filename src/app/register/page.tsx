@@ -18,6 +18,54 @@ export default function RegisterPage() {
 
   useEffect(() => { window.scrollTo({ top: 0, left: 0, behavior: "instant" as ScrollBehavior }); }, []);
 
+  // Auto-redirect if already authenticated (same fix as login)
+  useEffect(() => {
+    let cancelled = false;
+    let interval: ReturnType<typeof setInterval> | null = null;
+    const check = async () => {
+      try {
+        const r = await fetch("/api/me", { credentials: "include", cache: "no-store" });
+        if (r.ok) {
+          const j = await r.json().catch(() => null);
+          if (j?.user && !cancelled) {
+            const isAdmin = j.user.email === "lead@rich.africa" || j.user.email === "admin@rich.africa";
+            window.location.replace(isAdmin ? "/dashboard" : "/user/dashboard");
+            return true;
+          }
+        }
+        try {
+          const { getSession } = await import("next-auth/react");
+          const s = await getSession();
+          const em = (s?.user?.email as string) || "";
+          if (em && !cancelled) {
+            const rr = await fetch("/api/me", { credentials: "include", cache: "no-store" });
+            if (rr.ok) {
+              const jj = await rr.json().catch(() => null);
+              if (jj?.user) {
+                const isAdmin = jj.user.email === "lead@rich.africa" || jj.user.email === "admin@rich.africa";
+                window.location.replace(isAdmin ? "/dashboard" : "/user/dashboard");
+                return true;
+              }
+            }
+          }
+        } catch {}
+      } catch {}
+      return false;
+    };
+    check();
+    const onFocus = () => { check(); };
+    window.addEventListener("focus", onFocus);
+    document.addEventListener("visibilitychange", onFocus);
+    interval = setInterval(check, 1500);
+    setTimeout(() => { if (interval) clearInterval(interval); }, 20000);
+    return () => {
+      cancelled = true;
+      window.removeEventListener("focus", onFocus);
+      document.removeEventListener("visibilitychange", onFocus);
+      if (interval) clearInterval(interval);
+    };
+  }, []);
+
   async function onSubmit(e: React.FormEvent) {
     e.preventDefault();
     setLoading(true);

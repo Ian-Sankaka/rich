@@ -41,7 +41,7 @@ export function sessionCookieOptions() {
   return {
     httpOnly: true as const,
     secure: isProd,
-    sameSite: "strict" as const,
+    sameSite: "lax" as const,
     path: "/",
     maxAge: MAX_AGE,
   };
@@ -52,7 +52,7 @@ export function clearCookieOptions() {
   return {
     httpOnly: true as const,
     secure: isProd,
-    sameSite: "strict" as const,
+    sameSite: "lax" as const,
     path: "/",
     maxAge: 0,
   };
