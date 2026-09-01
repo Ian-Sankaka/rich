@@ -407,7 +407,7 @@ export default function DashboardPage() {
                   Welcome back, {profileLoaded || userName !== "there" ? userName : <span className="inline-block h-7 w-24 animate-pulse bg-white/20 rounded align-middle" />}
                   <span className="inline-block animate-[wave_2s_ease-in-out_infinite] origin-[70%_70%]">👋</span>
                 </h2>
-                <p className="mt-2 max-w-2xl text-[15px] font-light leading-6 text-white/80">Review open submissions, publish to the four collections, and keep the repository living - not archived.</p>
+                <p className="mt-2 max-w-2xl text-[14px] font-light leading-6 text-white/80">Review open submissions, publish to the four collections, and keep the repository living - not archived.</p>
               </div>
               <div className="hidden lg:flex shrink-0 gap-3">
                 <Link href="/submit" className="inline-flex items-center justify-center rounded-[4px] bg-white px-6 py-3 text-[15px] font-bold text-[#1a3a1a] hover:bg-white/90 transition-all">New submission</Link>
@@ -440,14 +440,14 @@ export default function DashboardPage() {
                 >
                   <div className="p-0.5">
                     <div className="flex items-center justify-between mb-3">
-                      <p className="text-[15px] font-semibold tracking-tight text-[var(--text-mid)]" style={{ fontFamily: "Roboto, sans-serif" }}>{c.label}</p>
+                      <p className="text-[14px] font-semibold tracking-tight text-[var(--text-mid)]" style={{ fontFamily: "Roboto, sans-serif" }}>{c.label}</p>
                       <Icon className="h-4 w-4 text-[var(--text-light)]" />
                     </div>
                     <div className="mb-3 flex items-baseline gap-2">
                       <span className="text-[30px] font-bold leading-none tracking-tight text-[var(--text-dark)]" style={{ fontFamily: "Space Grotesk, sans-serif" }}>
                         <AnimatedNumber value={c.value} />
                       </span>
-                      <span className="text-[14px] font-medium text-[var(--text-light)]">{c.hint}</span>
+                      <span className="text-[13px] font-medium text-[var(--text-light)]">{c.hint}</span>
                     </div>
                     <div className="w-full h-1.5 overflow-hidden rounded-full bg-black/5 dark:bg-white/10 flex">
                       <motion.div
@@ -473,19 +473,19 @@ export default function DashboardPage() {
           <div className="flex flex-col sm:flex-row gap-4 items-stretch sm:items-center justify-between rounded-[16px] border border-[var(--border)] bg-white dark:bg-[#1a221a] p-4 shadow-sm">
             <div className="flex flex-wrap gap-2">
               {(["all", "pending", "in_review", "published"] as const).map((f) => (
-                <button key={f} onClick={() => setFilter(f)} className={`rounded-[4px] px-5 py-2.5 text-[14px] font-bold uppercase tracking-wide transition-all ${filter === f ? "bg-[#1a3a1a] text-white shadow" : "bg-[var(--off-white)] dark:bg-white/5 text-[var(--text-mid)] hover:bg-[var(--border)]"}`}>
+                <button key={f} onClick={() => setFilter(f)} className={`rounded-[4px] px-5 py-2.5 text-[13px] font-bold uppercase tracking-wide transition-all ${filter === f ? "bg-[#1a3a1a] text-white shadow" : "bg-[var(--off-white)] dark:bg-white/5 text-[var(--text-mid)] hover:bg-[var(--border)]"}`}>
                   {f.replace("_", " ")}
                 </button>
               ))}
             </div>
-            <input value={query} onChange={(e) => setQuery(e.target.value)} placeholder="Search title or author…" className="w-full sm:w-72 rounded-[4px] border border-[var(--border)] bg-[var(--off-white)] dark:bg-white/5 px-5 py-3 text-[16px] outline-none focus:border-[#4a8c3f] focus:ring-4 focus:ring-[#4a8c3f]/10 transition-all" />
+            <input value={query} onChange={(e) => setQuery(e.target.value)} placeholder="Search title or author…" className="w-full sm:w-72 rounded-[4px] border border-[var(--border)] bg-[var(--off-white)] dark:bg-white/5 px-5 py-3 text-[15px] outline-none focus:border-[#4a8c3f] focus:ring-4 focus:ring-[#4a8c3f]/10 transition-all" />
           </div>
 
           {/* LIST */}
           <div className="rounded-[16px] border border-[var(--border)] bg-white dark:bg-[#1a221a] overflow-hidden shadow-sm">
             <div className="flex items-center justify-between border-b border-[var(--border)] px-6 py-5">
-              <h3 className="text-[17px] font-bold text-[var(--text-dark)]">Submissions</h3>
-              <span className="text-[14px] font-medium text-[var(--text-light)]">{filtered.length} items • click to view</span>
+              <h3 className="text-[16px] font-bold text-[var(--text-dark)]">Submissions</h3>
+              <span className="text-[13px] font-medium text-[var(--text-light)]">{filtered.length} items • click to view</span>
             </div>
             <div className="divide-y divide-[var(--border)]">
               {filtered.map((s, idx) => (

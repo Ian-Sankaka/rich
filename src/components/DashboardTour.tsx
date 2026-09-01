@@ -342,8 +342,8 @@ export default function DashboardTour() {
                   height: rect.height,
                   background: "transparent",
                   borderRadius: rect.radius,
-                  border: "1.5px solid rgba(255,255,255,0.96)",
-                  boxShadow: "0 0 0 1.5px rgba(74,140,63,0.95), 0 0 0 5px rgba(74,140,63,0.12), 0 8px 28px rgba(0,0,0,0.18), inset 0 1px 0 rgba(255,255,255,0.55)",
+                  border: "2px solid rgba(255,255,255,0.98)",
+                  boxShadow: "0 0 0 2px rgba(74,140,63,0.96), 0 0 0 6px rgba(74,140,63,0.13), 0 8px 28px rgba(0,0,0,0.18), inset 0 1px 0 rgba(255,255,255,0.60)",
                 }}
               />
             </>

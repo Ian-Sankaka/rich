@@ -472,16 +472,16 @@ export default function UserDashboardPage() {
               <div className="flex-1">
                 <p className="text-[13px] font-bold tracking-[0.14em] uppercase text-white/60">Contributor Hub</p>
                 <h2 className="mt-2 flex items-center gap-2 text-[26px] lg:text-[28px] font-bold leading-tight">Welcome, {profileLoaded || userName !== "there" ? userName : <span className="inline-block h-7 w-24 animate-pulse bg-white/20 rounded align-middle" />} <span className="inline-block animate-[wave_2s_ease-in-out_infinite] origin-[70%_70%]">👋</span></h2>
-                <p className="mt-2 max-w-2xl text-[15px] font-light leading-6 text-white/80">Submit resources, track review status, and see your published work live in the repository.</p>
+                <p className="mt-2 max-w-2xl text-[14px] font-light leading-6 text-white/80">Submit resources, track review status, and see your published work live in the repository.</p>
               </div>
               <div className="flex shrink-0 gap-3">
-                <button id="dash-contribute-btn" onClick={openNew} className="inline-flex items-center justify-center gap-2 rounded-[4px] bg-white px-6 py-3 text-[15px] font-bold text-[#1a3a1a] hover:bg-white/90 transition-all cursor-pointer"><Plus className="h-4 w-4" /> Contribute Resource</button>
-                <Link href="/collections" className="hidden sm:inline-flex items-center justify-center rounded-[4px] border border-white/20 px-6 py-3 text-[15px] font-bold text-white hover:bg-white/10 transition-colors">Browse</Link>
+                <button id="dash-contribute-btn" onClick={openNew} className="inline-flex items-center justify-center gap-2 rounded-[4px] bg-white px-4 py-3 text-[14px] font-bold text-[#1a3a1a] hover:bg-white/90 transition-all cursor-pointer"><Plus className="h-4 w-4" /> Contribute Resource</button>
+                <Link href="/collections" className="hidden sm:inline-flex items-center justify-center rounded-[4px] border border-white/20 px-5 py-3 text-[14px] font-bold text-white hover:bg-white/10 transition-colors">Browse</Link>
               </div>
             </div>
           </div>
 
-          <motion.div id="dash-stats" className="grid gap-5 sm:grid-cols-2 xl:grid-cols-4" variants={{ hidden: { opacity: 0, y: 20 }, visible: { opacity: 1, y: 0, transition: { staggerChildren: 0.1 } } }} initial="hidden" animate="visible">
+          <motion.div id="dash-stats" className="grid gap-5 sm:grid-cols-2 xl:grid-cols-4 rounded-[12px]" variants={{ hidden: { opacity: 0, y: 20 }, visible: { opacity: 1, y: 0, transition: { staggerChildren: 0.1 } } }} initial="hidden" animate="visible">
             {[
               { label: "Submissions", value: stats.total, hint: "All time", sub: "Total intake", icon: FileText, color: "bg-[#1a3a1a]", pct: 100 },
               { label: "Pending", value: stats.pending, hint: "Needs review", sub: "Awaiting review", icon: Clock, color: "bg-orange-500", pct: stats.total ? (stats.pending / stats.total) * 100 : 0 },
@@ -493,12 +493,12 @@ export default function UserDashboardPage() {
                 <motion.div key={c.label} variants={{ hidden: { opacity: 0, y: 15 }, visible: { opacity: 1, y: 0, transition: { duration: 0.5 } } }} whileHover={{ scale: 1.02, y: -3 }} transition={{ type: "spring", stiffness: 300, damping: 15 } as unknown as Record<string, unknown>} className="h-full overflow-hidden rounded-[12px] border border-[var(--border)] bg-white dark:bg-[#1a221a] p-4">
                   <div className="p-0.5">
                     <div className="flex items-center justify-between mb-3">
-                      <p className="text-[15px] font-semibold tracking-tight text-[var(--text-mid)]" style={{ fontFamily: "Roboto, sans-serif" }}>{c.label}</p>
+                      <p className="text-[14px] font-semibold tracking-tight text-[var(--text-mid)]" style={{ fontFamily: "Roboto, sans-serif" }}>{c.label}</p>
                       <Icon className="h-4 w-4 text-[var(--text-light)]" />
                     </div>
                     <div className="mb-3 flex items-baseline gap-2">
                       <span className="text-[30px] font-bold leading-none tracking-tight text-[var(--text-dark)]" style={{ fontFamily: "Space Grotesk, sans-serif" }}><AnimatedNumber value={c.value} /></span>
-                      <span className="text-[14px] font-medium text-[var(--text-light)]">{c.hint}</span>
+                      <span className="text-[13px] font-medium text-[var(--text-light)]">{c.hint}</span>
                     </div>
                     <div className="w-full h-1.5 overflow-hidden rounded-full bg-black/5 dark:bg-white/10 flex">
                       <motion.div className={`h-full ${c.color}`} initial={{ width: 0 }} animate={{ width: `${c.pct}%` }} transition={{ duration: 1, delay: 0.6, ease: "easeOut" }} />
@@ -516,16 +516,16 @@ export default function UserDashboardPage() {
           <div id="dash-filters" className="flex flex-col sm:flex-row gap-4 items-stretch sm:items-center justify-between rounded-[16px] border border-[var(--border)] bg-white dark:bg-[#1a221a] p-4 shadow-sm">
             <div className="flex flex-wrap gap-2">
               {(["all", "pending", "in_review", "published"] as const).map((f) => (
-                <button key={f} onClick={() => setFilter(f)} className={`rounded-[4px] px-5 py-2.5 text-[14px] font-bold uppercase tracking-wide transition-all ${filter === f ? "bg-[#1a3a1a] text-white shadow" : "bg-[var(--off-white)] dark:bg-white/5 text-[var(--text-mid)] hover:bg-[var(--border)]"}`}>{f.replace("_", " ")}</button>
+                <button key={f} onClick={() => setFilter(f)} className={`rounded-[4px] px-5 py-2.5 text-[13px] font-bold uppercase tracking-wide transition-all ${filter === f ? "bg-[#1a3a1a] text-white shadow" : "bg-[var(--off-white)] dark:bg-white/5 text-[var(--text-mid)] hover:bg-[var(--border)]"}`}>{f.replace("_", " ")}</button>
               ))}
             </div>
-            <input value={query} onChange={(e) => setQuery(e.target.value)} placeholder="Search your submissions…" className="w-full sm:w-72 rounded-[4px] border border-[var(--border)] bg-[var(--off-white)] dark:bg-white/5 px-5 py-3 text-[16px] outline-none focus:border-[#4a8c3f] focus:ring-4 focus:ring-[#4a8c3f]/10 transition-all" />
+            <input value={query} onChange={(e) => setQuery(e.target.value)} placeholder="Search your submissions…" className="w-full sm:w-72 rounded-[4px] border border-[var(--border)] bg-[var(--off-white)] dark:bg-white/5 px-5 py-3 text-[15px] outline-none focus:border-[#4a8c3f] focus:ring-4 focus:ring-[#4a8c3f]/10 transition-all" />
           </div>
 
           <div id="dash-list" className="rounded-[16px] border border-[var(--border)] bg-white dark:bg-[#1a221a] overflow-hidden shadow-sm">
             <div className="flex items-center justify-between border-b border-[var(--border)] px-6 py-5">
-              <h3 className="text-[17px] font-bold text-[var(--text-dark)]">My Submissions</h3>
-              <span className="text-[14px] font-medium text-[var(--text-light)]">{filtered.length} items</span>
+              <h3 className="text-[16px] font-bold text-[var(--text-dark)]">My Submissions</h3>
+              <span className="text-[13px] font-medium text-[var(--text-light)]">{filtered.length} items</span>
             </div>
             <div className="divide-y divide-[var(--border)]">
               {filtered.map((s, idx) => (
