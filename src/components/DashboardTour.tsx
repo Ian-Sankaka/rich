@@ -167,10 +167,31 @@ function getHighlightRadii(el: HTMLElement, pad: number, explicit?: string): str
   return `${Math.max(4, pad + 3)}px`;
 }
 
+function parseRadii(s: string): [number, number, number, number] {
+  if (!s) return [0, 0, 0, 0];
+  const parts = s.trim().split(/\s+/).map((p) => parseFloat(p) || 0);
+  if (parts.length === 1) return [parts[0], parts[0], parts[0], parts[0]];
+  if (parts.length === 2) return [parts[0], parts[1], parts[0], parts[1]];
+  if (parts.length === 3) return [parts[0], parts[1], parts[2], parts[1]];
+  return [parts[0] || 0, parts[1] || 0, parts[2] || 0, parts[3] || 0];
+}
+
+function buildSpotlightClipPath(rect: { top: number; left: number; width: number; height: number; radius: string }, vw: number, vh: number): string {
+  const [tl, tr, br, bl] = parseRadii(rect.radius);
+  const x = rect.left, y = rect.top, w = rect.width, h = rect.height;
+  const right = x + w, bottom = y + h;
+  const clamp = (v: number) => Math.min(v, w / 2, h / 2);
+  const ctl = clamp(tl), ctr = clamp(tr), cbr = clamp(br), cbl = clamp(bl);
+  // even-odd: outer fullscreen rect minus inner rounded rect hole
+  const p = `M0 0 H${vw} V${vh} H0 Z M${x + ctl} ${y} H${right - ctr} A${ctr} ${ctr} 0 0 1 ${right} ${y + ctr} V${bottom - cbr} A${cbr} ${cbr} 0 0 1 ${right - cbr} ${bottom} H${x + cbl} A${cbl} ${cbl} 0 0 1 ${x} ${bottom - cbl} V${y + ctl} A${ctl} ${ctl} 0 0 1 ${x + ctl} ${y} Z`;
+  return `path(evenodd, "${p}")`;
+}
+
 export default function DashboardTour() {
   const [open, setOpen] = useState(false);
   const [step, setStep] = useState(0);
   const [rect, setRect] = useState<{ top: number; left: number; width: number; height: number; radius: string } | null>(null);
+  const [clip, setClip] = useState<string | null>(null);
   const [tipPos, setTipPos] = useState<{ top: number; left: number; width: number } | null>(null);
   const [showTrigger, setShowTrigger] = useState(false);
   const tipRef = useRef<HTMLDivElement>(null);
@@ -194,7 +215,7 @@ export default function DashboardTour() {
   }, []);
 
   const close = useCallback((mode: "completed" | "dismissed" | "none" = "dismissed") => {
-    setOpen(false); setRect(null);
+    setOpen(false); setRect(null); setClip(null);
     if (mode === "completed") localStorage.setItem(LS_COMPLETED, "1");
     if (mode === "dismissed") sessionStorage.setItem(SS_DISMISSED, "1");
     setTimeout(() => setShowTrigger(true), 400);
@@ -228,20 +249,26 @@ export default function DashboardTour() {
   }, [open, centered]);
 
   const measure = useCallback(() => {
-    if (!open || centered) { setRect(null); setTipPos(null); return; }
+    if (!open || centered) { setRect(null); setClip(null); setTipPos(null); return; }
     const sel = data.target!;
     let el = document.querySelector(sel) as HTMLElement | null;
     if (el && !isVisible(el)) {
       if (sel.startsWith("#dash-nav-") && isMobile()) {
-        setRect(null);
+        setRect(null); setClip(null);
         return;
       }
       el = null;
     }
-    if (!el) { setRect(null); return; }
+    if (!el) { setRect(null); setClip(null); return; }
     const pad = data.pad !== undefined ? data.pad : (isMobile() ? 4 : 6);
-    // 4-corner radii so highlight matches every corner point exactly (green hub has 16 on all four, etc.)
+    // 4-corner radii so highlight wraps exactly to element shape in both light and dark (no square-hole artifacts)
     const highlightRadius = getHighlightRadii(el, pad, data.radius);
+    const vw = window.innerWidth, vh = window.innerHeight;
+    const commit = (rr: DOMRect) => {
+      const nr = { top: rr.top - pad, left: rr.left - pad, width: rr.width + pad*2, height: rr.height + pad*2, radius: highlightRadius };
+      setRect(nr);
+      try { setClip(buildSpotlightClipPath(nr, vw, vh)); } catch { setClip(null); }
+    };
     const headerOffset = 70;
     const r = el.getBoundingClientRect();
     const absTop = r.top + window.scrollY;
@@ -250,10 +277,10 @@ export default function DashboardTour() {
       window.scrollTo({ top: Math.max(0, targetY), behavior: "smooth" });
       setTimeout(() => {
         const rr = el!.getBoundingClientRect();
-        setRect({ top: rr.top - pad, left: rr.left - pad, width: rr.width + pad*2, height: rr.height + pad*2, radius: highlightRadius });
+        commit(rr);
       }, 460);
     } else {
-      setRect({ top: r.top - pad, left: r.left - pad, width: r.width + pad*2, height: r.height + pad*2, radius: highlightRadius });
+      commit(r);
     }
   }, [open, centered, data]);
 
@@ -329,10 +356,21 @@ export default function DashboardTour() {
             <div className="fixed inset-0 z-50 bg-[#0a150a]/65 backdrop-blur-[3px] animate-[tourFade_0.28s_ease]" onClick={() => close("dismissed")} />
           ) : rect ? (
             <>
-              <div className="fixed z-50 bg-black/55 backdrop-blur-[2.5px] transition-all duration-300" style={{ top: 0, left: 0, right: 0, height: rect.top }} onClick={() => close("dismissed")} />
-              <div className="fixed z-50 bg-black/55 backdrop-blur-[2.5px] transition-all duration-300" style={{ top: rect.top + rect.height, left: 0, right: 0, bottom: 0 }} onClick={() => close("dismissed")} />
-              <div className="fixed z-50 bg-black/55 backdrop-blur-[2.5px] transition-all duration-300" style={{ top: rect.top, left: 0, width: rect.left, height: rect.height }} onClick={() => close("dismissed")} />
-              <div className="fixed z-50 bg-black/55 backdrop-blur-[2.5px] transition-all duration-300" style={{ top: rect.top, left: rect.left + rect.width, right: 0, height: rect.height }} onClick={() => close("dismissed")} />
+              {/* single rounded-hole spotlight — clipPath makes hole wrap exactly to element shape in both themes, no square corners */}
+              <div
+                className="fixed inset-0 z-50 bg-black/55 backdrop-blur-[2.5px] transition-[clip-path] duration-300 ease-[cubic-bezier(0.16,1,0.3,1)]"
+                style={clip ? { clipPath: clip } as React.CSSProperties : undefined}
+                onClick={() => close("dismissed")}
+              />
+              {/* fallback for browsers without path() clip or while clip computes — 4-div square hole (covered by clip when available) */}
+              {!clip && (
+                <>
+                  <div className="fixed z-50 bg-black/55 backdrop-blur-[2.5px]" style={{ top: 0, left: 0, right: 0, height: rect.top }} onClick={() => close("dismissed")} />
+                  <div className="fixed z-50 bg-black/55 backdrop-blur-[2.5px]" style={{ top: rect.top + rect.height, left: 0, right: 0, bottom: 0 }} onClick={() => close("dismissed")} />
+                  <div className="fixed z-50 bg-black/55 backdrop-blur-[2.5px]" style={{ top: rect.top, left: 0, width: rect.left, height: rect.height }} onClick={() => close("dismissed")} />
+                  <div className="fixed z-50 bg-black/55 backdrop-blur-[2.5px]" style={{ top: rect.top, left: rect.left + rect.width, right: 0, height: rect.height }} onClick={() => close("dismissed")} />
+                </>
+              )}
               <div
                 className="fixed z-[51] pointer-events-none transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)]"
                 style={{
