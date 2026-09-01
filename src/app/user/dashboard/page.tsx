@@ -171,6 +171,30 @@ export default function UserDashboardPage() {
     return () => document.documentElement.classList.remove("dashboard-hide");
   }, []);
 
+  // lock to 90% zoom like browser 90% (user preference) — restores on leave
+  useEffect(() => {
+    const el = document.documentElement;
+    const prevZoom = el.style.zoom;
+    const prevTransform = el.style.transform;
+    const prevOrigin = el.style.transformOrigin;
+    const prevWidth = el.style.width;
+    // @ts-ignore CSS.supports check for zoom
+    const hasZoom = typeof CSS !== "undefined" && (CSS as any).supports?.("zoom", "0.9");
+    if (hasZoom) {
+      el.style.zoom = "0.9";
+    } else {
+      el.style.transform = "scale(0.9)";
+      el.style.transformOrigin = "top left";
+      el.style.width = "111.11%";
+    }
+    return () => {
+      el.style.zoom = prevZoom;
+      el.style.transform = prevTransform;
+      el.style.transformOrigin = prevOrigin;
+      el.style.width = prevWidth;
+    };
+  }, []);
+
   // hydrate from localStorage synchronously before paint to avoid flash of default name
   React.useLayoutEffect(() => {
     try {
