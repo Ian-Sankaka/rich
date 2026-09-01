@@ -438,9 +438,9 @@ export default function UserDashboardPage() {
   };
 
   return (
-    <div className="flex min-h-screen w-full bg-[#f8f8f5] dark:bg-[#070d07]">
+    <div className="flex min-h-[111.11vh] w-full bg-[#f8f8f5] dark:bg-[#070d07]">
       <DashboardTour />
-      <aside id="dash-sidebar" className="hidden lg:flex w-[300px] shrink-0 flex-col border-r border-[var(--border)] bg-white dark:bg-[#0f1410] sticky top-0 h-screen">
+      <aside id="dash-sidebar" className="hidden lg:flex w-[300px] shrink-0 flex-col border-r border-[var(--border)] bg-white dark:bg-[#0f1410] sticky top-0 h-[111.11vh]">
         <div className="flex h-[64px] items-center gap-2 px-6 border-b border-[var(--border)] shrink-0">
           <span className="flex h-8 w-8 items-center justify-center rounded-[4px] bg-[#4a8c3f] text-white font-black text-[16px]" style={{ fontFamily: "Roboto, sans-serif" }}>R</span>
           <span className="text-[16px] font-bold tracking-[0.08em] text-[#1a221a] dark:text-white">RICH</span>
