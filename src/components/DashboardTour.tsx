@@ -269,19 +269,13 @@ export default function DashboardTour() {
       setRect(nr);
       try { setClip(buildSpotlightClipPath(nr, vw, vh)); } catch { setClip(null); }
     };
-    const headerOffset = 70;
     const r = el.getBoundingClientRect();
-    const absTop = r.top + window.scrollY;
-    const targetY = absTop - headerOffset - 12;
-    if (r.top < headerOffset + 8 || r.bottom > window.innerHeight - 80) {
-      // hide spotlight while smooth-scrolling to avoid tear line dragging across viewport
-      setRect(null); setClip(null); setTipPos(null);
-      window.scrollTo({ top: Math.max(0, targetY), behavior: "smooth" });
-      setTimeout(() => {
+    if (r.top < 78 || r.bottom > window.innerHeight - 80) {
+      el.scrollIntoView({ behavior: "auto", block: "center", inline: "nearest" });
+      requestAnimationFrame(() => {
         const rr = el!.getBoundingClientRect();
-        // commit on next frame so clip + rect land together
-        requestAnimationFrame(() => commit(rr));
-      }, 520);
+        commit(rr);
+      });
     } else {
       commit(r);
     }
@@ -292,16 +286,10 @@ export default function DashboardTour() {
   useEffect(() => {
     if (!open || centered) return;
     let raf = 0;
-    let t: ReturnType<typeof setTimeout> | null = null;
-    const onWin = () => {
-      cancelAnimationFrame(raf);
-      if (t) clearTimeout(t);
-      // debounce to avoid mid-transition jitter
-      t = setTimeout(() => { raf = requestAnimationFrame(measure); }, 120);
-    };
+    const onWin = () => { cancelAnimationFrame(raf); raf = requestAnimationFrame(measure); };
     window.addEventListener("resize", onWin);
     window.addEventListener("scroll", onWin, { passive: true });
-    return () => { window.removeEventListener("resize", onWin); window.removeEventListener("scroll", onWin); if (t) clearTimeout(t); cancelAnimationFrame(raf); };
+    return () => { window.removeEventListener("resize", onWin); window.removeEventListener("scroll", onWin); cancelAnimationFrame(raf); };
   }, [open, centered, measure]);
 
   // auto-skip hidden nav items on mobile
