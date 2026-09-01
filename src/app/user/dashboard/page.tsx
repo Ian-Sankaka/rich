@@ -456,10 +456,10 @@ export default function UserDashboardPage() {
               const Icon = item.icon as unknown as React.ComponentType<{ className?: string }>;
               const active = filter === item.filter || (item.filter === "pending" && (filter === "pending" || filter === "in_review"));
               return (
-                <button id={item.id} key={item.label} onClick={() => setFilter(item.filter as Status | "all")} className={`flex w-full items-center gap-3 rounded-[4px] px-3 py-3 text-left text-[16px] transition-colors ${active ? "bg-[var(--off-white)] dark:bg-white/5 font-semibold text-[var(--text-dark)]" : "text-[var(--text-mid)] hover:bg-[var(--off-white)] dark:hover:bg-white/5"}`}>
+                <button id={item.id} key={item.label} onClick={() => setFilter(item.filter as Status | "all")} className={`flex w-full items-center gap-3 rounded-[4px] px-3 py-3 text-left text-[15px] transition-colors ${active ? "bg-[var(--off-white)] dark:bg-white/5 font-semibold text-[var(--text-dark)]" : "text-[var(--text-mid)] hover:bg-[var(--off-white)] dark:hover:bg-white/5"}`}>
                   <Icon className="h-4 w-4 shrink-0" />
                   <span className="flex-1">{item.label}</span>
-                  <span className={`rounded-full px-2 py-0.5 text-[14px] font-bold ${active ? "bg-[#4a8c3f] text-white" : "bg-[var(--off-white)] dark:bg-white/10 text-[var(--text-light)]"}`}>{item.count}</span>
+                  <span className={`rounded-full px-2 py-0.5 text-[15px] font-bold ${active ? "bg-[#4a8c3f] text-white" : "bg-[var(--off-white)] dark:bg-white/10 text-[var(--text-light)]"}`}>{item.count}</span>
                 </button>
               );
             })}
@@ -549,7 +549,7 @@ export default function UserDashboardPage() {
 
           <div id="dash-list" className="rounded-[16px] border border-[var(--border)] bg-white dark:bg-[#1a221a] overflow-hidden shadow-sm">
             <div className="flex items-center justify-between border-b border-[var(--border)] px-6 py-5">
-              <h3 className="text-[16px] font-bold text-[var(--text-dark)]">My Submissions</h3>
+              <h3 className="text-[15px] font-bold text-[var(--text-dark)]">My Submissions</h3>
               <span className="text-[13px] font-medium text-[var(--text-light)]">{filtered.length} items</span>
             </div>
             <div className="divide-y divide-[var(--border)]">
