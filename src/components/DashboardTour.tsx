@@ -138,11 +138,6 @@ function isVisible(el: HTMLElement) {
 }
 
 function getHighlightRadii(el: HTMLElement, pad: number, explicit?: string): string {
-  if (explicit) {
-    const m = explicit.match(/(\d+(\.\d+)?)/);
-    const base = m ? parseFloat(m[1]) : 0;
-    return `${base + pad}px`;
-  }
   const cs = getComputedStyle(el);
   const corners = [
     cs.borderTopLeftRadius,
@@ -150,13 +145,26 @@ function getHighlightRadii(el: HTMLElement, pad: number, explicit?: string): str
     cs.borderBottomRightRadius,
     cs.borderBottomLeftRadius,
   ];
-  const vals = corners.map((c) => {
+  const computedVals = corners.map((c) => {
     const mm = c.match(/(\d+(\.\d+)?)/);
     const b = mm ? parseFloat(mm[1]) : 0;
-    return `${b + pad}px`;
+    return b + pad;
   });
-  if (vals.every((v) => v === vals[0])) return vals[0];
-  return vals.join(" ");
+  // if element already has meaningful radius, preserve per-corner shape + pad (so 4-corner capture works in both themes)
+  const hasComputedRadius = computedVals.some((v) => v > pad + 0.5);
+  if (hasComputedRadius) {
+    const vals = computedVals.map((v) => `${v}px`);
+    if (vals.every((v) => v === vals[0])) return vals[0];
+    return vals.join(" ");
+  }
+  // fallback to explicit (for grid containers that are technically 0-radius but should appear rounded) or pad-based square
+  if (explicit) {
+    const m = explicit.match(/(\d+(\.\d+)?)/);
+    const base = m ? parseFloat(m[1]) : 0;
+    return `${base + pad}px`;
+  }
+  // square element with no explicit -> minimal rounding = pad itself keeps corners from looking boxish
+  return `${Math.max(4, pad + 3)}px`;
 }
 
 export default function DashboardTour() {
@@ -334,8 +342,8 @@ export default function DashboardTour() {
                   height: rect.height,
                   background: "transparent",
                   borderRadius: rect.radius,
-                  border: "1px solid rgba(255,255,255,0.90)",
-                  boxShadow: "0 0 0 1px rgba(74,140,63,0.10), 0 8px 28px rgba(0,0,0,0.13), 0 0 0 4px rgba(74,140,63,0.06), inset 0 1px 0 rgba(255,255,255,0.50)",
+                  border: "1.5px solid rgba(255,255,255,0.96)",
+                  boxShadow: "0 0 0 1.5px rgba(74,140,63,0.95), 0 0 0 5px rgba(74,140,63,0.12), 0 8px 28px rgba(0,0,0,0.18), inset 0 1px 0 rgba(255,255,255,0.55)",
                 }}
               />
             </>
