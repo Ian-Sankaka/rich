@@ -274,11 +274,14 @@ export default function DashboardTour() {
     const absTop = r.top + window.scrollY;
     const targetY = absTop - headerOffset - 12;
     if (r.top < headerOffset + 8 || r.bottom > window.innerHeight - 80) {
+      // hide spotlight while smooth-scrolling to avoid tear line dragging across viewport
+      setRect(null); setClip(null); setTipPos(null);
       window.scrollTo({ top: Math.max(0, targetY), behavior: "smooth" });
       setTimeout(() => {
         const rr = el!.getBoundingClientRect();
-        commit(rr);
-      }, 460);
+        // commit on next frame so clip + rect land together
+        requestAnimationFrame(() => commit(rr));
+      }, 520);
     } else {
       commit(r);
     }
@@ -289,11 +292,16 @@ export default function DashboardTour() {
   useEffect(() => {
     if (!open || centered) return;
     let raf = 0;
-    const onWin = () => { cancelAnimationFrame(raf); raf = requestAnimationFrame(measure); };
+    let t: ReturnType<typeof setTimeout> | null = null;
+    const onWin = () => {
+      cancelAnimationFrame(raf);
+      if (t) clearTimeout(t);
+      // debounce to avoid mid-transition jitter
+      t = setTimeout(() => { raf = requestAnimationFrame(measure); }, 120);
+    };
     window.addEventListener("resize", onWin);
     window.addEventListener("scroll", onWin, { passive: true });
-    const id = setInterval(measure, 900);
-    return () => { window.removeEventListener("resize", onWin); window.removeEventListener("scroll", onWin); clearInterval(id); cancelAnimationFrame(raf); };
+    return () => { window.removeEventListener("resize", onWin); window.removeEventListener("scroll", onWin); if (t) clearTimeout(t); cancelAnimationFrame(raf); };
   }, [open, centered, measure]);
 
   // auto-skip hidden nav items on mobile
@@ -356,10 +364,10 @@ export default function DashboardTour() {
             <div className="fixed inset-0 z-50 bg-[#0a150a]/65 backdrop-blur-[3px] animate-[tourFade_0.28s_ease]" onClick={() => close("dismissed")} />
           ) : rect ? (
             <>
-              {/* single rounded-hole spotlight — clipPath makes hole wrap exactly to element shape in both themes, no square corners */}
+              {/* single rounded-hole spotlight — clipPath makes hole wrap exactly to element shape in both themes, no square corners; no clip-path transition to avoid path-interpolation tears */}
               <div
-                className="fixed inset-0 z-50 bg-black/55 backdrop-blur-[2.5px] transition-[clip-path] duration-300 ease-[cubic-bezier(0.16,1,0.3,1)]"
-                style={clip ? { clipPath: clip } as React.CSSProperties : undefined}
+                className="fixed inset-0 z-50 bg-black/55 backdrop-blur-[2.5px]"
+                style={clip ? { clipPath: clip, WebkitClipPath: clip, willChange: "clip-path", transform: "translateZ(0)", backfaceVisibility: "hidden" } as React.CSSProperties : { willChange: "clip-path", transform: "translateZ(0)", backfaceVisibility: "hidden" } as React.CSSProperties}
                 onClick={() => close("dismissed")}
               />
               {/* fallback for browsers without path() clip or while clip computes — 4-div square hole (covered by clip when available) */}
@@ -372,7 +380,7 @@ export default function DashboardTour() {
                 </>
               )}
               <div
-                className="fixed z-[51] pointer-events-none transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)]"
+                className="fixed z-[51] pointer-events-none"
                 style={{
                   top: rect.top,
                   left: rect.left,
@@ -382,6 +390,10 @@ export default function DashboardTour() {
                   borderRadius: rect.radius,
                   border: "2px solid rgba(255,255,255,0.98)",
                   boxShadow: "0 0 0 2px rgba(74,140,63,0.96), 0 0 0 6px rgba(74,140,63,0.13), 0 8px 28px rgba(0,0,0,0.18), inset 0 1px 0 rgba(255,255,255,0.60)",
+                  transition: "top 320ms cubic-bezier(0.16,1,0.3,1), left 320ms cubic-bezier(0.16,1,0.3,1), width 320ms cubic-bezier(0.16,1,0.3,1), height 320ms cubic-bezier(0.16,1,0.3,1), border-radius 320ms cubic-bezier(0.16,1,0.3,1), box-shadow 320ms cubic-bezier(0.16,1,0.3,1)",
+                  willChange: "top, left, width, height, border-radius",
+                  transform: "translateZ(0)",
+                  backfaceVisibility: "hidden" as const,
                 }}
               />
             </>
@@ -417,7 +429,7 @@ export default function DashboardTour() {
               </div>
             </div>
           ) : rect && tipPos ? (
-            <div ref={tipRef} className="fixed z-[52] rounded-[16px] bg-white dark:bg-[#1a221a] border border-black/10 dark:border-white/10 shadow-[0_20px_60px_rgba(0,0,0,0.30)] overflow-hidden animate-[tourPop_0.32s_cubic-bezier(0.16,1,0.3,1)] flex flex-col" style={{ top: tipPos.top, left: tipPos.left, width: tipPos.width }} role="dialog">
+            <div ref={tipRef} className="fixed z-[52] rounded-[16px] bg-white dark:bg-[#1a221a] border border-black/10 dark:border-white/10 shadow-[0_20px_60px_rgba(0,0,0,0.30)] overflow-hidden flex flex-col" style={{ top: tipPos.top, left: tipPos.left, width: tipPos.width, transition: "top 320ms cubic-bezier(0.16,1,0.3,1), left 320ms cubic-bezier(0.16,1,0.3,1)", willChange: "top, left", transform: "translateZ(0)", backfaceVisibility: "hidden" } as React.CSSProperties} role="dialog">
               <div className="p-5 sm:p-6">
                 <div className="flex items-start justify-between gap-3">
                   <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-[10px] border shadow-sm" style={{ background: `${data.accent}12`, borderColor: `${data.accent}18`, color: data.accent }}>{data.Icon ? <data.Icon className="h-5 w-5" /> : <Sparkles className="h-5 w-5" />}</div>
