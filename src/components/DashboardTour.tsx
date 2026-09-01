@@ -167,6 +167,24 @@ function getHighlightRadii(el: HTMLElement, pad: number, explicit?: string): str
   return `${Math.max(4, pad + 3)}px`;
 }
 
+function getZoom(): number {
+  try {
+    const z = (getComputedStyle(document.documentElement).zoom as string) || "";
+    const v = parseFloat(z);
+    if (Number.isFinite(v) && v > 0) return v;
+    // fallback: check transform scale on html as alternative 90% implementation
+    const tr = getComputedStyle(document.documentElement).transform;
+    if (tr && tr !== "none") {
+      const m = tr.match(/matrix\(([^)]+)\)/);
+      if (m) {
+        const vals = m[1].split(",").map((n) => parseFloat(n));
+        if (Number.isFinite(vals[0]) && vals[0] > 0) return vals[0];
+      }
+    }
+  } catch {}
+  return 1;
+}
+
 function parseRadii(s: string): [number, number, number, number] {
   if (!s) return [0, 0, 0, 0];
   const parts = s.trim().split(/\s+/).map((p) => parseFloat(p) || 0);
@@ -182,7 +200,7 @@ function buildSpotlightClipPath(rect: { top: number; left: number; width: number
   const right = x + w, bottom = y + h;
   const clamp = (v: number) => Math.min(v, w / 2, h / 2);
   const ctl = clamp(tl), ctr = clamp(tr), cbr = clamp(br), cbl = clamp(bl);
-  // even-odd: outer fullscreen rect minus inner rounded rect hole
+  // even-odd: outer fullscreen rect minus inner rounded rect hole (all in logical px)
   const p = `M0 0 H${vw} V${vh} H0 Z M${x + ctl} ${y} H${right - ctr} A${ctr} ${ctr} 0 0 1 ${right} ${y + ctr} V${bottom - cbr} A${cbr} ${cbr} 0 0 1 ${right - cbr} ${bottom} H${x + cbl} A${cbl} ${cbl} 0 0 1 ${x} ${bottom - cbl} V${y + ctl} A${ctl} ${ctl} 0 0 1 ${x + ctl} ${y} Z`;
   return `path(evenodd, "${p}")`;
 }
@@ -261,11 +279,15 @@ export default function DashboardTour() {
     }
     if (!el) { setRect(null); setClip(null); return; }
     const pad = data.pad !== undefined ? data.pad : (isMobile() ? 4 : 6);
-    // 4-corner radii so highlight wraps exactly to element shape in both light and dark (no square-hole artifacts)
-    const highlightRadius = getHighlightRadii(el, pad, data.radius);
-    const vw = window.innerWidth, vh = window.innerHeight;
+    const zoom = getZoom();
+    const padLogical = pad / zoom;
+    // 4-corner radii so highlight wraps exactly to element shape in both light and dark + zoom-compensated hug
+    const highlightRadius = getHighlightRadii(el, padLogical, data.radius);
+    const vw = window.innerWidth / zoom, vh = window.innerHeight / zoom;
     const commit = (rr: DOMRect) => {
-      const nr = { top: rr.top - pad, left: rr.left - pad, width: rr.width + pad*2, height: rr.height + pad*2, radius: highlightRadius };
+      // rr is visual (scaled); convert to logical so highlight inside zoomed html lands perfectly
+      const top = rr.top / zoom, left = rr.left / zoom, width = rr.width / zoom, height = rr.height / zoom;
+      const nr = { top: top - padLogical, left: left - padLogical, width: width + padLogical * 2, height: height + padLogical * 2, radius: highlightRadius };
       setRect(nr);
       try { setClip(buildSpotlightClipPath(nr, vw, vh)); } catch { setClip(null); }
     };
@@ -307,19 +329,22 @@ export default function DashboardTour() {
   useLayoutEffect(() => {
     if (!open || centered || !rect) { setTipPos(null); return; }
     const place = () => {
-      const vw = window.innerWidth, vh = window.innerHeight;
-      const mob = vw < 768;
-      const w = mob ? Math.min(vw - 16, 380) : 380;
+      const zoom = getZoom();
+      const vw = window.innerWidth / zoom, vh = window.innerHeight / zoom;
+      const gap = 16 / zoom, edge = 8 / zoom;
+      const mob = window.innerWidth < 768;
+      const wVisual = 380, w = wVisual / zoom;
+      const wEff = mob ? Math.min(vw - gap, w) : w;
       const h = tipRef.current?.offsetHeight || 260;
-      let top = rect.top + rect.height + 16;
-      let left = rect.left + rect.width/2 - w/2;
-      left = Math.max(8, Math.min(left, vw - w - 8));
-      if (top + h + 16 > vh) {
-        const above = rect.top - h - 16;
-        if (above > 8) top = above; else top = Math.max(8, (vh - h)/2);
+      let top = rect.top + rect.height + gap;
+      let left = rect.left + rect.width / 2 - wEff / 2;
+      left = Math.max(edge, Math.min(left, vw - wEff - edge));
+      if (top + h + gap > vh) {
+        const above = rect.top - h - gap;
+        if (above > edge) top = above; else top = Math.max(edge, (vh - h) / 2);
       }
-      top = Math.max(8, top);
-      setTipPos({ top, left, width: w });
+      top = Math.max(edge, top);
+      setTipPos({ top, left, width: wEff });
     };
     const t = setTimeout(place, 80);
     const ro = new ResizeObserver(place);
