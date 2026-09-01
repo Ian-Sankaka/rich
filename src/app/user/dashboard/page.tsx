@@ -182,7 +182,7 @@ export default function UserDashboardPage() {
   }, []);
 
   useEffect(() => {
-    fetch("/api/me")
+    fetch("/api/me", { credentials: "include", cache: "no-store" })
       .then((r) => (r.ok ? r.json() : null))
       .then((j) => {
         const u = j?.user;
@@ -275,6 +275,7 @@ export default function UserDashboardPage() {
       const res = await fetch("/api/me", {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
+        credentials: "include",
         body: JSON.stringify({ name: displayName.trim().slice(0, 100), email: emailField.trim().toLowerCase().slice(0, 254), avatar }),
       });
       const j = await res.json().catch(() => ({}));

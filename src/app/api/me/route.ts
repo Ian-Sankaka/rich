@@ -4,9 +4,22 @@ import { verifySession, SESSION_COOKIE, signSession } from "@/lib/auth";
 export const dynamic = "force-dynamic";
 
 export async function GET(req: NextRequest) {
+  let payload: { id: number; email: string; name: string } | null = null;
   const token = req.cookies.get(SESSION_COOKIE)?.value;
-  if (!token) return NextResponse.json({ user: null }, { status: 401 });
-  const payload = await verifySession(token);
+  if (token) payload = await verifySession(token);
+  // fallback to next-auth session (Google OAuth) when rich_session missing/invalid
+  if (!payload) {
+    try {
+      const { auth } = await import("@/auth");
+      const session = await auth();
+      const email = (session?.user as any)?.email as string | undefined;
+      if (email) {
+        const { pool } = await import("@/lib/db");
+        const { rows } = await pool.query(`select id, email, name from public.users where lower(email)=lower($1) limit 1`, [email]);
+        if (rows[0]) payload = { id: Number(rows[0].id), email: rows[0].email, name: rows[0].name };
+      }
+    } catch {}
+  }
   if (!payload) return NextResponse.json({ user: null }, { status: 401 });
   // include avatar from DB if present - ensure column exists and is TEXT (production may be varchar(255))
   try {
@@ -26,10 +39,22 @@ export async function GET(req: NextRequest) {
 }
 
 export async function PATCH(req: NextRequest) {
+  let payload: { id: number; email: string; name: string } | null = null;
   const token = req.cookies.get(SESSION_COOKIE)?.value;
-  if (!token) return NextResponse.json({ error: "Not authenticated" }, { status: 401 });
-  const payload = await verifySession(token);
-  if (!payload) return NextResponse.json({ error: "Invalid session" }, { status: 401 });
+  if (token) payload = await verifySession(token);
+  if (!payload) {
+    try {
+      const { auth } = await import("@/auth");
+      const session = await auth();
+      const email = (session?.user as any)?.email as string | undefined;
+      if (email) {
+        const { pool } = await import("@/lib/db");
+        const { rows } = await pool.query(`select id, email, name from public.users where lower(email)=lower($1) limit 1`, [email]);
+        if (rows[0]) payload = { id: Number(rows[0].id), email: rows[0].email, name: rows[0].name };
+      }
+    } catch {}
+  }
+  if (!payload) return NextResponse.json({ error: "Not authenticated" }, { status: 401 });
 
   let body: any;
   try { body = await req.json(); } catch { return NextResponse.json({ error: "Invalid body" }, { status: 400 }); }
