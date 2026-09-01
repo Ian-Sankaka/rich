@@ -464,7 +464,7 @@ export default function DashboardPage() {
                 >
                   <div className="p-0.5">
                     <div className="flex items-center justify-between mb-3">
-                      <p className="text-[14px] font-semibold tracking-tight text-[var(--text-mid)]" style={{ fontFamily: "Roboto, sans-serif" }}>{c.label}</p>
+                      <p className="text-[15px] font-semibold tracking-tight text-[var(--text-mid)]" style={{ fontFamily: "Roboto, sans-serif" }}>{c.label}</p>
                       <Icon className="h-4 w-4 text-[var(--text-light)]" />
                     </div>
                     <div className="mb-3 flex items-baseline gap-2">

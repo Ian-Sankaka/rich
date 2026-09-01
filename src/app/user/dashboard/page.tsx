@@ -518,7 +518,7 @@ export default function UserDashboardPage() {
                 <motion.div key={c.label} variants={{ hidden: { opacity: 0, y: 15 }, visible: { opacity: 1, y: 0, transition: { duration: 0.5 } } }} whileHover={{ scale: 1.02, y: -3 }} transition={{ type: "spring", stiffness: 300, damping: 15 } as unknown as Record<string, unknown>} className="h-full overflow-hidden rounded-[12px] border border-[var(--border)] bg-white dark:bg-[#1a221a] p-4">
                   <div className="p-0.5">
                     <div className="flex items-center justify-between mb-3">
-                      <p className="text-[14px] font-semibold tracking-tight text-[var(--text-mid)]" style={{ fontFamily: "Roboto, sans-serif" }}>{c.label}</p>
+                      <p className="text-[15px] font-semibold tracking-tight text-[var(--text-mid)]" style={{ fontFamily: "Roboto, sans-serif" }}>{c.label}</p>
                       <Icon className="h-4 w-4 text-[var(--text-light)]" />
                     </div>
                     <div className="mb-3 flex items-baseline gap-2">
