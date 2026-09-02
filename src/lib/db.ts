@@ -7,8 +7,10 @@ declare global {
 
 function getPool() {
   if (global.__pgPool) return global.__pgPool;
-  const url = process.env.DATABASE_URL;
+  let url = process.env.DATABASE_URL;
   if (!url) throw new Error("DATABASE_URL not set");
+  // Use transaction mode (6543) for serverless to avoid session pool exhaustion (5432 session pool_size=15)
+  if (url.includes("supabase.com") && url.includes(":5432/")) url = url.replace(":5432/", ":6543/");
   // Supabase pooler (pgbouncer) uses a certificate chain that Node can't verify by default
   // - Supabase docs use sslmode=require which maps to rejectUnauthorized:false.
   // For non-Supabase hosts we enforce verification.
@@ -17,7 +19,10 @@ function getPool() {
   const pool = new Pool({
     connectionString: url,
     ssl: isLocal ? false : isSupabasePooler ? { rejectUnauthorized: false } : { rejectUnauthorized: true },
-    max: 5,
+    max: 1,
+    idleTimeoutMillis: 10000,
+    connectionTimeoutMillis: 10000,
+    allowExitOnIdle: true,
   });
   global.__pgPool = pool;
   return pool;
