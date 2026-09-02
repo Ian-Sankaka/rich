@@ -19,7 +19,7 @@ export const articles: Article[] = [
     author: "Leonida Mutuku",
     title: "LDRI to Host the AI4D Research and Innovation for Climate Hub",
     excerpt: "A major milestone in LDRI's journey: hosting the AI4D Climate Hub as a platform to accelerate responsible AI solutions for climate action in Africa.",
-    image: "https://images.unsplash.com/photo-1574943320219-553eb213f72d?w=1200&q=80",
+    image: "https://images.unsplash.com/photo-1574943320219-553eb213f72d?w=1920&q=85&auto=format&fit=crop",
     readTime: "5 min read",
     content: [
       "The Local Development Research Institute (LDRI) will host the AI4D Research and Innovation for Climate Hub (RICH) - a major milestone that positions African research and practice at the centre of climate AI innovation.",
@@ -36,7 +36,7 @@ export const articles: Article[] = [
     author: "Mark Irura",
     title: "The Collapse of Koko Networks: Lessons for Climate Innovation and Regulatory Reform",
     excerpt: "The closure of Koko Networks marks a significant setback for climate innovation in Africa. What can we learn about regulatory barriers and scaling pathways?",
-    image: "https://images.unsplash.com/photo-1593113598332-cd288d649433?w=1200&q=80",
+    image: "https://images.unsplash.com/photo-1593113598332-cd288d649433?w=1920&q=85&auto=format&fit=crop",
     readTime: "7 min read",
     content: [
       "Koko Networks’ closure is more than a company failure - it is a stress test for Africa’s climate innovation ecosystem. Koko scaled a clean cooking fuel network to hundreds of thousands of households, then ran into the kind of regulatory and market friction that stalls many government-adoption pathways.",
@@ -49,13 +49,12 @@ export const articles: Article[] = [
   {
     slug: "aligning-climate-ai-ndc-commitments",
     category: "Policy and AI",
-    date: "Coming Soon",
+    date: "February 28, 2026",
     author: "RICH Team",
     title: "Aligning Climate AI Innovations with Africa's NDC Commitments: A Practical Guide",
     excerpt: "How innovators and government staff can use the RICH Policy Resources collection to map their work against national and regional climate frameworks.",
-    image: "https://images.unsplash.com/photo-1497436072909-60f360e1d4b1?w=1200&q=80",
+    image: "https://images.unsplash.com/photo-1497436072909-60f360e1d4b1?w=1920&q=85&auto=format&fit=crop",
     readTime: "6 min read",
-    comingSoon: true,
     content: [
       "Innovators often ask a deceptively simple question: does my work count toward my country’s NDC? The answer matters for funding, for government partnership, and for procurement.",
       "This practical guide - launching in the Policy Resources collection - shows how to map a climate AI innovation against the AU Climate Strategy, the five RECs (EAC, ECOWAS, SADC, IGAD) and your national NDC and NAP. Each summary is plain-language, dated, and licensed for reuse by government staff.",

@@ -4,6 +4,7 @@ import { ThemeProvider } from "@/components/ThemeProvider";
 import { ToastProvider } from "@/components/ToastProvider";
 import Link from "next/link";
 import SiteHeader from "@/components/SiteHeader";
+import ScrollToTop from "@/components/ScrollToTop";
 import { Inter, Bricolage_Grotesque } from "next/font/google";
 
 const inter = Inter({
@@ -62,8 +63,11 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <body suppressHydrationWarning className="bg-[var(--background)] text-[var(--foreground)] antialiased">
         <ThemeProvider>
           <ToastProvider>
-            <TopBar />
-            <SiteHeader />
+            <ScrollToTop />
+            <div className="sticky top-0 z-50">
+              <TopBar />
+              <SiteHeader />
+            </div>
             <main>{children}</main>
           <footer id="contact" className="bg-[#111] text-white/65">
             <div className="mx-auto max-w-[1140px] px-6 lg:px-10 py-14">

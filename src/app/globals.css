@@ -41,7 +41,7 @@
 
 button, a, [role="button"] { cursor: pointer; }
 
-html { scroll-behavior: smooth; overflow-x: hidden; }
+html { scroll-behavior: smooth; overflow-x: hidden; scroll-padding-top: 130px; }
 * { -webkit-tap-highlight-color: transparent; }
 
 body {

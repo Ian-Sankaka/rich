@@ -22,7 +22,7 @@ export default function SiteHeader() {
   const dashboardHref = isAdmin ? "/dashboard" : "/user/dashboard";
 
   return (
-    <header className="sticky top-0 z-50 bg-white dark:bg-[#111] border-b border-[#e8ece8] dark:border-white/5 overflow-x-clip">
+    <header className="bg-white dark:bg-[#111] border-b border-[#e8ece8] dark:border-white/5 overflow-x-clip">
       <div className="mx-auto max-w-[1140px] flex h-[93px] items-center justify-between px-4 sm:px-6">
         <Link href="/" className="flex items-center gap-[10px] shrink-0">
           <span className="flex h-9 w-9 items-center justify-center rounded-[4px] bg-[var(--green-accent)] text-white font-black text-[19px]" style={{ fontFamily: 'Roboto, sans-serif' }}>R</span>
