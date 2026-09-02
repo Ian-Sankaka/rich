@@ -15,13 +15,11 @@ export default function LoginPage() {
 
   useEffect(() => { window.scrollTo({ top: 0, left: 0, behavior: "instant" as ScrollBehavior }); }, []);
 
-  // Auto-redirect if already authenticated (fixes OAuth staying on login until new tab)
+  // Auto-redirect if already authenticated
   useEffect(() => {
     let cancelled = false;
-    let interval: ReturnType<typeof setInterval> | null = null;
     const check = async () => {
       try {
-        // Check rich_session via /api/me
         const r = await fetch("/api/me", { credentials: "include", cache: "no-store" });
         if (r.ok) {
           const j = await r.json().catch(() => null);
@@ -31,13 +29,11 @@ export default function LoginPage() {
             return true;
           }
         }
-        // Fallback: check NextAuth session
         try {
           const { getSession } = await import("next-auth/react");
           const s = await getSession();
           const em = (s?.user?.email as string) || "";
           if (em && !cancelled) {
-            // confirm rich_session exists else wait for it
             const rr = await fetch("/api/me", { credentials: "include", cache: "no-store" });
             if (rr.ok) {
               const jj = await rr.json().catch(() => null);
@@ -52,20 +48,14 @@ export default function LoginPage() {
       } catch {}
       return false;
     };
-    // immediate check + on focus/visibility
     check();
     const onFocus = () => { check(); };
     window.addEventListener("focus", onFocus);
     document.addEventListener("visibilitychange", onFocus);
-    // poll briefly after mount to catch OAuth cookie that arrives cross-site (Strict->Lax fix)
-    interval = setInterval(check, 1500);
-    // stop polling after 20s
-    setTimeout(() => { if (interval) clearInterval(interval); }, 20000);
     return () => {
       cancelled = true;
       window.removeEventListener("focus", onFocus);
       document.removeEventListener("visibilitychange", onFocus);
-      if (interval) clearInterval(interval);
     };
   }, []);
 

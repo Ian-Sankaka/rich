@@ -18,10 +18,9 @@ export default function RegisterPage() {
 
   useEffect(() => { window.scrollTo({ top: 0, left: 0, behavior: "instant" as ScrollBehavior }); }, []);
 
-  // Auto-redirect if already authenticated (same fix as login)
+  // Auto-redirect if already authenticated
   useEffect(() => {
     let cancelled = false;
-    let interval: ReturnType<typeof setInterval> | null = null;
     const check = async () => {
       try {
         const r = await fetch("/api/me", { credentials: "include", cache: "no-store" });
@@ -56,13 +55,10 @@ export default function RegisterPage() {
     const onFocus = () => { check(); };
     window.addEventListener("focus", onFocus);
     document.addEventListener("visibilitychange", onFocus);
-    interval = setInterval(check, 1500);
-    setTimeout(() => { if (interval) clearInterval(interval); }, 20000);
     return () => {
       cancelled = true;
       window.removeEventListener("focus", onFocus);
       document.removeEventListener("visibilitychange", onFocus);
-      if (interval) clearInterval(interval);
     };
   }, []);
 
