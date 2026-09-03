@@ -205,6 +205,8 @@ function buildSpotlightClipPath(rect: { top: number; left: number; width: number
   return `path(evenodd, "${p}")`;
 }
 
+const MOBILE_STEP_IDS = ["hero", "stats", "filters", "list", "contribute"] as const;
+
 export default function DashboardTour() {
   const [open, setOpen] = useState(false);
   const [step, setStep] = useState(0);
@@ -213,8 +215,15 @@ export default function DashboardTour() {
   const [tipPos, setTipPos] = useState<{ top: number; left: number; width: number } | null>(null);
   const [showTrigger, setShowTrigger] = useState(false);
   const tipRef = useRef<HTMLDivElement>(null);
-  const data = STEPS[step];
-  const centered = !data.target;
+  const effectiveSteps = isMobile() ? STEPS.filter((s) => (MOBILE_STEP_IDS as readonly string[]).includes(s.id)) : STEPS;
+  const data = effectiveSteps[step] ?? effectiveSteps[0] ?? STEPS[step];
+  const centered = !data?.target;
+
+  // clamp step when switching between mobile (5 steps) and desktop (all)
+  useEffect(() => {
+    const total = isMobile() ? MOBILE_STEP_IDS.length : STEPS.length;
+    if (step >= total) setStep(total - 1);
+  }, [step]);
 
   useEffect(() => {
     const done = localStorage.getItem(LS_COMPLETED) === "1";
@@ -240,7 +249,8 @@ export default function DashboardTour() {
   }, []);
 
   const next = useCallback(() => {
-    if (step >= STEPS.length - 1) close("completed");
+    const totalSteps = isMobile() ? MOBILE_STEP_IDS.length : STEPS.length;
+    if (step >= totalSteps - 1) close("completed");
     else setStep((s) => s + 1);
   }, [step, close]);
 
@@ -309,14 +319,23 @@ export default function DashboardTour() {
     const threshold = needsRoomBelow ? 280 : needsRoomAbove ? 320 : 80;
     if (r.top < 78 || r.bottom > window.innerHeight - threshold || (needsRoomAbove && r.top < 300)) {
       // stats/hero/list -> start (tip below), filters -> center (tip above needs space)
+      // step 4 filters uses smooth for less draggy feel on mobile
       const block = mob && needsRoomBelow ? "start" as const : mob && needsRoomAbove ? "center" as const : "center" as const;
-      el.scrollIntoView({ behavior: "auto", block, inline: "nearest" });
+      const behavior = mob && isFilters ? "smooth" as const : "auto" as const;
+      el.scrollIntoView({ behavior, block, inline: "nearest" });
       // add offset for sticky header on mobile start
       if (mob && block === "start") window.scrollBy({ top: -72, left: 0, behavior: "auto" });
-      requestAnimationFrame(() => {
-        const rr = el!.getBoundingClientRect();
-        commit(rr);
-      });
+      if (behavior === "smooth") {
+        setTimeout(() => {
+          const rr = el!.getBoundingClientRect();
+          commit(rr);
+        }, 340);
+      } else {
+        requestAnimationFrame(() => {
+          const rr = el!.getBoundingClientRect();
+          commit(rr);
+        });
+      }
     } else {
       commit(r);
     }
@@ -333,25 +352,28 @@ export default function DashboardTour() {
     return () => { window.removeEventListener("resize", onWin); window.removeEventListener("scroll", onWin); cancelAnimationFrame(raf); };
   }, [open, centered, measure]);
 
-  // auto-skip hidden nav/profile items on mobile — instant, no flicker
+  // auto-skip hidden nav/profile items on mobile — instant, no flicker (desktop keeps all)
   useEffect(() => {
     if (!open || centered) return;
+    if (!isMobile()) return;
     const sel = data.target || "";
     const isHiddenNav = sel.startsWith("#dash-nav-") || sel === "#dash-profile";
-    if (isHiddenNav && isMobile() && rect === null) {
-      const t = setTimeout(() => {
-        const idx = STEPS.findIndex(s => s.id === data.id);
-        if (step === idx) next();
-      }, 120);
-      return () => clearTimeout(t);
+    if (isHiddenNav && rect === null) {
+      const steps = STEPS.filter((s) => (MOBILE_STEP_IDS as readonly string[]).includes(s.id));
+      const idx = steps.findIndex((s) => s.id === data.id);
+      if (step === idx) {
+        const t = setTimeout(() => next(), 120);
+        return () => clearTimeout(t);
+      }
     }
     // also skip contribute if somehow not found on mobile (fallback)
-    if (sel === "#dash-contribute-btn" && isMobile() && rect === null) {
-      const t = setTimeout(() => {
-        const idx = STEPS.findIndex(s => s.id === data.id);
-        if (step === idx) next();
-      }, 120);
-      return () => clearTimeout(t);
+    if (sel === "#dash-contribute-btn" && rect === null) {
+      const steps = STEPS.filter((s) => (MOBILE_STEP_IDS as readonly string[]).includes(s.id));
+      const idx = steps.findIndex((s) => s.id === data.id);
+      if (step === idx) {
+        const t = setTimeout(() => next(), 120);
+        return () => clearTimeout(t);
+      }
     }
   }, [open, centered, data, rect, step, next]);
 
@@ -406,7 +428,7 @@ export default function DashboardTour() {
   }, [open, centered, rect, step]);
 
   if (!open && !showTrigger) return null;
-  const total = STEPS.length;
+  const total = effectiveSteps.length;
   // pct kept for potential future use
   const pct = ((step + 1) / total) * 100;
 
@@ -455,7 +477,11 @@ export default function DashboardTour() {
                   borderRadius: rect.radius,
                   border: "2px solid rgba(255,255,255,0.98)",
                   boxShadow: "0 0 0 2px rgba(74,140,63,0.96), 0 0 0 6px rgba(74,140,63,0.13), 0 8px 28px rgba(0,0,0,0.18), inset 0 1px 0 rgba(255,255,255,0.60)",
-                  transition: "top 320ms cubic-bezier(0.16,1,0.3,1), left 320ms cubic-bezier(0.16,1,0.3,1), width 320ms cubic-bezier(0.16,1,0.3,1), height 320ms cubic-bezier(0.16,1,0.3,1), border-radius 320ms cubic-bezier(0.16,1,0.3,1), box-shadow 320ms cubic-bezier(0.16,1,0.3,1)",
+                  transition: isMobile() && data.id === "filters"
+                    ? "top 220ms cubic-bezier(0.32,0.72,0,1), left 220ms cubic-bezier(0.32,0.72,0,1), width 220ms cubic-bezier(0.32,0.72,0,1), height 220ms cubic-bezier(0.32,0.72,0,1), border-radius 220ms cubic-bezier(0.32,0.72,0,1), box-shadow 220ms cubic-bezier(0.32,0.72,0,1)"
+                    : isMobile()
+                    ? "top 240ms cubic-bezier(0.32,0.72,0,1), left 240ms cubic-bezier(0.32,0.72,0,1), width 240ms cubic-bezier(0.32,0.72,0,1), height 240ms cubic-bezier(0.32,0.72,0,1), border-radius 240ms cubic-bezier(0.32,0.72,0,1), box-shadow 240ms cubic-bezier(0.32,0.72,0,1)"
+                    : "top 320ms cubic-bezier(0.16,1,0.3,1), left 320ms cubic-bezier(0.16,1,0.3,1), width 320ms cubic-bezier(0.16,1,0.3,1), height 320ms cubic-bezier(0.16,1,0.3,1), border-radius 320ms cubic-bezier(0.16,1,0.3,1), box-shadow 320ms cubic-bezier(0.16,1,0.3,1)",
                   willChange: "top, left, width, height, border-radius",
                   transform: "translateZ(0)",
                   backfaceVisibility: "hidden" as const,
@@ -520,7 +546,7 @@ export default function DashboardTour() {
               </div>
             </div>
           ) : rect && tipPos ? (
-            <div ref={tipRef} className="fixed z-[52] rounded-[16px] bg-white dark:bg-[#1a221a] border border-black/10 dark:border-white/10 shadow-[0_20px_60px_rgba(0,0,0,0.30)] overflow-hidden flex flex-col" style={{ top: tipPos.top, left: tipPos.left, width: tipPos.width, transition: "top 320ms cubic-bezier(0.16,1,0.3,1), left 320ms cubic-bezier(0.16,1,0.3,1)", willChange: "top, left", transform: "translateZ(0)", backfaceVisibility: "hidden" } as React.CSSProperties} role="dialog">
+            <div ref={tipRef} className="fixed z-[52] rounded-[16px] bg-white dark:bg-[#1a221a] border border-black/10 dark:border-white/10 shadow-[0_20px_60px_rgba(0,0,0,0.30)] overflow-hidden flex flex-col" style={{ top: tipPos.top, left: tipPos.left, width: tipPos.width, transition: isMobile() && data.id === "filters" ? "top 220ms cubic-bezier(0.32,0.72,0,1), left 220ms cubic-bezier(0.32,0.72,0,1)" : isMobile() ? "top 240ms cubic-bezier(0.32,0.72,0,1), left 240ms cubic-bezier(0.32,0.72,0,1)" : "top 320ms cubic-bezier(0.16,1,0.3,1), left 320ms cubic-bezier(0.16,1,0.3,1)", willChange: "top, left", transform: "translateZ(0)", backfaceVisibility: "hidden" } as React.CSSProperties} role="dialog">
               <div className="p-5 sm:p-6">
                 <div className="flex items-start justify-between gap-3">
                   <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-[10px] border shadow-sm" style={{ background: `${data.accent}12`, borderColor: `${data.accent}18`, color: data.accent }}>{data.Icon ? <data.Icon className="h-5 w-5" /> : <Sparkles className="h-5 w-5" />}</div>
