@@ -270,11 +270,20 @@ export default function DashboardTour() {
     if (!open || centered) { setRect(null); setClip(null); setTipPos(null); return; }
     const sel = data.target!;
     let el = document.querySelector(sel) as HTMLElement | null;
-    if (el && !isVisible(el)) {
-      if (sel.startsWith("#dash-nav-") && isMobile()) {
+    // mobile fallback: try drawer variant for sidebar items
+    if (isMobile() && el && !isVisible(el)) {
+      const alt = sel === "#dash-nav-my" ? "#dash-nav-my-m" : sel === "#dash-nav-published" ? "#dash-nav-published-m" : sel === "#dash-nav-review" ? "#dash-nav-review-m" : null;
+      if (alt) {
+        const altEl = document.querySelector(alt) as HTMLElement | null;
+        if (altEl && isVisible(altEl)) el = altEl;
+        else { setRect(null); setClip(null); return; }
+      } else if (sel.startsWith("#dash-nav-") || sel === "#dash-profile") {
         setRect(null); setClip(null);
         return;
+      } else {
+        el = null;
       }
+    } else if (el && !isVisible(el)) {
       el = null;
     }
     if (!el) { setRect(null); setClip(null); return; }
@@ -292,8 +301,15 @@ export default function DashboardTour() {
       try { setClip(buildSpotlightClipPath(nr, vw, vh)); } catch { setClip(null); }
     };
     const r = el.getBoundingClientRect();
-    if (r.top < 78 || r.bottom > window.innerHeight - 80) {
-      el.scrollIntoView({ behavior: "auto", block: "center", inline: "nearest" });
+    const mob = isMobile();
+    // on mobile, ensure large elements leave room for bottom-sheet tip
+    const needsRoomBelow = mob && (sel === "#dash-stats" || sel === "#dash-filters" || sel === "#dash-hero" || sel === "#dash-list");
+    if (r.top < 78 || r.bottom > window.innerHeight - (needsRoomBelow ? 280 : 80)) {
+      // for stats on mobile, scroll to start so tip can sit below
+      const block = mob && needsRoomBelow ? "start" as const : "center" as const;
+      el.scrollIntoView({ behavior: "auto", block, inline: "nearest" });
+      // add offset for sticky header on mobile start
+      if (mob && block === "start") window.scrollBy({ top: -72, left: 0, behavior: "auto" });
       requestAnimationFrame(() => {
         const rr = el!.getBoundingClientRect();
         commit(rr);
@@ -314,14 +330,24 @@ export default function DashboardTour() {
     return () => { window.removeEventListener("resize", onWin); window.removeEventListener("scroll", onWin); cancelAnimationFrame(raf); };
   }, [open, centered, measure]);
 
-  // auto-skip hidden nav items on mobile
+  // auto-skip hidden nav/profile items on mobile — instant, no flicker
   useEffect(() => {
     if (!open || centered) return;
-    if (data.target?.startsWith("#dash-nav-") && isMobile() && rect === null) {
+    const sel = data.target || "";
+    const isHiddenNav = sel.startsWith("#dash-nav-") || sel === "#dash-profile";
+    if (isHiddenNav && isMobile() && rect === null) {
       const t = setTimeout(() => {
         const idx = STEPS.findIndex(s => s.id === data.id);
         if (step === idx) next();
-      }, 500);
+      }, 120);
+      return () => clearTimeout(t);
+    }
+    // also skip contribute if somehow not found on mobile (fallback)
+    if (sel === "#dash-contribute-btn" && isMobile() && rect === null) {
+      const t = setTimeout(() => {
+        const idx = STEPS.findIndex(s => s.id === data.id);
+        if (step === idx) next();
+      }, 120);
       return () => clearTimeout(t);
     }
   }, [open, centered, data, rect, step, next]);
@@ -334,8 +360,15 @@ export default function DashboardTour() {
       const gap = 16 / zoom, edge = 8 / zoom;
       const mob = window.innerWidth < 768;
       const wVisual = 380, w = wVisual / zoom;
-      const wEff = mob ? Math.min(vw - gap, w) : w;
+      const wEff = mob ? Math.min(vw - edge * 2, w) : w;
       const h = tipRef.current?.offsetHeight || 260;
+      if (mob) {
+        // bottom-sheet on mobile — always visible, never overlaps highlight heavily
+        const top = Math.max(edge, vh - h - edge - 12);
+        const left = edge;
+        setTipPos({ top, left, width: vw - edge * 2 });
+        return;
+      }
       let top = rect.top + rect.height + gap;
       let left = rect.left + rect.width / 2 - wEff / 2;
       left = Math.max(edge, Math.min(left, vw - wEff - edge));
@@ -411,7 +444,33 @@ export default function DashboardTour() {
               />
             </>
           ) : (
-            <div className="fixed inset-0 z-50 bg-[#0a150a]/60 backdrop-blur-[3px]" onClick={() => close("dismissed")} />
+            <>
+              <div className="fixed inset-0 z-50 bg-[#0a150a]/60 backdrop-blur-[3px]" onClick={() => close("dismissed")} />
+              {/* fallback when highlight target not found (e.g., hidden on mobile) — show centered card so user can still Next, auto-skips quickly via effect */}
+              <div className="fixed inset-0 z-[52] flex items-center justify-center p-4 pointer-events-none">
+                <div className="pointer-events-auto w-full max-w-[520px] rounded-[18px] bg-white dark:bg-[#1a221a] border border-black/10 dark:border-white/10 shadow-[0_24px_64px_rgba(0,0,0,0.28)] animate-[tourPop_0.36s_cubic-bezier(0.16,1,0.3,1)] flex flex-col">
+                  <div className="p-6 sm:p-7">
+                    <div className="flex items-start justify-between gap-4">
+                      <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-[12px] border shadow-sm" style={{ background: `${data.accent}14`, borderColor: `${data.accent}20`, color: data.accent }}>{data.Icon ? <data.Icon className="h-5 w-5" /> : <Sparkles className="h-5 w-5" />}</div>
+                      <button onClick={() => close("dismissed")} className="flex h-8 w-8 items-center justify-center rounded-full border border-black/10 dark:border-white/10 hover:bg-black/5"><X className="h-4 w-4" /></button>
+                    </div>
+                    <p className="mt-3 text-[11px] font-bold tracking-[0.14em] uppercase" style={{ color: data.accent }}>Step {step+1} of {total} • {data.title}</p>
+                    <p className="mt-2 text-[14px] font-light leading-6 text-[var(--text-mid)]">{data.desc}</p>
+                    <div className="mt-4 flex items-center gap-3">
+                      <div className="flex-1 h-1 rounded-full bg-black/10 dark:bg-white/10 overflow-hidden"><div className="h-full bg-[#4a8c3f] rounded-full" style={{ width: `${pct}%` }} /></div>
+                      <span className="text-[11px] font-bold text-[var(--text-light)] tabular-nums">{step+1}/{total}</span>
+                    </div>
+                    <div className="mt-5 flex items-center justify-between gap-2">
+                      <button onClick={() => close("dismissed")} className="text-[13px] font-semibold text-[var(--text-light)]">Skip</button>
+                      <div className="flex gap-2">
+                        <button onClick={prev} disabled={step<=1} className="inline-flex h-9 w-9 items-center justify-center rounded-full border border-black/10 disabled:opacity-30 disabled:pointer-events-none"><ArrowLeft className="h-4 w-4" /></button>
+                        <button onClick={next} className="inline-flex items-center gap-1.5 rounded-full bg-[#1a3a1a] px-5 py-2.5 text-[13px] font-bold text-white">Next <ArrowRight className="h-4 w-4" /></button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </>
           )}
 
           {centered ? (
