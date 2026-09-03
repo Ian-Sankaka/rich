@@ -302,11 +302,14 @@ export default function DashboardTour() {
     };
     const r = el.getBoundingClientRect();
     const mob = isMobile();
-    // on mobile, ensure large elements leave room for bottom-sheet tip
-    const needsRoomBelow = mob && (sel === "#dash-stats" || sel === "#dash-filters" || sel === "#dash-hero" || sel === "#dash-list");
-    if (r.top < 78 || r.bottom > window.innerHeight - (needsRoomBelow ? 280 : 80)) {
-      // for stats on mobile, scroll to start so tip can sit below
-      const block = mob && needsRoomBelow ? "start" as const : "center" as const;
+    // on mobile, ensure large elements leave room; filters needs room on top (tip sits above)
+    const isFilters = sel === "#dash-filters";
+    const needsRoomBelow = mob && (sel === "#dash-stats" || sel === "#dash-hero" || sel === "#dash-list");
+    const needsRoomAbove = mob && isFilters;
+    const threshold = needsRoomBelow ? 280 : needsRoomAbove ? 320 : 80;
+    if (r.top < 78 || r.bottom > window.innerHeight - threshold || (needsRoomAbove && r.top < 300)) {
+      // stats/hero/list -> start (tip below), filters -> center (tip above needs space)
+      const block = mob && needsRoomBelow ? "start" as const : mob && needsRoomAbove ? "center" as const : "center" as const;
       el.scrollIntoView({ behavior: "auto", block, inline: "nearest" });
       // add offset for sticky header on mobile start
       if (mob && block === "start") window.scrollBy({ top: -72, left: 0, behavior: "auto" });
@@ -363,8 +366,24 @@ export default function DashboardTour() {
       const wEff = mob ? Math.min(vw - edge * 2, w) : w;
       const h = tipRef.current?.offsetHeight || 260;
       if (mob) {
-        // bottom-sheet on mobile — always visible, never overlaps highlight heavily
-        const top = Math.max(edge, vh - h - edge - 12);
+        const topBelow = rect.top + rect.height + gap;
+        const topAbove = rect.top - h - gap;
+        const fitsBelow = topBelow + h + edge <= vh;
+        const fitsAbove = topAbove >= edge;
+        let top: number;
+        // filters (#dash-filters) should sit on top on mobile so chips + search stay fully visible
+        if (data.id === "filters" && fitsAbove) {
+          top = topAbove;
+        } else if (data.id === "filters" && !fitsAbove && fitsBelow) {
+          top = topBelow;
+        } else if (fitsBelow) {
+          top = topBelow;
+        } else if (fitsAbove) {
+          top = topAbove;
+        } else {
+          // no room above or below — bottom-sheet fallback
+          top = Math.max(edge, vh - h - edge - 12);
+        }
         const left = edge;
         setTipPos({ top, left, width: vw - edge * 2 });
         return;
