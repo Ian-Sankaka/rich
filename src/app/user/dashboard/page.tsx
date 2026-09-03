@@ -114,6 +114,7 @@ export default function UserDashboardPage() {
   const [pwConfirm, setPwConfirm] = useState("");
   const [savingProfile, setSavingProfile] = useState(false);
   const [savingPw, setSavingPw] = useState(false);
+  const [mobileNavOpen, setMobileNavOpen] = useState(false);
 
   // contribute form state (full 4 steps like /submit)
   const [step, setStep] = useState(1);
@@ -171,8 +172,9 @@ export default function UserDashboardPage() {
     return () => document.documentElement.classList.remove("dashboard-hide");
   }, []);
 
-  // lock to 90% zoom like browser 90% (user preference) — restores on leave
+  // lock to 90% zoom like browser 90% (user preference) — restores on leave — desktop only
   useEffect(() => {
+    if (typeof window !== "undefined" && window.innerWidth < 1024) return;
     const el = document.documentElement;
     const prevZoom = el.style.zoom;
     const prevTransform = el.style.transform;
@@ -438,9 +440,51 @@ export default function UserDashboardPage() {
   };
 
   return (
-    <div className="flex min-h-[111.11vh] w-full bg-[#f8f8f5] dark:bg-[#070d07]">
+    <div className="flex min-h-[100dvh] lg:min-h-[111.11vh] w-full bg-[#f8f8f5] dark:bg-[#070d07]">
       <DashboardTour />
-      <aside id="dash-sidebar" className="hidden lg:flex w-[300px] shrink-0 flex-col border-r border-[var(--border)] bg-white dark:bg-[#0f1410] sticky top-0 h-[111.11vh]">
+      {/* MOBILE DRAWER */}
+      {mobileNavOpen && (
+        <>
+          <div className="fixed inset-0 z-40 bg-black/40 backdrop-blur-sm lg:hidden" onClick={() => setMobileNavOpen(false)} aria-hidden="true" />
+          <div className="fixed inset-y-0 left-0 z-50 flex w-[300px] max-w-[86vw] flex-col border-r border-[var(--border)] bg-white dark:bg-[#0f1410] shadow-2xl lg:hidden animate-[toast-in_0.22s_ease] overflow-hidden">
+            <div className="flex h-[64px] items-center gap-2 px-6 border-b border-[var(--border)] shrink-0">
+              <span className="flex h-8 w-8 items-center justify-center rounded-[4px] bg-[#4a8c3f] text-white font-black text-[16px]" style={{ fontFamily: "Roboto, sans-serif" }}>R</span>
+              <span className="text-[16px] font-bold tracking-[0.08em] text-[#1a221a] dark:text-white">RICH</span>
+              <button onClick={() => setMobileNavOpen(false)} aria-label="Close menu" className="ml-auto flex h-9 w-9 items-center justify-center rounded-full border border-[var(--border)] text-[var(--text-light)] hover:bg-[var(--off-white)]">✕</button>
+            </div>
+            <nav className="flex-1 overflow-auto p-4 space-y-6">
+              <div id="dash-sidebar-nav-mobile" className="space-y-2">
+                {[
+                  { id: "dash-nav-my-m", label: "My Submissions", count: stats.total, filter: "all" as const, icon: LayoutDashboard },
+                  { id: "dash-nav-published-m", label: "Published", count: stats.published, filter: "published" as const, icon: CheckCircle },
+                  { id: "dash-nav-review-m", label: "In Review", count: stats.pending + stats.review, filter: "pending" as const, icon: Clock },
+                ].map((item) => {
+                  const Icon = item.icon as unknown as React.ComponentType<{ className?: string }>;
+                  const active = filter === item.filter || (item.filter === "pending" && (filter === "pending" || filter === "in_review"));
+                  return (
+                    <button key={item.label} onClick={() => { setFilter(item.filter as Status | "all"); setMobileNavOpen(false); }} className={`flex w-full items-center gap-3 rounded-[4px] px-3 py-3.5 text-left text-[15px] transition-colors touch-manipulation ${active ? "bg-[var(--off-white)] dark:bg-white/5 font-semibold text-[var(--text-dark)]" : "text-[var(--text-mid)] hover:bg-[var(--off-white)] dark:hover:bg-white/5"}`}>
+                      <Icon className="h-5 w-5 shrink-0" />
+                      <span className="flex-1">{item.label}</span>
+                      <span className={`rounded-full px-2 py-0.5 text-[15px] font-bold ${active ? "bg-[#4a8c3f] text-white" : "bg-[var(--off-white)] dark:bg-white/10 text-[var(--text-light)]"}`}>{item.count}</span>
+                    </button>
+                  );
+                })}
+              </div>
+            </nav>
+            <div className="p-4 border-t border-[var(--border)] shrink-0">
+              <button onClick={() => { setProfileModalOpen(true); setMobileNavOpen(false); }} className="flex w-full items-center gap-3 rounded-[4px] px-2 py-2.5 hover:bg-[var(--off-white)] dark:hover:bg-white/5 transition-colors text-left cursor-pointer touch-manipulation">
+                <div className="flex h-10 w-10 shrink-0 items-center justify-center overflow-hidden rounded-full bg-gradient-to-br from-[#1a3a1a] to-[#4a8c3f] text-white font-bold text-[18px]">{avatar ? <img src={avatar} alt="" className="h-full w-full object-cover" /> : (userName[0]?.toUpperCase() || "U")}</div>
+                <div className="flex-1 min-w-0">
+                  <p className="text-[16px] font-bold leading-none text-[var(--text-dark)]" style={{ fontFamily: "Roboto, sans-serif" }}>{userName !== "there" ? userName : (displayName.split(" ")[0] || "User")}</p>
+                  <p className="text-[13px] text-[var(--text-light)] truncate" style={{ fontFamily: "Roboto, sans-serif" }}>{userEmail}</p>
+                </div>
+                <Settings className="h-4 w-4 text-[var(--text-light)] shrink-0" />
+              </button>
+            </div>
+          </div>
+        </>
+      )}
+      <aside id="dash-sidebar" className="hidden lg:flex w-[300px] shrink-0 flex-col border-r border-[var(--border)] bg-white dark:bg-[#0f1410] sticky top-0 h-[100dvh] lg:h-[111.11vh]">
         <div className="flex h-[64px] items-center gap-2 px-6 border-b border-[var(--border)] shrink-0">
           <span className="flex h-8 w-8 items-center justify-center rounded-[4px] bg-[#4a8c3f] text-white font-black text-[16px]" style={{ fontFamily: "Roboto, sans-serif" }}>R</span>
           <span className="text-[16px] font-bold tracking-[0.08em] text-[#1a221a] dark:text-white">RICH</span>
@@ -479,34 +523,37 @@ export default function UserDashboardPage() {
       </aside>
 
       <div className="flex-1 min-w-0 flex flex-col">
-        <div className="flex h-[64px] items-center justify-between gap-4 px-6 lg:px-8 border-b border-[var(--border)] bg-white dark:bg-[#1a221a] sticky top-0 z-20">
-          <div className="flex items-center gap-3">
-            <h1 className="text-[18px] font-bold text-[var(--text-dark)]">My Dashboard</h1>
-            <span className="hidden sm:inline-flex items-center rounded-full bg-[#e8f3e5] dark:bg-[#14311a] px-2.5 py-1 text-[12px] font-bold text-[#2d5a27] dark:text-[#6db862]">{stats.total} submissions</span>
+        <div className="flex h-[64px] items-center justify-between gap-2 sm:gap-3 px-3 sm:px-6 lg:px-8 border-b border-[var(--border)] bg-white dark:bg-[#1a221a] sticky top-0 z-20">
+          <div className="flex items-center gap-2 sm:gap-3 min-w-0">
+            <button aria-label={mobileNavOpen ? "Close menu" : "Open menu"} aria-expanded={mobileNavOpen} onClick={() => setMobileNavOpen((v) => !v)} className="lg:hidden flex h-10 w-10 shrink-0 items-center justify-center rounded-md border border-[var(--border)] text-[var(--text-mid)] dark:text-white/80 bg-white dark:bg-transparent active:scale-95 transition-transform touch-manipulation">
+              {mobileNavOpen ? <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2}><path d="M6 6l12 12M18 6L6 18" /></svg> : <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2}><path d="M4 6h16M4 12h16M4 18h16" /></svg>}
+            </button>
+            <h1 className="text-[15px] sm:text-[18px] font-bold text-[var(--text-dark)] truncate">My Dashboard</h1>
+            <span className="hidden sm:inline-flex items-center rounded-full bg-[#e8f3e5] dark:bg-[#14311a] px-2.5 py-1 text-[12px] font-bold text-[#2d5a27] dark:text-[#6db862] shrink-0">{stats.total} submissions</span>
           </div>
-          <div className="flex items-center gap-2">
-            <div className="transition-transform duration-300 hover:scale-105 hover:-translate-y-0.5"><ThemeToggle /></div>
-            <button onClick={signOut} className="group inline-flex cursor-pointer items-center gap-2 rounded-[4px] border border-[var(--border)] bg-white dark:bg-white/5 px-4 py-2.5 text-[14px] font-bold text-[var(--text-dark)] hover:border-[#4a8c3f] hover:text-[#4a8c3f] hover:shadow-md hover:-translate-y-0.5 active:translate-y-0 transition-all duration-300"><LogOut className="h-4 w-4 transition-transform duration-300 group-hover:translate-x-0.5" /> Sign out</button>
-            <button onClick={() => window.dispatchEvent(new CustomEvent("rich-open-tour"))} className="inline-flex items-center gap-2 rounded-[4px] bg-[#1a3a1a] px-3 sm:px-4 py-2.5 text-[13px] sm:text-[14px] font-bold text-white hover:bg-black shadow-sm hover:shadow-md hover:-translate-y-0.5 active:translate-y-0 transition-all duration-300"><Sparkles className="h-4 w-4" /><span className="hidden sm:inline">Take Tour</span><span className="sm:hidden">Tour</span></button>
+          <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
+            <div className="transition-transform duration-300 hover:scale-105"><ThemeToggle /></div>
+            <button onClick={signOut} className="group inline-flex cursor-pointer items-center gap-1.5 sm:gap-2 rounded-[4px] border border-[var(--border)] bg-white dark:bg-white/5 px-2.5 sm:px-4 py-2.5 text-[14px] font-bold text-[var(--text-dark)] hover:border-[#4a8c3f] hover:text-[#4a8c3f] hover:shadow-md active:translate-y-0 transition-all touch-manipulation"><LogOut className="h-4 w-4 shrink-0" /> <span className="hidden sm:inline">Sign out</span></button>
+            <button onClick={() => window.dispatchEvent(new CustomEvent("rich-open-tour"))} className="inline-flex items-center gap-1.5 sm:gap-2 rounded-[4px] bg-[#1a3a1a] px-2.5 sm:px-4 py-2.5 text-[13px] sm:text-[14px] font-bold text-white hover:bg-black shadow-sm hover:shadow-md active:translate-y-0 transition-all touch-manipulation"><Sparkles className="h-4 w-4 shrink-0" /><span className="hidden sm:inline">Take Tour</span><span className="sm:hidden">Tour</span></button>
           </div>
         </div>
 
-        <div className="flex-1 p-6 lg:p-8 space-y-6 bg-[#f8f8f5] dark:bg-[#070d07] overflow-auto">
-          <div id="dash-hero" className="rounded-[16px] border border-[var(--border)] bg-gradient-to-br from-[#1a3a1a] via-[#2d5a27] to-[#4a8c3f] p-7 lg:p-8 text-white shadow-lg">
-            <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6">
-              <div className="flex-1">
-                <p className="text-[13px] font-bold tracking-[0.14em] uppercase text-white/60">Contributor Hub</p>
-                <h2 className="mt-2 flex items-center gap-2 text-[26px] lg:text-[28px] font-bold leading-tight">Welcome, {profileLoaded || userName !== "there" ? userName : <span className="inline-block h-7 w-24 animate-pulse bg-white/20 rounded align-middle" />} <span className="inline-block animate-[wave_2s_ease-in-out_infinite] origin-[70%_70%]">👋</span></h2>
-                <p className="mt-2 max-w-2xl text-[14px] font-light leading-6 text-white/80">Submit resources, track review status, and see your published work live in the repository.</p>
+        <div className="flex-1 p-4 sm:p-6 lg:p-8 space-y-4 sm:space-y-6 bg-[#f8f8f5] dark:bg-[#070d07] overflow-auto">
+          <div id="dash-hero" className="rounded-[16px] border border-[var(--border)] bg-gradient-to-br from-[#1a3a1a] via-[#2d5a27] to-[#4a8c3f] p-5 sm:p-7 lg:p-8 text-white shadow-lg">
+            <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-5 sm:gap-6">
+              <div className="flex-1 min-w-0">
+                <p className="text-[11px] sm:text-[13px] font-bold tracking-[0.14em] uppercase text-white/60">Contributor Hub</p>
+                <h2 className="mt-2 flex flex-wrap items-center gap-2 text-[22px] sm:text-[26px] lg:text-[28px] font-bold leading-tight">Welcome, {profileLoaded || userName !== "there" ? userName : <span className="inline-block h-7 w-24 animate-pulse bg-white/20 rounded align-middle" />} <span className="inline-block animate-[wave_2s_ease-in-out_infinite] origin-[70%_70%]">👋</span></h2>
+                <p className="mt-2 max-w-2xl text-[13px] sm:text-[14px] font-light leading-6 text-white/80">Submit resources, track review status, and see your published work live in the repository.</p>
               </div>
-              <div className="flex shrink-0 gap-3">
-                <button id="dash-contribute-btn" onClick={openNew} className="inline-flex items-center justify-center gap-2 rounded-[4px] bg-white px-4 py-3 text-[14px] font-bold text-[#1a3a1a] hover:bg-white/90 transition-all cursor-pointer"><Plus className="h-4 w-4" /> Contribute Resource</button>
-                <Link href="/collections" className="hidden sm:inline-flex items-center justify-center rounded-[4px] border border-white/20 px-5 py-3 text-[14px] font-bold text-white hover:bg-white/10 transition-colors">Browse</Link>
+              <div className="flex flex-col sm:flex-row shrink-0 gap-2 sm:gap-3 w-full lg:w-auto">
+                <button id="dash-contribute-btn" onClick={openNew} className="inline-flex items-center justify-center gap-2 rounded-[4px] bg-white px-4 py-3.5 sm:py-3 text-[14px] font-bold text-[#1a3a1a] hover:bg-white/90 transition-all cursor-pointer w-full sm:w-auto touch-manipulation min-h-[44px]"><Plus className="h-4 w-4" /> Contribute Resource</button>
+                <Link href="/collections" className="inline-flex items-center justify-center rounded-[4px] border border-white/20 px-5 py-3.5 sm:py-3 text-[14px] font-bold text-white hover:bg-white/10 transition-colors w-full sm:w-auto touch-manipulation min-h-[44px] text-center">Browse</Link>
               </div>
             </div>
           </div>
 
-          <motion.div id="dash-stats" className="grid gap-5 sm:grid-cols-2 xl:grid-cols-4 rounded-[12px]" variants={{ hidden: { opacity: 0, y: 20 }, visible: { opacity: 1, y: 0, transition: { staggerChildren: 0.1 } } }} initial="hidden" animate="visible">
+          <motion.div id="dash-stats" className="grid grid-cols-2 gap-3 sm:gap-5 xl:grid-cols-4 rounded-[12px]" variants={{ hidden: { opacity: 0, y: 20 }, visible: { opacity: 1, y: 0, transition: { staggerChildren: 0.1 } } }} initial="hidden" animate="visible">
             {[
               { label: "Submissions", value: stats.total, hint: "All time", sub: "Total intake", icon: FileText, color: "bg-[#1a3a1a]", pct: 100 },
               { label: "Pending", value: stats.pending, hint: "Needs review", sub: "Awaiting review", icon: Clock, color: "bg-orange-500", pct: stats.total ? (stats.pending / stats.total) * 100 : 0 },
@@ -515,15 +562,15 @@ export default function UserDashboardPage() {
             ].map((c) => {
               const Icon = c.icon;
               return (
-                <motion.div key={c.label} variants={{ hidden: { opacity: 0, y: 15 }, visible: { opacity: 1, y: 0, transition: { duration: 0.5 } } }} whileHover={{ scale: 1.02, y: -3 }} transition={{ type: "spring", stiffness: 300, damping: 15 } as unknown as Record<string, unknown>} className="h-full overflow-hidden rounded-[12px] border border-[var(--border)] bg-white dark:bg-[#1a221a] p-4">
+                <motion.div key={c.label} variants={{ hidden: { opacity: 0, y: 15 }, visible: { opacity: 1, y: 0, transition: { duration: 0.5 } } }} whileHover={{ scale: 1.02, y: -3 }} transition={{ type: "spring", stiffness: 300, damping: 15 } as unknown as Record<string, unknown>} className="h-full overflow-hidden rounded-[12px] border border-[var(--border)] bg-white dark:bg-[#1a221a] p-3 sm:p-4">
                   <div className="p-0.5">
                     <div className="flex items-center justify-between mb-3">
                       <p className="text-[15px] font-semibold tracking-tight text-[var(--text-mid)]" style={{ fontFamily: "Roboto, sans-serif" }}>{c.label}</p>
                       <Icon className="h-4 w-4 text-[var(--text-light)]" />
                     </div>
-                    <div className="mb-3 flex items-baseline gap-2">
-                      <span className="text-[30px] font-bold leading-none tracking-tight text-[var(--text-dark)]" style={{ fontFamily: "Space Grotesk, sans-serif" }}><AnimatedNumber value={c.value} /></span>
-                      <span className="text-[13px] font-medium text-[var(--text-light)]">{c.hint}</span>
+                    <div className="mb-3 flex items-baseline gap-1.5 sm:gap-2">
+                      <span className="text-[22px] sm:text-[30px] font-bold leading-none tracking-tight text-[var(--text-dark)]" style={{ fontFamily: "Space Grotesk, sans-serif" }}><AnimatedNumber value={c.value} /></span>
+                      <span className="text-[12px] sm:text-[13px] font-medium text-[var(--text-light)]">{c.hint}</span>
                     </div>
                     <div className="w-full h-1.5 overflow-hidden rounded-full bg-black/5 dark:bg-white/10 flex">
                       <motion.div className={`h-full ${c.color}`} initial={{ width: 0 }} animate={{ width: `${c.pct}%` }} transition={{ duration: 1, delay: 0.6, ease: "easeOut" }} />
@@ -538,43 +585,43 @@ export default function UserDashboardPage() {
             })}
           </motion.div>
 
-          <div id="dash-filters" className="flex flex-col sm:flex-row gap-4 items-stretch sm:items-center justify-between rounded-[16px] border border-[var(--border)] bg-white dark:bg-[#1a221a] p-4 shadow-sm">
-            <div className="flex flex-wrap gap-2">
+          <div id="dash-filters" className="flex flex-col gap-3 sm:gap-4 sm:flex-row items-stretch sm:items-center justify-between rounded-[16px] border border-[var(--border)] bg-white dark:bg-[#1a221a] p-3 sm:p-4 shadow-sm">
+            <div className="flex gap-2 overflow-x-auto no-scrollbar -mx-1 px-1 sm:flex-wrap sm:overflow-visible">
               {(["all", "pending", "in_review", "published"] as const).map((f) => (
-                <button key={f} onClick={() => setFilter(f)} className={`rounded-[4px] px-5 py-2.5 text-[13px] font-bold uppercase tracking-wide transition-all ${filter === f ? "bg-[#1a3a1a] text-white shadow" : "bg-[var(--off-white)] dark:bg-white/5 text-[var(--text-mid)] hover:bg-[var(--border)]"}`}>{f.replace("_", " ")}</button>
+                <button key={f} onClick={() => setFilter(f)} className={`shrink-0 whitespace-nowrap rounded-[4px] px-4 sm:px-5 py-3 sm:py-2.5 text-[12px] sm:text-[13px] font-bold uppercase tracking-wide transition-all touch-manipulation min-h-[44px] sm:min-h-0 ${filter === f ? "bg-[#1a3a1a] text-white shadow" : "bg-[var(--off-white)] dark:bg-white/5 text-[var(--text-mid)] hover:bg-[var(--border)]"}`}>{f.replace("_", " ")}</button>
               ))}
             </div>
-            <input value={query} onChange={(e) => setQuery(e.target.value)} placeholder="Search your submissions…" className="w-full sm:w-72 rounded-[4px] border border-[var(--border)] bg-[var(--off-white)] dark:bg-white/5 px-5 py-3 text-[15px] outline-none focus:border-[#4a8c3f] focus:ring-4 focus:ring-[#4a8c3f]/10 transition-all" />
+            <input value={query} onChange={(e) => setQuery(e.target.value)} placeholder="Search your submissions…" className="w-full sm:w-72 rounded-[4px] border border-[var(--border)] bg-[var(--off-white)] dark:bg-white/5 px-4 sm:px-5 py-3.5 sm:py-3 text-[15px] outline-none focus:border-[#4a8c3f] focus:ring-4 focus:ring-[#4a8c3f]/10 transition-all min-h-[44px]" />
           </div>
 
           <div id="dash-list" className="rounded-[16px] border border-[var(--border)] bg-white dark:bg-[#1a221a] overflow-hidden shadow-sm">
-            <div className="flex items-center justify-between border-b border-[var(--border)] px-6 py-5">
-              <h3 className="text-[15px] font-bold text-[var(--text-dark)]">My Submissions</h3>
-              <span className="text-[13px] font-medium text-[var(--text-light)]">{filtered.length} items</span>
+            <div className="flex items-center justify-between border-b border-[var(--border)] px-4 sm:px-6 py-4 sm:py-5 gap-2">
+              <h3 className="text-[15px] font-bold text-[var(--text-dark)] shrink-0">My Submissions</h3>
+              <span className="text-[12px] sm:text-[13px] font-medium text-[var(--text-light)] truncate">{filtered.length} items</span>
             </div>
             <div className="divide-y divide-[var(--border)]">
               {filtered.map((s, idx) => (
-                <div key={s.id} onClick={() => setSelected(s)} className="group flex flex-col sm:flex-row sm:items-center gap-4 px-6 py-5 hover:bg-[var(--off-white)]/70 dark:hover:bg-white/[0.03] cursor-pointer transition-colors" style={{ animation: `toast-in 0.4s ease ${idx * 40}ms both` }}>
+                <div key={s.id} onClick={() => setSelected(s)} className="group flex flex-col gap-3 px-4 sm:px-6 py-4 sm:py-5 hover:bg-[var(--off-white)]/70 dark:hover:bg-white/[0.03] cursor-pointer transition-colors" style={{ animation: `toast-in 0.4s ease ${idx * 40}ms both` }}>
                   <div className="flex-1 min-w-0">
-                    <div className="flex flex-wrap items-center gap-2.5">
-                      <p className="text-[16px] font-semibold leading-6 text-[var(--text-dark)] group-hover:text-[#4a8c3f] transition-colors line-clamp-1">{s.title}</p>
+                    <div className="flex flex-wrap items-center gap-2">
+                      <p className="text-[15px] sm:text-[16px] font-semibold leading-6 text-[var(--text-dark)] group-hover:text-[#4a8c3f] transition-colors line-clamp-2 sm:line-clamp-1">{s.title}</p>
                       {s.isNew && <NewBadge />}
                       <StatusBadge s={s.status} />
                     </div>
-                    <p className="mt-1.5 text-[14px] font-medium text-[var(--text-light)]">{s.collection} • {s.type ? `${s.type} • ` : ""}{s.dateTime || s.date}</p>
-                    <p className="mt-2 text-[16px] font-light leading-6 text-[var(--text-mid)] line-clamp-1">{s.excerpt}</p>
+                    <p className="mt-1.5 text-[13px] sm:text-[14px] font-medium text-[var(--text-light)] line-clamp-1">{s.collection} • {s.type ? `${s.type} • ` : ""}{s.dateTime || s.date}</p>
+                    <p className="mt-2 text-[14px] sm:text-[16px] font-light leading-6 text-[var(--text-mid)] line-clamp-2 sm:line-clamp-1">{s.excerpt}</p>
                   </div>
-                  <div className="flex shrink-0 gap-2 sm:ml-auto">
-                    <button onClick={(e) => { e.stopPropagation(); setSelected(s); }} className="rounded-[4px] border border-[var(--border)] bg-white dark:bg-white/5 px-4 py-2.5 text-[14px] font-bold text-[var(--text-dark)] hover:border-[#4a8c3f] transition-colors">View</button>
+                  <div className="flex flex-wrap gap-2 w-full sm:w-auto sm:justify-end">
+                    <button onClick={(e) => { e.stopPropagation(); setSelected(s); }} className="flex-1 sm:flex-none rounded-[4px] border border-[var(--border)] bg-white dark:bg-white/5 px-4 py-3 sm:py-2.5 text-[14px] font-bold text-[var(--text-dark)] hover:border-[#4a8c3f] transition-colors touch-manipulation min-h-[44px] sm:min-h-0 text-center">View</button>
                     {s.status === "declined" && (
-                      <button onClick={(e) => { e.stopPropagation(); openEdit(s); }} className="rounded-[4px] bg-[#1a3a1a] px-4 py-2.5 text-[14px] font-bold text-white hover:bg-black transition-colors">Edit & resubmit</button>
+                      <button onClick={(e) => { e.stopPropagation(); openEdit(s); }} className="flex-1 sm:flex-none rounded-[4px] bg-[#1a3a1a] px-4 py-3 sm:py-2.5 text-[14px] font-bold text-white hover:bg-black transition-colors touch-manipulation min-h-[44px] sm:min-h-0 text-center">Edit & resubmit</button>
                     )}
                   </div>
                 </div>
               ))}
               {filtered.length === 0 && (
-                <div className="px-6 py-16 text-center">
-                  <div className="mx-auto max-w-md rounded-[12px] border-2 border-dashed border-[var(--border)] bg-[var(--off-white)]/50 p-8">
+                <div className="px-4 sm:px-6 py-12 sm:py-16 text-center">
+                  <div className="mx-auto max-w-md rounded-[12px] border-2 border-dashed border-[var(--border)] bg-[var(--off-white)]/50 p-6 sm:p-8">
                     <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-[#e8f3e5] dark:bg-[#14311a] text-[#4a8c3f]"><Plus className="h-6 w-6" /></div>
                     <h4 className="mt-4 text-[18px] font-bold text-[var(--text-dark)]">No submissions yet</h4>
                     <p className="mt-1 text-[15px] text-[var(--text-mid)]">Start by adding your first article. It will appear here with its review status.</p>
@@ -588,14 +635,14 @@ export default function UserDashboardPage() {
       </div>
 
       {profileModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+        <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4">
           <div onClick={() => setProfileModalOpen(false)} className="absolute inset-0 bg-black/50 backdrop-blur-sm" />
-          <div className="relative w-full max-w-[560px] max-h-[90vh] overflow-auto rounded-[16px] bg-white dark:bg-[#1a221a] border border-[var(--border)] shadow-2xl animate-[toast-in_0.3s_ease]">
-            <div className="sticky top-0 flex items-center justify-between gap-4 border-b border-[var(--border)] bg-white dark:bg-[#1a221a] px-6 py-5">
+          <div className="relative w-full max-w-[560px] max-h-[92dvh] sm:max-h-[90vh] overflow-auto rounded-t-[16px] sm:rounded-[16px] bg-white dark:bg-[#1a221a] border border-[var(--border)] shadow-2xl animate-[toast-in_0.3s_ease] pb-[env(safe-area-inset-bottom)]">
+            <div className="sticky top-0 flex items-center justify-between gap-4 border-b border-[var(--border)] bg-white dark:bg-[#1a221a] px-4 sm:px-6 py-4 sm:py-5">
               <div><h3 className="text-[18px] font-bold text-[var(--text-dark)]">Profile settings</h3><p className="text-[13px] text-[var(--text-light)]">Manage your profile</p></div>
               <button onClick={() => setProfileModalOpen(false)} className="flex h-9 w-9 items-center justify-center rounded-full border border-[var(--border)] hover:bg-[var(--off-white)] transition-colors">✕</button>
             </div>
-            <div className="p-6 space-y-6">
+            <div className="p-4 sm:p-6 space-y-6">
               <div className="flex flex-col items-center text-center">
                 <div className="relative">
                   <div className="h-24 w-24 overflow-hidden rounded-full border-4 border-white dark:border-[#1a221a] shadow-md bg-white flex items-center justify-center">{avatar ? <img src={avatar} alt="avatar" className="h-full w-full object-cover" /> : <span className="text-[28px] font-black text-[#4a8c3f]">{userName[0]?.toUpperCase() || "U"}</span>}</div>
@@ -627,10 +674,10 @@ export default function UserDashboardPage() {
       )}
 
       {selected && (
-        <div className="fixed inset-0 z-40 flex items-center justify-center p-4">
+        <div className="fixed inset-0 z-40 flex items-end sm:items-center justify-center p-0 sm:p-4">
           <div onClick={() => setSelected(null)} className="absolute inset-0 bg-black/50 backdrop-blur-sm animate-[toast-in_0.2s_ease]" />
-          <div className="relative w-full max-w-[720px] max-h-[90vh] overflow-auto rounded-[16px] bg-[#f7f6f4] dark:bg-[#0f1410] border border-[#e8ece8] dark:border-white/10 shadow-2xl animate-[toast-in_0.32s_ease]">
-            <div className="sticky top-0 bg-gradient-to-br from-[#1a3a1a] via-[#2d5a27] to-[#4a8c3f] p-6 flex items-start justify-between gap-4 rounded-t-[16px]">
+          <div className="relative w-full max-w-[720px] max-h-[92dvh] sm:max-h-[90vh] overflow-auto rounded-t-[16px] sm:rounded-[16px] bg-[#f7f6f4] dark:bg-[#0f1410] border border-[#e8ece8] dark:border-white/10 shadow-2xl animate-[toast-in_0.32s_ease] pb-[env(safe-area-inset-bottom)]">
+            <div className="sticky top-0 bg-gradient-to-br from-[#1a3a1a] via-[#2d5a27] to-[#4a8c3f] p-4 sm:p-6 flex items-start justify-between gap-4 rounded-t-[16px]">
               <div className="flex-1 min-w-0">
                 <div className="flex flex-wrap items-center gap-2">
                   <span className="inline-flex rounded-full bg-white/15 text-white px-2.5 py-1 text-[11px] font-bold uppercase tracking-widest border border-white/20">{selected.collection}</span>
@@ -642,7 +689,7 @@ export default function UserDashboardPage() {
               </div>
               <button onClick={() => setSelected(null)} className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-white/15 text-white hover:bg-white/25 border border-white/20 transition-colors">✕</button>
             </div>
-            <div className="bg-white dark:bg-[#1a221a] p-6 space-y-6">
+            <div className="bg-white dark:bg-[#1a221a] p-4 sm:p-6 space-y-6">
               <div>
                 <p className="text-[12px] font-bold uppercase tracking-widest text-[var(--text-light)]">Abstract</p>
                 <p className="mt-2 text-[15px] leading-7 text-[var(--text-mid)] whitespace-pre-wrap break-words">{selected.abstract || selected.excerpt}</p>
@@ -661,13 +708,13 @@ export default function UserDashboardPage() {
                   ["Licensing", selected.licensing || "-"],
                   ["Submitted", selected.dateTime || selected.date],
                 ].map(([k, v]) => (
-                  <div key={k} className="grid grid-cols-[150px_1fr] gap-3 px-4 py-3">
-                    <span className="text-[12px] font-bold uppercase tracking-wide text-[var(--text-light)]">{k}</span>
-                    <span className="text-[14px] font-medium leading-6 text-[var(--text-dark)] break-words">{String(v)}</span>
+                  <div key={k} className="grid grid-cols-[110px_1fr] sm:grid-cols-[150px_1fr] gap-2 sm:gap-3 px-3 sm:px-4 py-3">
+                    <span className="text-[11px] sm:text-[12px] font-bold uppercase tracking-wide text-[var(--text-light)]">{k}</span>
+                    <span className="text-[13px] sm:text-[14px] font-medium leading-6 text-[var(--text-dark)] break-words">{String(v)}</span>
                   </div>
                 ))}
-                <div className="grid grid-cols-[150px_1fr] gap-3 px-4 py-3 items-center">
-                  <span className="text-[12px] font-bold uppercase tracking-wide text-[var(--text-light)]">Status</span>
+                <div className="grid grid-cols-[110px_1fr] sm:grid-cols-[150px_1fr] gap-2 sm:gap-3 px-3 sm:px-4 py-3 items-center">
+                  <span className="text-[11px] sm:text-[12px] font-bold uppercase tracking-wide text-[var(--text-light)]">Status</span>
                   <span><StatusBadge s={selected.status} /></span>
                 </div>
               </div>
@@ -689,18 +736,18 @@ export default function UserDashboardPage() {
         </div>
       )}
       {contributeOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+        <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4">
           <div onClick={() => { setContributeOpen(false); setEditingId(null); }} className="absolute inset-0 bg-black/50 backdrop-blur-sm" />
-          <div className="relative w-full max-w-[880px] max-h-[90vh] overflow-auto rounded-[16px] bg-[#f7f6f4] dark:bg-[#070d07] border border-[#e8ece8] dark:border-white/10 shadow-2xl animate-[toast-in_0.3s_ease] flex flex-col">
+          <div className="relative w-full max-w-[880px] max-h-[92dvh] sm:max-h-[90vh] overflow-auto rounded-t-[16px] sm:rounded-[16px] bg-[#f7f6f4] dark:bg-[#070d07] border border-[#e8ece8] dark:border-white/10 shadow-2xl animate-[toast-in_0.3s_ease] flex flex-col pb-[env(safe-area-inset-bottom)]">
             {/* header like /submit */}
-            <div className="shrink-0 bg-[#1a3a1a] border-b border-white/5 px-6 lg:px-8 py-8">
+            <div className="shrink-0 bg-[#1a3a1a] border-b border-white/5 px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
               <p className="text-[14px] font-bold tracking-[0.20em] uppercase text-[#6db862]">{editingId ? "Editing · Fix & resubmit" : "Contribution · Phase 1 intake"}</p>
               <h3 className="mt-2 text-[28px] font-medium leading-none text-white" style={{ fontFamily: "Playfair Display, serif" }}>{editingId ? "Edit Submission" : "Contribute Resource"}</h3>
               <p className="mt-2 max-w-[660px] text-[14px] font-light leading-6 text-white/80">{editingId ? "Fix based on decline notes below, then resubmit. It will return to Pending for review." : "Same form as Submit - reviewed within 4 weeks. Your submission will appear in My Submissions as Pending."}</p>
               {editingId && (() => { const ed = subs.find((x) => x.id === editingId); return ed?.reviewNotes ? <div className="mt-4 rounded-[8px] bg-red-500/20 border border-red-400/30 p-3"><p className="text-[12px] font-bold uppercase tracking-widest text-red-200">Decline notes to address</p><p className="mt-1 text-[13px] leading-6 text-white/90 whitespace-pre-wrap">{ed.reviewNotes}</p></div> : null; })()}
             </div>
             {/* stepper */}
-            <div className="shrink-0 bg-white dark:bg-[#1a221a] border-b border-[#e8ece8] dark:border-white/10 px-6 lg:px-8 pt-6 pb-4">
+            <div className="shrink-0 bg-white dark:bg-[#1a221a] border-b border-[#e8ece8] dark:border-white/10 px-2 sm:px-6 lg:px-8 pt-4 sm:pt-6 pb-4 overflow-x-auto no-scrollbar">
               <div className="flex items-start justify-center gap-0">
                 {STEPS.map((s, i) => {
                   const active = s.n === step;
@@ -712,14 +759,14 @@ export default function UserDashboardPage() {
                         <p className={`mt-2 text-[13px] font-bold tracking-[0.07em] uppercase ${active ? "text-[#1a221a] dark:text-white" : done ? "text-[#4a8c3f]" : "text-[#9aa09a]"}`}>{s.label}</p>
                         <p className={`text-[12px] leading-tight ${active ? "text-[#6b726b]" : "text-[#9aa09a]"} dark:text-white/40`}>{s.desc}</p>
                       </div>
-                      {i < 3 && <div className={`mx-1 sm:mx-2 mt-[17px] h-px w-6 sm:w-10 lg:w-16 shrink-0 transition-colors ${s.n < step ? "bg-[#4a8c3f]" : "bg-[#d6d9d6] dark:bg-white/10"}`} />}
+                       {i < 3 && <div className={`mx-1 sm:mx-2 mt-[17px] h-px w-3 sm:w-10 lg:w-16 shrink-0 transition-colors ${s.n < step ? "bg-[#4a8c3f]" : "bg-[#d6d9d6] dark:bg-white/10"}`} />}
                     </div>
                   );
                 })}
               </div>
             </div>
             {/* step content */}
-            <div className="flex-1 overflow-auto bg-white dark:bg-[#1a221a] px-6 lg:px-8 py-6">
+            <div className="flex-1 overflow-auto bg-white dark:bg-[#1a221a] px-4 sm:px-6 lg:px-8 py-6">
               {step === 1 && (
                 <div className="space-y-5 animate-[toast-in_0.35s_ease]">
                   <div><h4 className="text-[20px] font-bold text-[#1a221a] dark:text-white">Resource basics</h4><p className="mt-1 text-[14px] text-[#6b726b] dark:text-white/50">This is what reviewers and search see first.</p></div>
@@ -781,7 +828,8 @@ export default function UserDashboardPage() {
                 </div>
               )}
             </div>
-            <div className="shrink-0 flex items-center justify-between gap-3 border-t border-[#e8ece8] bg-[#f7f6f4] px-6 py-4">
+            <div className="shrink-0 flex items-center justify-between gap-2 sm:gap-3 border-t border-[#e8ece8] bg-[#f7f6f4] px-4 sm:px-6 py-4 pb-[calc(0.75rem+env(safe-area-inset-bottom))]">
+
               <button type="button" onClick={() => setStep((s) => Math.max(1, s - 1))} disabled={step === 1} className="inline-flex items-center gap-2 rounded-[4px] border border-[#d6d9d6] bg-white px-5 py-2.5 text-[12px] font-bold tracking-[0.06em] uppercase disabled:opacity-40 hover:border-[#4a8c3f]">← Back</button>
               <div className="flex items-center gap-3">
                 <span className="hidden sm:inline text-[12px] text-[#9aa09a]">Step {step} of 4</span>
