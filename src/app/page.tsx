@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { articles } from "@/lib/articles";
 import PartnerCarousel from "@/components/PartnerCarousel";
+import ArticleCard from "@/components/ArticleCard";
 import { Search, FileText, Globe2, ScrollText, ArrowUpRight } from "lucide-react";
 
 const collections: {
@@ -181,22 +182,9 @@ export default function Home() {
             </div>
             <Link href="/articles" className="inline-flex items-center gap-2 border-b border-[#4a8c3f] pb-0.5 text-[15px] font-bold tracking-[0.07em] uppercase text-[#4a8c3f] self-start sm:self-auto">View all articles →</Link>
           </div>
-          <div className="grid gap-7 lg:grid-cols-3">
+          <div className="grid gap-6 sm:gap-7 lg:grid-cols-3 lg:items-stretch">
             {articles.map((a) => (
-              <Link key={a.slug} href={`/articles/${a.slug}`} className="group flex flex-col overflow-hidden rounded-[4px] border border-[var(--border)] bg-white dark:bg-[#1a221a] hover:border-[#4a8c3f] hover:shadow-lg hover:-translate-y-1 transition-all duration-300 ease-out">
-                <div className="relative h-[180px] overflow-hidden">
-                  <div className="absolute inset-0 bg-cover bg-center transition-transform duration-500 ease-out group-hover:scale-[1.06]" style={{ backgroundImage: `url('${a.image}')` }} />
-                  <div className="absolute inset-0 bg-gradient-to-br from-black/40 to-transparent transition-opacity duration-300 group-hover:from-black/50" />
-                  <span className="absolute bottom-3 left-3 rounded-[4px] bg-[#1a3a1a] px-2.5 py-1 text-[12px] font-bold tracking-[0.1em] uppercase text-white">{a.category}</span>
-                  {a.comingSoon && <span className="absolute top-3 right-3 rounded-[4px] bg-amber-500 px-2 py-1 text-[12px] font-bold uppercase text-white">Coming Soon</span>}
-                </div>
-                <div className="flex flex-1 flex-col p-[22px]">
-                  <p className="text-[13.5px] text-[var(--text-light)]">{a.date} · {a.author}</p>
-                  <h3 className="mt-2.5 flex-1 text-[19px] font-medium leading-[1.35] text-[var(--text-dark)] group-hover:text-[#4a8c3f] transition-colors duration-300" style={{ fontFamily: "Playfair Display, serif" }}>{a.title}</h3>
-                  <p className="mt-3 text-[15px] font-light leading-6 text-[var(--text-mid)] line-clamp-3">{a.excerpt}</p>
-                  <span className="mt-4 inline-flex items-center gap-1.5 text-[14px] font-bold tracking-[0.07em] uppercase text-[#4a8c3f] transition-transform duration-300 group-hover:translate-x-1">{a.comingSoon ? "Preview →" : "Read more →"}</span>
-                </div>
-              </Link>
+              <ArticleCard key={a.slug} article={a} hideReadTime />
             ))}
           </div>
         </div>
